@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>驗證碼產生器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Anton&family=Architects+Daughter&family=Baloo+2:wght@500;600;700;800&family=Bangers&family=Caveat:wght@600;700&family=Comfortaa:wght@600;700&family=cwTeX+Q+Fangsong&family=cwTeX+Q+Hei&family=cwTeX+Q+Kai&family=cwTeX+Q+Yuan&family=Fredoka:wght@500;600;700&family=Kalam:wght@400;700&family=Luckiest+Guy&family=Noto+Sans+TC:wght@400;500;600;700;800&family=Noto+Serif+TC:wght@600;700&family=Pacifico&family=Patrick+Hand&family=Permanent+Marker&family=Poppins:wght@600;700;800&family=Righteous&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#e6e8eb;
+    --bg-2:#f3f4f6;
+    --glass:rgba(255,255,255,0.55);
+    --glass-strong:rgba(255,255,255,0.78);
+    --glass-border:rgba(255,255,255,0.92);
+    --ink:#34383c;
+    --ink-soft:#787e84;
+    --accent:#585d64;
+    --accent-soft:rgba(88,93,100,0.10);
+    --shadow:rgba(28,32,36,0.14);
+    --radius-lg:26px;
+    --radius-md:18px;
+    --radius-sm:12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg-1:#1b1c1e;
+      --bg-2:#242527;
+      --glass:rgba(255,255,255,0.07);
+      --glass-strong:rgba(255,255,255,0.12);
+      --glass-border:rgba(255,255,255,0.16);
+      --ink:#edeef0;
+      --ink-soft:#9a9ea3;
+      --accent:#c6c9cd;
+      --accent-soft:rgba(255,255,255,0.09);
+      --shadow:rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-1:#1b1c1e;
+    --bg-2:#242527;
+    --glass:rgba(255,255,255,0.07);
+    --glass-strong:rgba(255,255,255,0.12);
+    --glass-border:rgba(255,255,255,0.16);
+    --ink:#edeef0;
+    --ink-soft:#9a9ea3;
+    --accent:#c6c9cd;
+    --accent-soft:rgba(255,255,255,0.09);
+    --shadow:rgba(0,0,0,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'PingFang TC', sans-serif;
+    color:var(--ink);
+    background:var(--bg-1);
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body::before, body::after{
+    content:"";
+    position:fixed;
+    border-radius:50%;
+    filter:blur(70px);
+    z-index:0;
+    pointer-events:none;
+    opacity:.55;
+  }
+  body::before{
+    width:420px;height:420px;
+    top:-120px;left:-140px;
+    background:radial-gradient(circle, #c9cdd2, transparent 70%);
+  }
+  body::after{
+    width:380px;height:380px;
+    bottom:-140px;right:-120px;
+    background:radial-gradient(circle, #dfe1e4, transparent 70%);
+  }
+  :root[data-theme="dark"] body::before,
+  :root[data-theme="dark"] body::after{opacity:.25;}
+
+  .shell{
+    max-width:480px;
+    margin:0 auto;
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+  }
+
+  /* 頂部懸浮預覽區 */
+  .preview-zone{
+    position:sticky;
+    top:0;
+    z-index:10;
+    padding:16px 16px 12px;
+    background:var(--glass);
+    backdrop-filter:blur(22px) saturate(140%);
+    -webkit-backdrop-filter:blur(22px) saturate(140%);
+    border-bottom:1px solid var(--glass-border);
+    box-shadow:0 8px 24px var(--shadow);
+  }
+  .canvas-frame{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/7.4;
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    background:var(--glass-strong);
+    border:1px solid var(--glass-border);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 6px 18px var(--shadow);
+  }
+  .canvas-frame canvas{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+  .preview-actions{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+  }
+  .btn{
+    appearance:none;
+    border:1px solid var(--glass-border);
+    background:var(--glass-strong);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:600;
+    padding:10px 14px;
+    border-radius:var(--radius-sm);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 2px 8px var(--shadow);
+  }
+  .btn:active{transform:scale(.96);}
+  .btn.primary{
+    background:var(--ink);
+    color:var(--bg-2);
+    border-color:var(--ink);
+  }
+  .btn.primary#downloadBtn{
+    background:#ffffff;
+    color:#2b2f33;
+    border-color:rgba(0,0,0,0.10);
+    letter-spacing:.12em;
+  }
+  .btn.ghost{flex:0 0 auto;}
+  .btn.primary{flex:1;}
+  .btn svg{width:16px;height:16px;flex:none;}
+
+  /* 可捲動內容區 */
+  .content{
+    padding:20px 16px 48px;
+    position:relative;
+    z-index:1;
+  }
+  .card{
+    background:var(--glass);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius-lg);
+    padding:16px;
+    box-shadow:0 4px 16px var(--shadow);
+    margin-bottom:16px;
+  }
+  .card h2{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+    letter-spacing:.03em;
+  }
+  .text-input{
+    width:100%;
+    border:1px solid var(--glass-border);
+    background:var(--glass-strong);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:16px;
+    font-weight:600;
+    padding:12px 14px;
+    border-radius:var(--radius-sm);
+    outline:none;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.06);
+  }
+  .text-input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .hint{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:8px;
+  }
+
+  .style-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
+  }
+
+  .style-btn{
+    border:1.5px solid var(--glass-border);
+    background:var(--glass-strong);
+    border-radius:var(--radius-sm);
+    padding:6px;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset;
+  }
+  .style-btn canvas{
+    width:100%;
+    aspect-ratio:16/10;
+    border-radius:8px;
+    display:block;
+  }
+  .style-btn span{
+    font-size:10px;
+    font-weight:600;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:100%;
+  }
+  .style-btn:active{transform:scale(.95);}
+  .style-btn.active{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .style-btn.active span{color:var(--ink);}
+
+  .font-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .font-btn{
+    flex:0 0 auto;
+    border:1.5px solid var(--glass-border);
+    background:var(--glass-strong);
+    border-radius:var(--radius-sm);
+    padding:8px 12px 6px;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    min-width:64px;
+    transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset;
+  }
+  .font-btn .sample{
+    font-size:19px;
+    line-height:1.1;
+    color:var(--ink);
+  }
+  .font-btn .fname{
+    font-size:9px;
+    font-weight:600;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .font-btn:active{transform:scale(.95);}
+  .font-btn.active{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .font-btn.active .fname{color:var(--ink);}
+
+  @media (min-width:481px){
+    .shell{
+      margin-top:24px;
+      min-height:calc(100vh - 24px);
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:0 20px 60px var(--shadow);
+      margin-bottom:24px;
+    }
+    .preview-zone{top:0;border-radius:28px 28px 0 0;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+<div id="fontPreload" aria-hidden="true" style="position:fixed;left:-9999px;top:-9999px;opacity:0;pointer-events:none;white-space:nowrap;font-size:10px;"></div>
+
+  <div class="preview-zone">
+    <div class="canvas-frame">
+      <canvas id="mainCanvas"></canvas>
+    </div>
+    <div class="preview-actions">
+      <button class="btn ghost" id="shuffleBtn" aria-label="換一個樣式變化">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+      </button>
+      <button class="btn primary" id="downloadBtn">
+        下載圖片
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <h2>輸入文字</h2>
+      <input class="text-input" id="textInput" maxlength="14" placeholder="輸入想產生的文字" value="歲月靜好">
+    </div>
+
+    <div class="card">
+      <h2>字型</h2>
+      <div class="font-grid" id="fontGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="style-grid" id="styleRow"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- 可重現的隨機數產生器 ---------- */
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function hexToRgba(hex, alpha){
+    const c = hex.replace('#','');
+    const r = parseInt(c.substring(0,2),16);
+    const g = parseInt(c.substring(2,4),16);
+    const b = parseInt(c.substring(4,6),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  const CJK_RE = /[\u3400-\u9FFF\u3040-\u30FF\uF900-\uFAFF]/;
+
+  /* ---------- 色票組合 ---------- */
+  const PAL = {
+    rainbow: ['#e4572e','#f3a712','#3a86ff','#2f9e44','#c2255c','#7048e8','#087f8c'],
+    pastelRainbow: ['#e07a5f','#3d5a80','#81b29a','#f2cc8f','#9d4edd','#118ab2'],
+    neon: ['#ff5da2','#7dd3fc','#facc15','#a3e635','#c084fc'],
+    earth: ['#7a4a2b','#8a5a3b','#5e3a20','#93602f'],
+    inkDark: ['#2b2f33','#3d2b56','#1f4b3f','#4a2c17','#2a3d66'],
+    navy: ['#22304a','#1c2c40'],
+  };
+
+  /* ---------- 背景產生函式 ---------- */
+  function bgGradientMesh(ctx,w,h,rng){
+    ctx.fillStyle = '#f1efe9'; ctx.fillRect(0,0,w,h);
+    const blobs = ['#ffd6a5','#caffbf','#a0c4ff','#ffadad','#bdb2ff','#fdffb6'];
+    for(let i=0;i<5;i++){
+      const cx=rng()*w, cy=rng()*h, r=(0.35+rng()*0.55)*Math.max(w,h);
+      const col=blobs[Math.floor(rng()*blobs.length)];
+      const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+      g.addColorStop(0,hexToRgba(col,0.5));
+      g.addColorStop(1,hexToRgba(col,0));
+      ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    }
+  }
+  function bgDotHalftone(ctx,w,h,rng){
+    ctx.fillStyle = '#e9e9ec'; ctx.fillRect(0,0,w,h);
+    const step = h/9;
+    for(let y=step/2;y<h;y+=step){
+      for(let x=step/2;x<w;x+=step){
+        const jx=x+(rng()-0.5)*step*0.4, jy=y+(rng()-0.5)*step*0.4;
+        const rad=step*0.16+rng()*step*0.14;
+        ctx.beginPath();
+        ctx.arc(jx,jy,rad,0,Math.PI*2);
+        ctx.fillStyle = `rgba(70,75,80,${0.10+rng()*0.16})`;
+        ctx.fill();
+      }
+    }
+  }
+  function bgDiagonalStripe(ctx,w,h,rng){
+    ctx.fillStyle='#f4f1ec'; ctx.fillRect(0,0,w,h);
+    const stripeColors=['#e7dfce','#e0e8e2','#e3e0ea','#efe6d8'];
+    ctx.save();
+    const diag=Math.sqrt(w*w+h*h);
+    ctx.translate(w/2,h/2); ctx.rotate(-0.4); ctx.translate(-diag/2,-diag/2);
+    let x=0;
+    while(x<diag){
+      const sw = diag*0.06 + rng()*diag*0.05;
+      ctx.fillStyle = stripeColors[Math.floor(rng()*stripeColors.length)];
+      ctx.fillRect(x,0,sw,diag);
+      x+=sw;
+    }
+    ctx.restore();
+  }
+  function bgGridPaper(ctx,w,h,rng){
+    ctx.fillStyle = '#f6efe2'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(140,120,90,0.22)';
+    ctx.lineWidth=1;
+    const step=h/7;
+    for(let x=0;x<=w;x+=step){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    for(let y=0;y<=h;y+=step){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  }
+  function bgNoiseStatic(ctx,w,h,rng){
+    ctx.fillStyle = '#232527'; ctx.fillRect(0,0,w,h);
+    const g = ctx.createRadialGradient(w/2,h/2,0,w/2,h/2,Math.max(w,h)*0.7);
+    g.addColorStop(0,'rgba(80,85,92,0.5)'); g.addColorStop(1,'rgba(20,22,24,0)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    const n = Math.floor(w*h/26);
+    for(let i=0;i<n;i++){
+      const x=rng()*w, y=rng()*h, s=rng()*1.6;
+      ctx.fillStyle = `rgba(255,255,255,${rng()*0.18})`;
+      ctx.fillRect(x,y,s,s);
+    }
+  }
+  function bgBubbleWave(ctx,w,h,rng){
+    const g=ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#bcdff2'); g.addColorStop(1,'#8fc4e6');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    for(let b=0;b<3;b++){
+      const baseY=h*(0.25+b*0.28);
+      ctx.beginPath();
+      ctx.moveTo(0,baseY);
+      for(let x=0;x<=w;x+=w/12){
+        const yy=baseY+Math.sin(x*0.02+b*2+rng())* (h*0.05);
+        ctx.lineTo(x,yy);
+      }
+      ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath();
+      ctx.fillStyle=`rgba(255,255,255,${0.10+b*0.06})`;
+      ctx.fill();
+    }
+    for(let i=0;i<10;i++){
+      ctx.beginPath();
+      ctx.arc(rng()*w, rng()*h, rng()*6+2, 0, Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${0.15+rng()*0.25})`;
+      ctx.fill();
+    }
+  }
+  function bgConfetti(ctx,w,h,rng){
+    ctx.fillStyle='#f4eef2'; ctx.fillRect(0,0,w,h);
+    const colors=['#f3c4d3','#c9e4de','#f6e27a','#c6def1','#dbcdf0'];
+    for(let i=0;i<28;i++){
+      const x=rng()*w, y=rng()*h, s=6+rng()*10;
+      ctx.save();
+      ctx.translate(x,y); ctx.rotate(rng()*Math.PI);
+      ctx.fillStyle=colors[Math.floor(rng()*colors.length)];
+      const shape=Math.floor(rng()*3);
+      ctx.beginPath();
+      if(shape===0){ ctx.arc(0,0,s*0.4,0,Math.PI*2); }
+      else if(shape===1){ ctx.rect(-s*0.4,-s*0.2,s*0.8,s*0.4); }
+      else { ctx.moveTo(0,-s*0.4); ctx.lineTo(s*0.4,s*0.3); ctx.lineTo(-s*0.4,s*0.3); ctx.closePath(); }
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+  function bgCrosshatch(ctx,w,h,rng){
+    ctx.fillStyle='#efe9de'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(60,70,90,0.16)';
+    ctx.lineWidth=1;
+    const step=h/9;
+    ctx.save(); ctx.beginPath(); ctx.rect(0,0,w,h); ctx.clip();
+    for(let x=-h;x<w+h;x+=step){
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x+h,h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x+h,0); ctx.lineTo(x,h); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bgOcean(ctx,w,h,rng){
+    const g=ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#0f5c8a'); g.addColorStop(0.55,'#12799e'); g.addColorStop(1,'#0a3d62');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    for(let b=0;b<4;b++){
+      const baseY=h*(0.18+b*0.24);
+      ctx.beginPath();
+      ctx.moveTo(0,baseY);
+      for(let x=0;x<=w;x+=w/14){
+        const yy=baseY+Math.sin(x*0.03+b*1.7+rng()*2)*(h*0.045);
+        ctx.lineTo(x,yy);
+      }
+      ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath();
+      ctx.fillStyle=`rgba(255,255,255,${0.05+b*0.03})`;
+      ctx.fill();
+    }
+    for(let i=0;i<14;i++){
+      ctx.beginPath();
+      ctx.arc(rng()*w, rng()*h, rng()*4+1.5, 0, Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${0.15+rng()*0.3})`;
+      ctx.fill();
+    }
+  }
+  function bgForest(ctx,w,h,rng){
+    const g=ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#274b2e'); g.addColorStop(1,'#5a7d3d');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    const leafGreens=['#3f6b34','#4f7d3a','#6a9450','#274b2e','#87a45a'];
+    for(let i=0;i<34;i++){
+      const x=rng()*w, y=rng()*h, s=6+rng()*12;
+      ctx.save();
+      ctx.translate(x,y); ctx.rotate(rng()*Math.PI*2);
+      ctx.fillStyle=leafGreens[Math.floor(rng()*leafGreens.length)];
+      ctx.globalAlpha=0.55+rng()*0.35;
+      ctx.beginPath();
+      ctx.ellipse(0,0,s*0.5,s*0.22,0,0,Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.globalAlpha=1;
+    for(let i=0;i<5;i++){
+      const x=rng()*w;
+      ctx.fillStyle='rgba(60,42,26,0.28)';
+      ctx.fillRect(x, h*0.7, w*0.02+rng()*4, h*0.3);
+    }
+  }
+  function bgGrass(ctx,w,h,rng){
+    const g=ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#c8e8a0'); g.addColorStop(1,'#7fb355');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    const blades=['#4c8a34','#5fa53f','#3d7228','#6fb84a'];
+    const count=Math.floor(w/6);
+    for(let i=0;i<count;i++){
+      const x=rng()*w;
+      const bh=h*(0.25+rng()*0.45);
+      const lean=(rng()-0.5)*h*0.18;
+      ctx.strokeStyle=blades[Math.floor(rng()*blades.length)];
+      ctx.lineWidth=1.4+rng()*1.2;
+      ctx.beginPath();
+      ctx.moveTo(x,h);
+      ctx.quadraticCurveTo(x+lean*0.5,h-bh*0.6,x+lean,h-bh);
+      ctx.stroke();
+    }
+  }
+  function bgSky(ctx,w,h,rng){
+    const g=ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#8fc6f0'); g.addColorStop(1,'#e4f3fb');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    for(let c=0;c<4;c++){
+      const cx=rng()*w, cy=h*(0.15+rng()*0.65), scale=0.6+rng()*0.7;
+      const puffs=5+Math.floor(rng()*3);
+      for(let p=0;p<puffs;p++){
+        const px=cx+(p-puffs/2)*14*scale+(rng()-0.5)*6;
+        const py=cy+(rng()-0.5)*8*scale;
+        const r=(10+rng()*10)*scale;
+        ctx.beginPath();
+        ctx.arc(px,py,r,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,255,255,0.85)';
+        ctx.fill();
+      }
+    }
+  }
+
+  /* ---------- 風格清單 ---------- */
+  const STYLES = [
+    { id:'mesh', name:'渲染漸層', bg:bgGradientMesh,
+      font:"'Baloo 2', sans-serif", weight:800, sizeRatio:.40, spacing:.06,
+      color:'single', palette:PAL.inkDark, rot:20, jitter:.34 },
+    { id:'dot', name:'光點網格', bg:bgDotHalftone,
+      font:"'Permanent Marker', cursive", weight:400, sizeRatio:.36, spacing:.10,
+      color:'rainbow', palette:PAL.rainbow, rot:26, jitter:.42 },
+    { id:'stripe', name:'斜紋條紋', bg:bgDiagonalStripe,
+      font:"'Anton', sans-serif", weight:400, sizeRatio:.44, spacing:.04,
+      color:'stroke', palette:['#2b2f33'], rot:16, jitter:.24 },
+    { id:'grid', name:'方格筆記', bg:bgGridPaper,
+      font:"'Caveat', cursive", weight:700, sizeRatio:.48, spacing:.04,
+      color:'single', palette:PAL.earth, rot:14, jitter:.22 },
+    { id:'noise', name:'雜訊靜電', bg:bgNoiseStatic, dark:true,
+      font:"'Bangers', cursive", weight:400, sizeRatio:.40, spacing:.08,
+      color:'neon', palette:PAL.neon, rot:22, jitter:.36, glow:true },
+    { id:'wave', name:'水波暈染', bg:bgBubbleWave,
+      font:"'Baloo 2', sans-serif", weight:800, sizeRatio:.38, spacing:.06,
+      color:'outline', palette:['#ffffff'], strokeColor:'#2b6e94', rot:20, jitter:.38 },
+    { id:'confetti', name:'彩色紙屑', bg:bgConfetti,
+      font:"'Kalam', cursive", weight:700, sizeRatio:.38, spacing:.08,
+      color:'rainbow', palette:PAL.pastelRainbow, rot:26, jitter:.40 },
+    { id:'hatch', name:'交叉影線', bg:bgCrosshatch,
+      font:"'Architects Daughter', cursive", weight:400, sizeRatio:.36, spacing:.08,
+      color:'single', palette:PAL.navy, rot:14, jitter:.20 },
+    { id:'ocean', name:'海洋', bg:bgOcean, dark:true,
+      font:"'Fredoka', sans-serif", weight:700, sizeRatio:.40, spacing:.06,
+      color:'outline', palette:['#eaf7ff','#cdeeff'], strokeColor:'#083a5c', rot:20, jitter:.36 },
+    { id:'forest', name:'森林', bg:bgForest, dark:true,
+      font:"'Kalam', cursive", weight:700, sizeRatio:.42, spacing:.06,
+      color:'single', palette:['#fdf6e3','#eef0c9'], rot:18, jitter:.30 },
+    { id:'grass', name:'草皮', bg:bgGrass,
+      font:"'Poppins', sans-serif", weight:800, sizeRatio:.36, spacing:.05,
+      color:'outline', palette:['#eafce0'], strokeColor:'#2f5f22', rot:14, jitter:.26 },
+    { id:'sky', name:'白雲天空', bg:bgSky,
+      font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.36, spacing:.07,
+      color:'outline', palette:['#ffffff'], strokeColor:'#4a90c4', rot:13, jitter:.22 },
+  ];
+
+  /* ---------- 字型清單（可覆寫樣式預設字型） ---------- */
+  const FONTS = [
+    { id:'cwKai', label:'楷體', family:"'cwTeX Q Kai', serif", weight:400, sampleText:'字' },
+    { id:'cwFangsong', label:'仿宋', family:"'cwTeX Q Fangsong', serif", weight:400, sampleText:'字' },
+    { id:'cwHei', label:'黑體', family:"'cwTeX Q Hei', sans-serif", weight:400, sampleText:'字' },
+    { id:'cwYuan', label:'圓體', family:"'cwTeX Q Yuan', sans-serif", weight:400, sampleText:'字' },
+    { id:'notoSerifTC', label:'思源宋體', family:"'Noto Serif TC', serif", weight:700, sampleText:'字' },
+    { id:'baloo', label:'Baloo 2', family:"'Baloo 2', sans-serif", weight:800 },
+    { id:'permanentMarker', label:'Permanent Marker', family:"'Permanent Marker', cursive", weight:400 },
+    { id:'anton', label:'Anton', family:"'Anton', sans-serif", weight:400 },
+    { id:'caveat', label:'Caveat', family:"'Caveat', cursive", weight:700 },
+    { id:'bangers', label:'Bangers', family:"'Bangers', cursive", weight:400 },
+    { id:'architects', label:'Architects Daughter', family:"'Architects Daughter', cursive", weight:400 },
+    { id:'kalam', label:'Kalam', family:"'Kalam', cursive", weight:700 },
+    { id:'patrickHand', label:'Patrick Hand', family:"'Patrick Hand', cursive", weight:400 },
+    { id:'fredoka', label:'Fredoka', family:"'Fredoka', sans-serif", weight:700 },
+    { id:'poppins', label:'Poppins', family:"'Poppins', sans-serif", weight:800 },
+    { id:'righteous', label:'Righteous', family:"'Righteous', sans-serif", weight:400 },
+    { id:'pacifico', label:'Pacifico', family:"'Pacifico', cursive", weight:400 },
+    { id:'amatic', label:'Amatic SC', family:"'Amatic SC', sans-serif", weight:700 },
+    { id:'comfortaa', label:'Comfortaa', family:"'Comfortaa', sans-serif", weight:700 },
+    { id:'luckiestGuy', label:'Luckiest Guy', family:"'Luckiest Guy', cursive", weight:400 },
+    { id:'shadows', label:'Shadows Into Light', family:"'Shadows Into Light', cursive", weight:400 },
+  ];
+
+  /* ---------- 文字繪製 ---------- */
+  function drawStyledText(ctx,w,h,text,style,rng,fontOverride){
+    const isCJK = CJK_RE.test(text);
+    const chosenFamily = fontOverride ? fontOverride.family : style.font;
+    const weight = fontOverride ? fontOverride.weight : style.weight;
+    // 以使用者選擇的字型為主；只有在該字型缺少某個字的字圖時，
+    // 才用思源黑體（Noto Sans TC）作為備援字型補上該字
+    const family = isCJK ? `${chosenFamily}, 'Noto Sans TC', sans-serif` : chosenFamily;
+    const fontSize = h * (isCJK ? Math.min(style.sizeRatio, .40) : style.sizeRatio);
+    ctx.font = `${weight} ${fontSize}px ${family}`;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+
+    const chars = Array.from(text);
+    const spacing = fontSize*style.spacing;
+    const widths = chars.map(ch => ctx.measureText(ch).width || fontSize*0.55);
+    const totalWidth = widths.reduce((a,b)=>a+b,0) + spacing*(chars.length-1);
+    let x = (w-totalWidth)/2;
+    const seedPhase = rng()*10;
+
+    chars.forEach((ch,i)=>{
+      const cw = widths[i];
+      const hDrift = (rng()-0.5)*fontSize*0.30;
+      const cx = x + cw/2 + hDrift;
+      const cy = h/2 + Math.sin(i*1.9+seedPhase)*fontSize*style.jitter*0.7 + (rng()-0.5)*fontSize*style.jitter*0.9;
+      const angle = (rng()-0.5)*2*(style.rot*Math.PI/180);
+      const scale = 0.80+rng()*0.42;
+
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate(angle);
+      ctx.scale(scale,scale);
+
+      const pal = style.palette;
+      const col = pal[Math.floor(rng()*pal.length)];
+
+      if(style.color==='stroke'){
+        ctx.lineWidth = fontSize*0.07;
+        ctx.strokeStyle = col;
+        ctx.lineJoin='round';
+        ctx.strokeText(ch,0,0);
+      } else if(style.color==='outline'){
+        ctx.lineWidth = fontSize*0.06;
+        ctx.strokeStyle = style.strokeColor;
+        ctx.lineJoin='round';
+        ctx.strokeText(ch,0,0);
+        ctx.fillStyle = col;
+        ctx.fillText(ch,0,0);
+      } else if(style.color==='neon'){
+        if(style.glow){ ctx.shadowColor=col; ctx.shadowBlur=fontSize*0.22; }
+        ctx.fillStyle = col;
+        ctx.fillText(ch,0,0);
+      } else {
+        ctx.fillStyle = col;
+        ctx.fillText(ch,0,0);
+      }
+      ctx.restore();
+      x += cw+spacing + (rng()-0.5)*spacing*0.8;
+    });
+  }
+
+  function roundedClip(ctx,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(r,0);
+    ctx.arcTo(w,0,w,h,r);
+    ctx.arcTo(w,h,0,h,r);
+    ctx.arcTo(0,h,0,0,r);
+    ctx.arcTo(0,0,w,0,r);
+    ctx.closePath();
+    ctx.clip();
+  }
+
+  function addDotNoise(ctx,w,h,rng,color,count){
+    for(let i=0;i<count;i++){
+      ctx.beginPath();
+      ctx.arc(rng()*w, rng()*h, 0.6+rng()*1.5, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  }
+
+  function render(canvas, text, style, seed, logicalW, logicalH, fontOverride){
+    const dpr = Math.min(window.devicePixelRatio||1, 2.5);
+    canvas.width = logicalW*dpr;
+    canvas.height = logicalH*dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,logicalW,logicalH);
+    const rng = mulberry32(seed);
+    ctx.save();
+    roundedClip(ctx, logicalW, logicalH, Math.min(14, logicalH*0.14));
+    style.bg(ctx, logicalW, logicalH, rng);
+    drawStyledText(ctx, logicalW, logicalH, text || ' ', style, rng, fontOverride);
+    const dotColor = style.dark ? 'rgba(255,255,255,0.38)' : 'rgba(20,24,28,0.30)';
+    addDotNoise(ctx, logicalW, logicalH, rng, dotColor, Math.floor((logicalW*logicalH)/850));
+    ctx.restore();
+  }
+
+  /* ---------- 應用程式狀態與互動邏輯 ---------- */
+  const mainCanvas = document.getElementById('mainCanvas');
+  const styleRow = document.getElementById('styleRow');
+  const fontGrid = document.getElementById('fontGrid');
+  const textInput = document.getElementById('textInput');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  const state = {
+    styleIdx: 0,
+    fontIdx: 0,
+    seed: Math.floor(Math.random()*1e9),
+    text: textInput.value
+  };
+
+  const fontPreloadEl = document.getElementById('fontPreload');
+
+  function currentStyle(){ return STYLES[state.styleIdx]; }
+  function currentFont(){ return FONTS[state.fontIdx]; }
+
+  // 用隱藏的 DOM 文字節點強迫瀏覽器實際排版該文字，這是觸發網頁字型
+  // 真正下載最穩定相容的做法（比單獨呼叫 Font Loading API 更可靠，
+  // 尤其是大型、分區塊下載的中文字型）
+  function preloadFontViaDOM(family, weight, text){
+    const span = document.createElement('span');
+    span.style.fontFamily = family;
+    span.style.fontWeight = weight;
+    span.textContent = text;
+    fontPreloadEl.appendChild(span);
+  }
+
+  async function ensureFontsLoaded(){
+    const style = currentStyle();
+    const font = currentFont();
+    const text = state.text || ' ';
+    const isCJK = CJK_RE.test(text);
+
+    fontPreloadEl.innerHTML = '';
+    preloadFontViaDOM(font.family, font.weight, text);
+    preloadFontViaDOM(style.font, style.weight, 'Aa');
+    if(isCJK){
+      preloadFontViaDOM("'Noto Sans TC', sans-serif", 700, text);
+    }
+
+    if(document.fonts && document.fonts.load){
+      const specs = [
+        [`${font.weight} 32px ${font.family}`, text],
+        [`${style.weight} 32px ${style.font}`, 'Aa']
+      ];
+      if(isCJK){
+        specs.push([`700 32px 'Noto Sans TC', sans-serif`, text]);
+      }
+      await Promise.all(specs.map(([spec,txt])=>{
+        try{ return document.fonts.load(spec, txt); }catch(e){ return Promise.resolve(); }
+      })).catch(()=>{});
+    }
+    if(document.fonts && document.fonts.ready){
+      try{ await document.fonts.ready; }catch(e){}
+    }
+    // 多等一個畫面更新週期，確保剛下載好的字型已經能被 canvas 讀取到
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  }
+
+  async function renderMain(){
+    await ensureFontsLoaded();
+    const rect = mainCanvas.parentElement.getBoundingClientRect();
+    render(mainCanvas, state.text, currentStyle(), state.seed, rect.width, rect.height, currentFont());
+  }
+
+  function buildStyleButtons(){
+    STYLES.forEach((style, idx)=>{
+      const btn = document.createElement('button');
+      btn.className = 'style-btn' + (idx===0 ? ' active' : '');
+      btn.setAttribute('aria-label', style.name);
+      btn.dataset.idx = idx;
+
+      const icon = document.createElement('canvas');
+      btn.appendChild(icon);
+      const label = document.createElement('span');
+      label.textContent = style.name;
+      btn.appendChild(label);
+
+      styleRow.appendChild(btn);
+
+      // 等字型準備好後再畫縮圖圖示（一律使用該風格自帶的字型，
+      // 這樣不管目前選了什麼文字字型，按鈕圖示都還是能辨識出該風格）
+      requestAnimationFrame(()=>{
+        const iw = icon.clientWidth || 66, ih = icon.clientHeight || 41;
+        render(icon, 'Aa', style, 1234+idx*77, iw, ih);
+      });
+
+      btn.addEventListener('click', ()=>{
+        state.styleIdx = idx;
+        state.seed = Math.floor(Math.random()*1e9);
+        document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMain();
+      });
+    });
+  }
+
+  function buildFontButtons(){
+    FONTS.forEach((font, idx)=>{
+      const btn = document.createElement('button');
+      btn.className = 'font-btn' + (idx===0 ? ' active' : '');
+      btn.setAttribute('aria-label', font.label);
+
+      const sample = document.createElement('div');
+      sample.className = 'sample';
+      sample.textContent = font.sampleText || 'Aa';
+      sample.style.fontFamily = font.family;
+      sample.style.fontWeight = font.weight;
+      btn.appendChild(sample);
+
+      const fname = document.createElement('div');
+      fname.className = 'fname';
+      fname.textContent = font.label;
+      btn.appendChild(fname);
+
+      fontGrid.appendChild(btn);
+
+      btn.addEventListener('click', ()=>{
+        state.fontIdx = idx;
+        document.querySelectorAll('.font-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMain();
+      });
+    });
+  }
+
+  // 保險機制：如果有字型是在背景才完成下載，一旦瀏覽器回報完成，
+  // 就重新繪製一次，確保畫面最終一定會用上正確的字型
+  if(document.fonts && document.fonts.addEventListener){
+    document.fonts.addEventListener('loadingdone', ()=>{ renderMain(); });
+  }
+
+  let debounceTimer;
+  textInput.addEventListener('input', ()=>{
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(()=>{
+      state.text = textInput.value.trim() || ' ';
+      renderMain();
+    }, 120);
+  });
+
+  shuffleBtn.addEventListener('click', ()=>{
+    state.seed = Math.floor(Math.random()*1e9);
+    renderMain();
+  });
+
+  downloadBtn.addEventListener('click', ()=>{
+    mainCanvas.toBlob(async (blob)=>{
+      if(!blob) return;
+      const fileName = `captcha-${Date.now()}.png`;
+      const file = new File([blob], fileName, { type:'image/png' });
+
+      if(navigator.canShare && navigator.canShare({ files:[file] })){
+        try{
+          await navigator.share({ files:[file], title:'驗證碼圖片' });
+          return;
+        }catch(err){ /* 使用者取消分享，改用直接下載 */ }
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    }, 'image/png');
+  });
+
+  window.addEventListener('resize', ()=>{ renderMain(); });
+
+  async function preloadAllFonts(){
+    if(!(document.fonts && document.fonts.load)) return;
+    const specs = [];
+    STYLES.forEach(s => specs.push([`${s.weight} 32px ${s.font}`, 'Aa']));
+    FONTS.forEach(f => specs.push([`${f.weight} 32px ${f.family}`, f.sampleText || 'Aa']));
+    specs.push([`700 32px 'Noto Sans TC', sans-serif`, '歲月靜好']);
+    await Promise.all(specs.map(([spec,txt])=>{
+      try{ return document.fonts.load(spec, txt); }catch(e){ return Promise.resolve(); }
+    })).catch(()=>{});
+  }
+
+  let built = false;
+  function boot(){
+    if(!built){
+      buildStyleButtons();
+      buildFontButtons();
+      built = true;
+    }
+    renderMain();
+    document.querySelectorAll('.style-btn').forEach((btn,idx)=>{
+      const iw = btn.querySelector('canvas').clientWidth || 66;
+      const ih = btn.querySelector('canvas').clientHeight || 41;
+      render(btn.querySelector('canvas'), 'Aa', STYLES[idx], 1234+idx*77, iw, ih);
+    });
+  }
+
+  // 先用備援字型畫一次，讓畫面不會空白，
+  // 接著主動預先載入所有網頁字型（並帶入實際樣本字，確保中文字型子集真的有下載），
+  // 載入完成後再重新繪製一次正確的畫面。
+  boot();
+  preloadAllFonts().then(boot);
+})();
+</script>
+</body>
+</html>
