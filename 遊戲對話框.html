@@ -26,6 +26,114 @@
   max-height: 45vh !important;
 }
 </style>
+<style>
+/* 液態玻璃介面風格：更圓潤的造型、邊緣高光、通透感模糊，模擬光線在玻璃表面折射的效果 */
+body {
+  background: #EDEEF0 !important;
+  background-attachment: fixed;
+}
+
+#previewWrap {
+  background: rgba(255,255,255,0.42) !important;
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.75);
+  border-radius: 1.5rem !important;
+  box-shadow:
+    inset 0 1.5px 1px rgba(255,255,255,0.9),
+    inset 0 -1px 2px rgba(255,255,255,0.3),
+    0 12px 36px rgba(31,38,135,0.14),
+    0 2px 8px rgba(31,38,135,0.08);
+}
+
+.btn-unified {
+  background: rgba(255,255,255,0.38) !important;
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.75) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.9),
+    inset 0 -1px 1px rgba(255,255,255,0.2),
+    0 6px 18px rgba(31,38,135,0.1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.btn-unified:hover:not(:disabled) {
+  background: rgba(255,255,255,0.58) !important;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.9),
+    inset 0 -1px 1px rgba(255,255,255,0.2),
+    0 8px 22px rgba(31,38,135,0.14);
+}
+.btn-unified:active:not(:disabled) { transform: translateY(0px) scale(0.98); }
+.btn-unified.active {
+  background: rgba(138,149,158,0.82) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.5),
+    inset 0 -1px 2px rgba(0,0,0,0.1),
+    0 6px 18px rgba(31,38,135,0.16);
+}
+.btn-unified:disabled {
+  background: rgba(255,255,255,0.2) !important;
+  border-color: rgba(209,213,219,0.5) !important;
+  box-shadow: none;
+}
+
+.style-card, .font-card {
+  background: rgba(255,255,255,0.38) !important;
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.7) !important;
+  border-radius: 0.85rem !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.85),
+    inset 0 -1px 1px rgba(255,255,255,0.15),
+    0 3px 10px rgba(31,38,135,0.07);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.style-card:hover, .font-card:hover { transform: translateY(-1px); }
+.style-card.active, .font-card.active {
+  background: rgba(138,149,158,0.32) !important;
+  border-color: rgba(138,149,158,0.8) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(31,38,135,0.08),
+    0 2px 8px rgba(31,38,135,0.08);
+}
+
+.position-btn {
+  background: rgba(255,255,255,0.38) !important;
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.7) !important;
+  border-radius: 0.85rem !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.85), 0 3px 10px rgba(31,38,135,0.06);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.position-btn:hover { background: rgba(255,255,255,0.6) !important; transform: translateY(-1px); }
+.position-btn:active { transform: translateY(0) scale(0.96); }
+
+textarea#dialogueText, input#imageUpload {
+  background: rgba(255,255,255,0.45) !important;
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.75) !important;
+  border-radius: 0.85rem !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.8), inset 0 2px 6px rgba(31,38,135,0.04);
+}
+
+main { position: relative; z-index: 1; }
+main > div.bg-white {
+  background: rgba(255,255,255,0.34) !important;
+  backdrop-filter: blur(22px) saturate(200%);
+  -webkit-backdrop-filter: blur(22px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 1.25rem !important;
+  box-shadow:
+    inset 0 1.5px 1px rgba(255,255,255,0.85),
+    inset 0 -1px 2px rgba(255,255,255,0.2),
+    0 10px 28px rgba(31,38,135,0.08);
+}
+</style>
 </head>
 <body class="bg-white min-h-screen flex flex-col overflow-x-hidden font-sans">
 <main class="flex-1 flex flex-col p-3 md:p-6 max-w-5xl mx-auto w-full">
@@ -550,24 +658,20 @@ function drawCore(ctx, cw, ch) {
       }
     });
   } else if (currentStyle === 'new7' || currentStyle === 'school1') {
-    // 信紙咖 / 信紙藍：底色 + 橫線（固定間距，線條多且不壓文字）
+    // 信紙咖 / 信紙藍：底色 + 橫線（以整個對話框為基準，所有橫線間距完全平均；
+    // 線條先畫、文字後畫，文字會自然蓋在線條上方，不需刻意避開）
     ctx.fillRect(bl, bt, boxW, boxH); ctx.strokeRect(bl, bt, boxW, boxH);
     const lineColor = currentStyle === 'new7' ? 'rgba(168,144,120,0.4)' : 'rgba(96,165,250,0.35)';
     ctx.strokeStyle = lineColor; ctx.lineWidth = Math.max(0.8, 1.2*s);
-    // 固定間距：約 fSize*0.75，確保行數夠多
+    // 目標間距：約 fSize*0.75
     const lineSpacing = Math.max(8*s, fSize * 0.75);
     const marginX = pad * 0.6;
-    for (let ly = bt + lineSpacing; ly < bt + boxH - 2; ly += lineSpacing) {
-      // 檢查這條線是否落在文字行上（若是則跳過，避免壓字）
-      const relY = ly - (bt + pad);
-      const lineOffset2 = (lineH - metrics.height) / 2;
-      let onText = false;
-      for (let li = 0; li < lines.length; li++) {
-        const textTop = li * lineH + lineOffset2;
-        const textBot = textTop + metrics.height;
-        if (relY >= textTop - 1 && relY <= textBot + 1) { onText = true; break; }
-      }
-      if (onText) continue;
+    // 將整個對話框高度 boxH 平均切成 (N+1) 等份，N 條線落在等分點上，
+    // 上緣到第一條線、線與線之間、最後一條線到下緣，間距完全一致
+    const lineCount = Math.max(1, Math.round(boxH / lineSpacing) - 1);
+    const evenSpacing = boxH / (lineCount + 1);
+    for (let li2 = 0; li2 < lineCount; li2++) {
+      const ly = bt + evenSpacing * (li2 + 1);
       ctx.beginPath(); ctx.moveTo(bl + marginX, ly); ctx.lineTo(bl + boxW - marginX, ly); ctx.stroke();
     }
   } else {
