@@ -535,7 +535,7 @@ function drawCore(ctx, cw, ch) {
   } else if (currentStyle === 'new12') {
     // 藍波雲：連續波浪邊框，用弧形序列構成封閉雲朵輪廓
     const rx = bl, ry = bt, rw = boxW, rh = boxH;
-    const bump = Math.max(7, Math.min(18, rw * 0.032)); // 每個波浪弧半徑
+    const bump = Math.max(7*s, Math.min(18*s, rw * 0.032)); // 每個波浪弧半徑
     const lw = Math.max(2, 3 * s);
 
     // 沿一條邊畫連續弧形（交替上凸/下凸，形成波浪）
@@ -664,8 +664,8 @@ function drawCore(ctx, cw, ch) {
     // 信紙咖 / 信紙藍：底色 + 橫線（以整個對話框為基準，所有橫線間距完全平均；
     // 線條先畫、文字後畫，文字會自然蓋在線條上方，不需刻意避開）
     ctx.fillRect(bl, bt, boxW, boxH); ctx.strokeRect(bl, bt, boxW, boxH);
-    const lineColor = currentStyle === 'new7' ? 'rgba(168,144,120,0.4)' : 'rgba(96,165,250,0.35)';
-    ctx.strokeStyle = lineColor; ctx.lineWidth = Math.max(0.8, 1.2*s);
+    const lineColor = currentStyle === 'new7' ? 'rgba(168,144,120,0.55)' : 'rgba(96,165,250,0.55)';
+    ctx.strokeStyle = lineColor; ctx.lineWidth = Math.max(1.2, 1.4*s);
     // 目標間距：約 fSize*0.75
     const lineSpacing = Math.max(8*s, fSize * 0.75);
     const marginX = pad * 0.6;
