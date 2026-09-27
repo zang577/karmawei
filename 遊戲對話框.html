@@ -795,7 +795,6 @@ function bindAllEvent() {
       setTimeout(() => URL.revokeObjectURL(url), 500);
     }, 'image/png');
   };
-
   boxOpacity.addEventListener('input',       () => { updateSliderValues(); drawAll(); });
   textSizeSlider.addEventListener('input',   () => { updateSliderValues(); drawAll(); });
   bottomMarginSlider.addEventListener('input', () => { updateSliderValues(); drawAll(); });
