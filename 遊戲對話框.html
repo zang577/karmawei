@@ -661,22 +661,33 @@ function drawCore(ctx, cw, ch) {
       }
     });
   } else if (currentStyle === 'new7' || currentStyle === 'school1') {
-    // 信紙咖 / 信紙藍：底色 + 橫線（以整個對話框為基準，所有橫線間距完全平均；
-    // 線條先畫、文字後畫，文字會自然蓋在線條上方，不需刻意避開）
+    // 信紙咖 / 信紙藍：底色 + 橫線
+    // 文字上方、下方各自平均分配橫線（不與文字重疊）；
+    // 由於對話框的上下留白（pad）本身對稱，兩側可用空間必然相等，
+    // 因此上下兩段各自算出的間距會是同一個值，整體看起來就是同一套均勻網格。
     ctx.fillRect(bl, bt, boxW, boxH); ctx.strokeRect(bl, bt, boxW, boxH);
     const lineColor = currentStyle === 'new7' ? 'rgba(168,144,120,0.55)' : 'rgba(96,165,250,0.55)';
     ctx.strokeStyle = lineColor; ctx.lineWidth = Math.max(1.2, 1.4*s);
     // 目標間距：約 fSize*0.75
     const lineSpacing = Math.max(8*s, fSize * 0.75);
     const marginX = pad * 0.6;
-    // 將整個對話框高度 boxH 平均切成 (N+1) 等份，N 條線落在等分點上，
-    // 上緣到第一條線、線與線之間、最後一條線到下緣，間距完全一致
-    const lineCount = Math.max(1, Math.round(boxH / lineSpacing) - 1);
-    const evenSpacing = boxH / (lineCount + 1);
-    for (let li2 = 0; li2 < lineCount; li2++) {
-      const ly = bt + evenSpacing * (li2 + 1);
-      ctx.beginPath(); ctx.moveTo(bl + marginX, ly); ctx.lineTo(bl + boxW - marginX, ly); ctx.stroke();
+    const lineOffset2 = (lineH - metrics.height) / 2;
+    // 文字區塊的上緣／下緣（相對於框頂端 bt 的座標，含 pad 留白）
+    const textBlockTop = pad + lineOffset2;
+    const textBlockBottom = pad + (lines.length - 1) * lineH + lineOffset2 + metrics.height;
+    // 在 [fromRel, toRel] 區間內畫出「間距完全平均、含首尾邊界」的橫線
+    function drawEvenLines(fromRel, toRel) {
+      const span = toRel - fromRel;
+      if (span < lineSpacing * 0.6) return; // 空間太小，不畫線
+      const n = Math.max(1, Math.round(span / lineSpacing) - 1);
+      const gap = span / (n + 1);
+      for (let i = 0; i < n; i++) {
+        const ly = bt + fromRel + gap * (i + 1);
+        ctx.beginPath(); ctx.moveTo(bl + marginX, ly); ctx.lineTo(bl + boxW - marginX, ly); ctx.stroke();
+      }
     }
+    drawEvenLines(0, textBlockTop);            // 文字上方
+    drawEvenLines(textBlockBottom, boxH);      // 文字下方
   } else {
     ctx.fillRect(bl, bt, boxW, boxH);
     ctx.strokeRect(bl, bt, boxW, boxH);
