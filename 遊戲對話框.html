@@ -422,8 +422,10 @@ function drawCore(ctx, cw, ch) {
 
   function getLineMetrics(size) {
     ctx.font = size + 'px ' + fontStr;
-    // 用 'Hg|' 量測：H 取 ascent，g 取 descent，| 輔助，各字型都有且跨平台穩定
-    const m = ctx.measureText('Hg|');
+    // 用中文字「中」搭配英文「Hg」與符號「|」量測：
+    // 「中」取中文字型實際的視覺高度基準（純拉丁字母 Hg 在中文字型下的度量常與實際中文字符不一致），
+    // Hg 補足英數字元可能超出中文字符範圍的部分，確保中英混排時仍準確。
+    const m = ctx.measureText('中文字型');
     const ascent  = m.actualBoundingBoxAscent  != null ? m.actualBoundingBoxAscent  : size * 0.78;
     const descent = m.actualBoundingBoxDescent != null ? m.actualBoundingBoxDescent : size * 0.22;
     return { ascent, descent, height: ascent + descent };
@@ -795,6 +797,7 @@ function bindAllEvent() {
       setTimeout(() => URL.revokeObjectURL(url), 500);
     }, 'image/png');
   };
+
   boxOpacity.addEventListener('input',       () => { updateSliderValues(); drawAll(); });
   textSizeSlider.addEventListener('input',   () => { updateSliderValues(); drawAll(); });
   bottomMarginSlider.addEventListener('input', () => { updateSliderValues(); drawAll(); });
