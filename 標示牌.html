@@ -713,7 +713,9 @@ function buildFinalCanvas() {
     if (bgImage) {
         const iw = bgImage.naturalWidth || bgImage.width;
         const ih = bgImage.naturalHeight || bgImage.height;
-        const scale = Math.min(1600 / iw, 1200 / ih, 1);
+        // 保持原圖尺寸；只有超過手機畫布上限(約1600萬像素)時才縮小
+        const MAX_PIXELS = 16000000;
+        const scale = Math.min(1, Math.sqrt(MAX_PIXELS / (iw * ih)));
         finalWidth = Math.floor(iw * scale);
         finalHeight = Math.floor(ih * scale);
     } else {
