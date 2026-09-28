@@ -2,15 +2,111 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>標示牌</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Noto Sans TC", sans-serif;
+    font-family: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.06em;
 }
+
+html {
+    background: #e5e7ea;
+}
+
+body {
+    min-height: 100vh;
+    background: #e5e7ea;
+    color: #2b2f36;
+    overflow-x: hidden;
+}
+
+/* 淺灰底色上的柔光 */
+.blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+}
+.b1 { width: 340px; height: 340px; background: #ffffff; top: -90px; left: -70px; opacity: .95; }
+.b2 { width: 300px; height: 300px; background: #c6d0da; right: -90px; top: 38%; opacity: .75; }
+.b3 { width: 320px; height: 320px; background: #dcd5cd; left: 8%; bottom: -110px; opacity: .75; }
+
+.app {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 15px calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ========== 液態玻璃面板 ========== */
+.glass {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,255,255,0.58), rgba(255,255,255,0.22));
+    -webkit-backdrop-filter: blur(26px) saturate(180%);
+    backdrop-filter: blur(26px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 30px;
+    box-shadow:
+        0 10px 34px rgba(60,72,90,0.14),
+        inset 0 1.5px 1px rgba(255,255,255,0.95),
+        inset 0 -1px 1px rgba(255,255,255,0.35);
+}
+.glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 32%);
+    pointer-events: none;
+}
+
+.preview {
+    padding: 16px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+.preview h3 {
+    position: relative;
+    font-size: 15px;
+    font-weight: 700;
+    color: #5a616b;
+    margin-bottom: 12px;
+}
+canvas {
+    display: block;
+    margin: 0 auto;
+}
+#previewCanvas {
+    position: relative;
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 20px;
+    touch-action: none;
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 8px 22px rgba(60,72,90,0.18);
+}
+
+.control {
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+.control > * {
+    position: relative;
+}
+
 button {
     background: none;
     border: none;
@@ -18,75 +114,64 @@ button {
     cursor: pointer;
     font-family: inherit;
 }
-body {
-    background: #f5f6f8;
-    padding: 20px 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #222;
-}
-.preview {
-    background: #fff;
-    padding: 20px;
-    border-radius: 14px;
-    margin-bottom: 20px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    max-width: 600px;
-}
-#previewCanvas {
-    display: block;
-    max-width: 100%;
-    border-radius: 8px;
-    max-height: 500px;
-}
-.control {
-    background: #fff;
-    padding: 20px;
-    border-radius: 14px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
+
 input {
     width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 0 0 8px;
+    border: 1px solid rgba(255,255,255,0.85);
+    border-radius: 18px;
     font-size: 16px;
+    color: #2b2f36;
+    background: rgba(255,255,255,0.5);
+    box-shadow: inset 0 2px 5px rgba(60,72,90,0.10), 0 1px 0 rgba(255,255,255,0.9);
+    outline: none;
+    transition: box-shadow .2s, background .2s;
 }
+input:focus {
+    background: rgba(255,255,255,0.72);
+    box-shadow: inset 0 2px 5px rgba(60,72,90,0.10), 0 0 0 3px rgba(120,140,165,0.28);
+}
+
 .color-group {
-    margin: 10px 0;
+    margin: 12px 0;
 }
 .color-group p {
     font-size: 15px;
-    margin-bottom: 6px;
-    color: #333;
+    margin-bottom: 8px;
+    color: #4a515b;
 }
 .color-btn-wrap {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 10px;
 }
+/* 玻璃珠色票 */
 .color-btn {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    border: 2px solid #ddd;
+    background:
+        radial-gradient(circle at 30% 24%, rgba(255,255,255,0.85), rgba(255,255,255,0) 52%),
+        var(--c);
+    border: 2px solid rgba(255,255,255,0.9);
+    box-shadow:
+        0 3px 8px rgba(60,72,90,0.25),
+        inset 0 -3px 6px rgba(0,0,0,0.15);
+    transition: transform .15s, box-shadow .15s;
+}
+.color-btn:active {
+    transform: scale(0.9);
 }
 .color-btn.active {
-    border-color: #222;
+    transform: scale(1.12);
+    box-shadow:
+        0 0 0 2px #2b2f36,
+        0 4px 10px rgba(60,72,90,0.3),
+        inset 0 -3px 6px rgba(0,0,0,0.15);
 }
+
 .custom-color {
     display: flex;
     align-items: center;
@@ -95,130 +180,196 @@ input {
 }
 .custom-color label {
     font-size: 14px;
+    color: #4a515b;
 }
 .custom-color input[type="color"] {
-    width: 50px;
+    width: 56px;
     height: 40px;
-    padding: 0;
-    border: none;
+    padding: 4px;
+    margin: 0;
+    border-radius: 14px;
     cursor: pointer;
 }
+
 .preset {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
-    margin: 8px 0;
+    margin: 12px 0;
 }
 .preset button {
-    padding: 6px 12px;
-    background: #c8c1b6;
-    color: #444;
-    border-radius: 6px;
+    padding: 7px 14px;
+    border-radius: 999px;
     font-size: 14px;
-    transition: 0.2s;
+    color: #3b424c;
+    background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.35));
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow:
+        0 3px 10px rgba(60,72,90,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.95);
+    transition: transform .15s, background .2s;
 }
-.preset button:hover {
-    background: #b9b2a5;
+.preset button:active {
+    transform: scale(0.95);
+    background: rgba(255,255,255,0.8);
 }
-.upload-btn {
+
+/* 玻璃按鈕 */
+.btn-glass {
+    display: block;
     width: 100%;
-    padding: 12px;
-    background: #94a3a8;
-    color: #fff;
-    border-radius: 8px;
-    margin-top: 6px;
+    padding: 13px;
+    margin-top: 10px;
+    border-radius: 999px;
     font-size: 16px;
-    transition: 0.2s;
+    font-weight: 700;
+    color: #33393f;
+    background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.38));
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow:
+        0 6px 16px rgba(60,72,90,0.16),
+        inset 0 1.5px 0 rgba(255,255,255,1),
+        inset 0 -2px 4px rgba(255,255,255,0.4);
+    transition: transform .15s, box-shadow .15s;
 }
-.upload-btn:hover {
-    background: #829196;
+.btn-glass:active {
+    transform: scale(0.97);
+    box-shadow:
+        0 2px 8px rgba(60,72,90,0.16),
+        inset 0 1.5px 0 rgba(255,255,255,1);
 }
-.btn-red {
-    width: 100%;
-    padding: 12px;
-    background: #b8a9a1;
-    color: #fff;
-    border-radius: 8px;
-    margin-top: 6px;
-    font-size: 16px;
-    transition: 0.2s;
-}
-.btn-red:hover {
-    background: #a79890;
-}
+.upload-btn,
+.btn-red,
 .btn-dark {
-    width: 100%;
-    padding: 12px;
-    background: #7c8489;
-    color: #fff;
-    border-radius: 8px;
-    margin-top: 6px;
-    font-size: 16px;
-    transition: 0.2s;
+    color: #33393f;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.78));
+    border-color: rgba(255,255,255,1);
+    box-shadow:
+        0 6px 16px rgba(60,72,90,0.16),
+        inset 0 1.5px 0 rgba(255,255,255,1),
+        inset 0 -2px 4px rgba(220,225,232,0.5);
 }
-.btn-dark:hover {
-    background: #6b7378;
+.upload-btn:active,
+.btn-red:active,
+.btn-dark:active {
+    box-shadow:
+        0 2px 8px rgba(60,72,90,0.16),
+        inset 0 1.5px 0 rgba(255,255,255,1);
 }
+
 #fileInput {
     display: none;
 }
-canvas {
-    display: block;
-    margin: 0 auto;
+
+/* 儲存視窗 */
+.save-mask {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(225,228,232,0.6);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    backdrop-filter: blur(22px) saturate(160%);
 }
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap');
+.save-mask.show {
+    display: flex;
+}
+.save-mask img {
+    max-width: 100%;
+    max-height: 66vh;
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: 0 14px 40px rgba(60,72,90,0.3);
+    -webkit-touch-callout: default;
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+.save-mask p {
+    color: #3b424c;
+    font-size: 16px;
+    margin: 18px 0 8px;
+    text-align: center;
+    line-height: 1.6;
+}
+.save-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+}
+.save-actions .btn-glass {
+    margin-top: 6px;
+}
 </style>
 </head>
 <body>
 
-<h2>標示牌產生器</h2>
-<div class="preview">
-    <h3>預覽</h3>
-    <canvas id="previewCanvas"></canvas>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+
+<div class="app">
+    <div class="preview glass">
+        <h3>預覽</h3>
+        <canvas id="previewCanvas"></canvas>
+    </div>
+
+    <div class="control glass">
+        <input id="text" value="營業中">
+
+        <div class="color-group">
+            <p>文字&amp;邊框顏色</p>
+            <div class="color-btn-wrap">
+                <button class="color-btn active" style="--c:#e53935" onclick="setColor('#e53935',this)"></button>
+                <button class="color-btn" style="--c:#0061FE" onclick="setColor('#0061FE',this)"></button>
+                <button class="color-btn" style="--c:#4CAF50" onclick="setColor('#4CAF50',this)"></button>
+                <button class="color-btn" style="--c:#FF9800" onclick="setColor('#FF9800',this)"></button>
+                <button class="color-btn" style="--c:#9C27B0" onclick="setColor('#9C27B0',this)"></button>
+                <button class="color-btn" style="--c:#00BCD4" onclick="setColor('#00BCD4',this)"></button>
+                <button class="color-btn" style="--c:#795548" onclick="setColor('#795548',this)"></button>
+                <button class="color-btn" style="--c:#9E9E9E" onclick="setColor('#9E9E9E',this)"></button>
+                <button class="color-btn" style="--c:#000000" onclick="setColor('#000000',this)"></button>
+            </div>
+
+            <div class="custom-color">
+                <label>自訂顏色：</label>
+                <input type="color" id="customColor" oninput="setColor(this.value,this)" onchange="setColor(this.value,this)">
+            </div>
+        </div>
+
+        <div class="preset">
+            <button onclick="set('營業中')">營業中</button>
+            <button onclick="set('休息中')">休息中</button>
+            <button onclick="set('本日公休')">本日公休</button>
+            <button onclick="set('禁止進入')">禁止進入</button>
+            <button onclick="set('請勿打擾')">請勿打擾</button>
+            <button onclick="set('請勿攝影')">請勿攝影</button>
+            <button onclick="set('歡迎參觀')">歡迎參觀</button>
+            <button onclick="set('請先付款')">請先付款</button>
+            <button onclick="set('禁帶外食')">禁帶外食</button>
+            <button onclick="set('冷氣開放中')">冷氣開放中</button>
+            <button onclick="set('錄影監視中')">錄影監視中</button>
+        </div>
+
+        <button class="btn-glass upload-btn" onclick="document.getElementById('fileInput').click()">上傳圖片</button>
+        <input type="file" id="fileInput" accept="image/*">
+
+        <button class="btn-glass btn-red" onclick="redrawSign()">更新預覽</button>
+        <button class="btn-glass btn-dark" onclick="downloadFinal()">下載圖片</button>
+    </div>
 </div>
 
-<div class="control">
-    <input id="text" value="營業中">
-
-    <div class="color-group">
-        <p>文字&邊框顏色</p>
-        <div class="color-btn-wrap">
-            <button class="color-btn active" style="background:#e53935" onclick="setColor('#e53935',this)"></button>
-            <button class="color-btn" style="background:#0061FE" onclick="setColor('#0061FE',this)"></button>
-            <button class="color-btn" style="background:#4CAF50" onclick="setColor('#4CAF50',this)"></button>
-            <button class="color-btn" style="background:#FF9800" onclick="setColor('#FF9800',this)"></button>
-            <button class="color-btn" style="background:#9C27B0" onclick="setColor('#9C27B0',this)"></button>
-            <button class="color-btn" style="background:#00BCD4" onclick="setColor('#00BCD4',this)"></button>
-            <button class="color-btn" style="background:#795548" onclick="setColor('#795548',this)"></button>
-            <button class="color-btn" style="background:#9E9E9E" onclick="setColor('#9E9E9E',this)"></button>
-            <button class="color-btn" style="background:#000000" onclick="setColor('#000000',this)"></button>
-        </div>
-
-        <div class="custom-color">
-            <label>自訂顏色：</label>
-            <input type="color" id="customColor" oninput="setColor(this.value,this)" onchange="setColor(this.value,this)">
-        </div>
+<div class="save-mask" id="saveMask">
+    <img id="saveImg" alt="標示牌照片">
+    <p>長按圖片，選「加入照片」或「儲存圖片」</p>
+    <div class="save-actions">
+        <button class="btn-glass" onclick="directDownload()">下載檔案</button>
+        <button class="btn-glass" onclick="closeMask()">關閉</button>
     </div>
-
-    <div class="preset">
-        <button onclick="set('營業中')">營業中</button>
-        <button onclick="set('休息中')">休息中</button>
-        <button onclick="set('本日公休')">本日公休</button>
-        <button onclick="set('禁止進入')">禁止進入</button>
-        <button onclick="set('請勿打擾')">請勿打擾</button>
-        <button onclick="set('請勿攝影')">請勿攝影</button>
-        <button onclick="set('歡迎參觀')">歡迎參觀</button>
-        <button onclick="set('請先付款')">請先付款</button>
-        <button onclick="set('禁帶外食')">禁帶外食</button>
-        <button onclick="set('冷氣開放中')">冷氣開放中</button>
-        <button onclick="set('錄影監視中')">錄影監視中</button>
-    </div>
-
-    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">上傳圖片</button>
-    <input type="file" id="fileInput" accept="image/*">
-    
-    <button class="btn-red" onclick="redrawSign()">更新預覽</button>
-    <button class="btn-dark" onclick="downloadFinal()">下載圖片</button>
 </div>
 
 <script>
@@ -233,6 +384,7 @@ const CHAR_GAP_NORMAL = 90;
 const CHAR_GAP_SMALL = 76;
 const BORDER = 6;
 const RADIUS = 10;
+const FONT_FAMILY = '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
 
 let bgImage = null;
 const previewCanvas = document.getElementById('previewCanvas');
@@ -244,28 +396,129 @@ let isDragging = false;
 let startX, startY;
 let initialDistance = 0;
 
-// 淺色清新日式背景
-const defaultBg = new Image();
-defaultBg.crossOrigin = "anonymous";
-// 使用更高分辨率的默认背景图片
-defaultBg.src = "https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?q=80&w=1600&auto=format&fit=crop";
-defaultBg.onload = function(){
-    bgImage = defaultBg;
-    // 放大预览画布尺寸，使用更大的尺寸以保持画质
-    const maxWidth = 800;
-    const maxHeight = 600;
-    const scale = Math.min(maxWidth / defaultBg.width, maxHeight / defaultBg.height);
-    
-    // 使用整数尺寸避免模糊
-    previewCanvas.width = Math.floor(defaultBg.width * scale);
-    previewCanvas.height = Math.floor(defaultBg.height * scale);
-    
-    signScale = 0.8; // 缩小标示牌初始比例
-    signX = previewCanvas.width - signCanvas.width * signScale - 50; // 调整为中右位置
-    signY = previewCanvas.height / 2 - signCanvas.height * signScale / 2; // 垂直居中
-    renderPreview();
-};
+/* ---------- 預設背景：程式繪製的店面玻璃門（不依賴外部圖片，一定會顯示） ---------- */
+function makeDefaultBg() {
+    const W = 1200, H = 900;
+    const c = document.createElement('canvas');
+    c.width = W;
+    c.height = H;
+    const g = c.getContext('2d');
 
+    // 牆面
+    let grad = g.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#efede9');
+    grad.addColorStop(1, '#d8d4cd');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, W, H);
+
+    // 地面
+    grad = g.createLinearGradient(0, 770, 0, H);
+    grad.addColorStop(0, '#c4c0b8');
+    grad.addColorStop(1, '#a9a49b');
+    g.fillStyle = grad;
+    g.fillRect(0, 770, W, H - 770);
+    g.fillStyle = 'rgba(0,0,0,0.08)';
+    g.fillRect(0, 766, W, 6);
+
+    // 門框陰影
+    g.fillStyle = 'rgba(0,0,0,0.12)';
+    g.fillRect(262, 96, 600, 700);
+
+    // 門框
+    g.fillStyle = '#4a4e54';
+    g.fillRect(250, 80, 600, 700);
+
+    // 玻璃
+    grad = g.createLinearGradient(280, 110, 820, 750);
+    grad.addColorStop(0, '#e6eff3');
+    grad.addColorStop(1, '#b4c6d0');
+    g.fillStyle = grad;
+    g.fillRect(280, 110, 540, 640);
+
+    // 玻璃反光
+    g.save();
+    g.beginPath();
+    g.rect(280, 110, 540, 640);
+    g.clip();
+    g.fillStyle = 'rgba(255,255,255,0.38)';
+    g.beginPath();
+    g.moveTo(330, 110); g.lineTo(450, 110); g.lineTo(300, 750); g.lineTo(180, 750);
+    g.closePath(); g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.22)';
+    g.beginPath();
+    g.moveTo(500, 110); g.lineTo(560, 110); g.lineTo(410, 750); g.lineTo(350, 750);
+    g.closePath(); g.fill();
+    g.restore();
+
+    // 中間門框
+    g.fillStyle = '#4a4e54';
+    g.fillRect(544, 110, 12, 640);
+
+    // 把手
+    g.fillStyle = '#d3d6da';
+    g.fillRect(516, 400, 9, 130);
+    g.fillRect(575, 400, 9, 130);
+    g.fillStyle = 'rgba(255,255,255,0.7)';
+    g.fillRect(517, 400, 3, 130);
+    g.fillRect(576, 400, 3, 130);
+
+    // 左側盆栽
+    g.fillStyle = '#8c6f5a';
+    g.beginPath();
+    g.moveTo(70, 690); g.lineTo(190, 690); g.lineTo(172, 785); g.lineTo(88, 785);
+    g.closePath(); g.fill();
+    g.fillStyle = 'rgba(0,0,0,0.12)';
+    g.beginPath(); g.ellipse(130, 792, 78, 10, 0, 0, Math.PI * 2); g.fill();
+    const leaves = [
+        [130, 560, 34, 96, 0], [95, 600, 28, 80, -0.5], [165, 600, 28, 80, 0.5],
+        [70, 650, 22, 60, -0.9], [190, 650, 22, 60, 0.9]
+    ];
+    leaves.forEach(l => {
+        g.fillStyle = '#6f9a72';
+        g.beginPath(); g.ellipse(l[0], l[1], l[2], l[3], l[4], 0, Math.PI * 2); g.fill();
+        g.fillStyle = 'rgba(255,255,255,0.18)';
+        g.beginPath(); g.ellipse(l[0] - 6, l[1] - 8, l[2] * 0.4, l[3] * 0.7, l[4], 0, Math.PI * 2); g.fill();
+    });
+
+    return c;
+}
+
+/* ---------- 版面配置 ---------- */
+function clampSign() {
+    const cw = previewCanvas.width, ch = previewCanvas.height;
+    if (!cw) return;
+    const maxH = ch * 0.9, maxW = cw * 0.9;
+    if (signCanvas.height * signScale > maxH) signScale = maxH / signCanvas.height;
+    if (signCanvas.width * signScale > maxW) signScale = maxW / signCanvas.width;
+    const w = signCanvas.width * signScale;
+    const h = signCanvas.height * signScale;
+    signX = Math.min(Math.max(signX, 0), cw - w);
+    signY = Math.min(Math.max(signY, 0), ch - h);
+}
+
+// 標示牌初始位置：高度約佔畫面一半，靠右置中
+function placeSign() {
+    const cw = previewCanvas.width, ch = previewCanvas.height;
+    signScale = Math.min(1, (ch * 0.5) / signCanvas.height);
+    const w = signCanvas.width * signScale;
+    const h = signCanvas.height * signScale;
+    signX = cw - w - cw * 0.08;
+    signY = (ch - h) / 2;
+    clampSign();
+}
+
+function setBackground(img) {
+    bgImage = img;
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    const scale = Math.min(800 / iw, 600 / ih);
+    previewCanvas.width = Math.max(1, Math.floor(iw * scale));
+    previewCanvas.height = Math.max(1, Math.floor(ih * scale));
+    placeSign();
+    renderPreview();
+}
+
+/* ---------- 事件 ---------- */
 previewCanvas.addEventListener('mousedown', startDrag);
 previewCanvas.addEventListener('mousemove', drag);
 previewCanvas.addEventListener('mouseup', endDrag);
@@ -274,18 +527,41 @@ previewCanvas.addEventListener('touchstart', handleTouch, { passive: false });
 previewCanvas.addEventListener('touchmove', handleTouch, { passive: false });
 previewCanvas.addEventListener('touchend', endDrag);
 
+// 螢幕座標 → 畫布座標（畫布被縮小顯示時也能對準）
+function getPos(clientX, clientY) {
+    const rect = previewCanvas.getBoundingClientRect();
+    return {
+        x: (clientX - rect.left) * (previewCanvas.width / rect.width),
+        y: (clientY - rect.top) * (previewCanvas.height / rect.height)
+    };
+}
+
+function refresh() {
+    drawSign();
+    clampSign();
+    renderPreview();
+}
+
+// 確保中文字型載入完成後再重畫，避免顯示成預設字型
+function ensureFont() {
+    if (!document.fonts || !document.fonts.load) return;
+    const t = document.getElementById('text').value || '營業中';
+    document.fonts.load('700 ' + FONT_SIZE + 'px "Noto Sans TC"', t)
+        .then(refresh)
+        .catch(() => {});
+}
+
 function setColor(color, dom) {
     nowColor = color;
     document.querySelectorAll('.color-btn').forEach(item => item.classList.remove('active'));
-    if (dom && dom.classList) dom.classList.add('active');
-    drawSign();
-    renderPreview();
+    if (dom && dom.classList && dom.classList.contains('color-btn')) dom.classList.add('active');
+    refresh();
 }
 
 function set(t) {
     document.getElementById('text').value = t;
-    drawSign();
-    renderPreview();
+    refresh();
+    ensureFont();
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -304,7 +580,8 @@ function roundRect(ctx, x, y, w, h, r) {
 
 function drawSign() {
     const txt = document.getElementById('text').value.trim();
-    const chars = txt.split('');
+    let chars = Array.from(txt);
+    if (!chars.length) chars = ['\u3000'];
     const len = chars.length;
     const gap = len >= 5 ? CHAR_GAP_SMALL : CHAR_GAP_NORMAL;
     const textH = (len - 1) * gap + FONT_SIZE;
@@ -324,7 +601,7 @@ function drawSign() {
     signCtx.fillStyle = nowColor;
     signCtx.textAlign = "center";
     signCtx.textBaseline = "middle";
-    signCtx.font = `bold ${FONT_SIZE}px "Noto Sans TC"`;
+    signCtx.font = `bold ${FONT_SIZE}px ${FONT_FAMILY}`;
 
     let sy = PADDING + FONT_SIZE / 2;
     chars.forEach((c, i) => {
@@ -335,12 +612,8 @@ function drawSign() {
 function renderPreview() {
     if (!previewCanvas.width) return;
     previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-    
-    // 提高Canvas绘制质量
     previewCtx.imageSmoothingEnabled = true;
     previewCtx.imageSmoothingQuality = 'high';
-    previewCtx.patternQuality = 'high';
-    previewCtx.textRendering = 'optimizeLegibility';
 
     if (bgImage) {
         previewCtx.drawImage(bgImage, 0, 0, previewCanvas.width, previewCanvas.height);
@@ -351,55 +624,40 @@ function renderPreview() {
 }
 
 function redrawSign() {
-    drawSign();
-    renderPreview();
+    refresh();
+    ensureFont();
 }
 
 document.getElementById('fileInput').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (!file) return;
-    
 
-    
-    // 创建图片对象直接读取文件，避免FileReader可能的压缩
     const img = new Image();
-    img.crossOrigin = "anonymous"; // 确保可以访问图片数据
+    const url = URL.createObjectURL(file);
     img.onload = function () {
-        bgImage = img;
-        
-        // 限制预览尺寸，但保持原始图片用于高质量导出
-        const maxPreviewWidth = 800;
-        const maxPreviewHeight = 600;
-        const scale = Math.min(maxPreviewWidth / img.width, maxPreviewHeight / img.height);
-        
-        // 确保Canvas使用整数尺寸以避免模糊
-        previewCanvas.width = Math.floor(img.width * scale);
-        previewCanvas.height = Math.floor(img.height * scale);
-        
-        signScale = 0.8; // 缩小标示牌初始比例
-        signX = previewCanvas.width - signCanvas.width * signScale - 50; // 确保在中右位置
-        signY = previewCanvas.height / 2 - signCanvas.height * signScale / 2; // 垂直居中
-        
-        renderPreview();
-
+        setBackground(img);
+        URL.revokeObjectURL(url);
     };
-    
-    // 使用createObjectURL而不是FileReader来避免不必要的编码/解码
-    img.src = URL.createObjectURL(file);
+    img.onerror = function () {
+        URL.revokeObjectURL(url);
+        alert('這張圖片無法讀取，請換一張試試');
+    };
+    img.src = url;
+    e.target.value = '';
 });
 
 function startDrag(e) {
     isDragging = true;
-    const rect = previewCanvas.getBoundingClientRect();
-    startX = e.clientX - rect.left - signX;
-    startY = e.clientY - rect.top - signY;
+    const p = getPos(e.clientX, e.clientY);
+    startX = p.x - signX;
+    startY = p.y - signY;
 }
 
 function drag(e) {
     if (!isDragging) return;
-    const rect = previewCanvas.getBoundingClientRect();
-    signX = e.clientX - rect.left - startX;
-    signY = e.clientY - rect.top - startY;
+    const p = getPos(e.clientX, e.clientY);
+    signX = p.x - startX;
+    signY = p.y - startY;
     renderPreview();
 }
 
@@ -417,24 +675,23 @@ function getDistance(t1, t2) {
 function handleTouch(e) {
     e.preventDefault();
     const touches = e.touches;
-    const rect = previewCanvas.getBoundingClientRect();
 
     if (touches.length === 1) {
         const t = touches[0];
+        const p = getPos(t.clientX, t.clientY);
         if (e.type === 'touchstart') {
             isDragging = true;
-            startX = t.clientX - rect.left - signX;
-            startY = t.clientY - rect.top - signY;
+            startX = p.x - signX;
+            startY = p.y - signY;
         } else if (e.type === 'touchmove' && isDragging) {
-            signX = t.clientX - rect.left - startX;
-            signY = t.clientY - rect.top - startY;
+            signX = p.x - startX;
+            signY = p.y - startY;
             renderPreview();
         }
     }
 
     if (touches.length === 2) {
-        const t1 = touches[0], t2 = touches[1];
-        const dist = getDistance(t1, t2);
+        const dist = getDistance(touches[0], touches[1]);
         if (initialDistance > 0) {
             const scale = dist / initialDistance;
             signScale *= scale;
@@ -446,69 +703,91 @@ function handleTouch(e) {
     }
 }
 
-function downloadFinal() {
-    // 创建临时画布，使用原始图片尺寸而不是预览尺寸
+/* ---------- 儲存到手機 ---------- */
+let lastBlob = null;
+let lastUrl = null;
+
+function buildFinalCanvas() {
     const tempCanvas = document.createElement('canvas');
-    
-    // 计算原始图片的缩放比例，保持与预览相同的显示比例
     let finalWidth, finalHeight;
     if (bgImage) {
-        // 限制最大尺寸以避免过大的文件
-        const maxExportWidth = 1600;
-        const maxExportHeight = 1200;
-        const scale = Math.min(
-            maxExportWidth / bgImage.width,
-            maxExportHeight / bgImage.height,
-            1 // 不放大原图
-        );
-        finalWidth = Math.floor(bgImage.width * scale);
-        finalHeight = Math.floor(bgImage.height * scale);
+        const iw = bgImage.naturalWidth || bgImage.width;
+        const ih = bgImage.naturalHeight || bgImage.height;
+        const scale = Math.min(1600 / iw, 1200 / ih, 1);
+        finalWidth = Math.floor(iw * scale);
+        finalHeight = Math.floor(ih * scale);
     } else {
         finalWidth = previewCanvas.width;
         finalHeight = previewCanvas.height;
     }
-    
+
     tempCanvas.width = finalWidth;
     tempCanvas.height = finalHeight;
     const tempCtx = tempCanvas.getContext('2d');
-    
-    // 设置最高质量绘制参数
     tempCtx.imageSmoothingEnabled = true;
     tempCtx.imageSmoothingQuality = 'high';
-    tempCtx.patternQuality = 'high';
-    tempCtx.textRendering = 'optimizeLegibility';
-    tempCtx.antialias = 'subpixel';
-    tempCtx.lineCap = 'round';
-    tempCtx.lineJoin = 'round';
 
-    // 绘制背景图片，使用原始尺寸的高质量版本
     if (bgImage) {
         tempCtx.drawImage(bgImage, 0, 0, finalWidth, finalHeight);
     }
-    
-    // 计算标示牌在最终图片中的位置和大小
-    const previewToOriginalRatio = finalWidth / previewCanvas.width;
-    const finalSignWidth = signCanvas.width * signScale * previewToOriginalRatio;
-    const finalSignHeight = signCanvas.height * signScale * previewToOriginalRatio;
-    const finalSignX = signX * previewToOriginalRatio;
-    const finalSignY = signY * previewToOriginalRatio;
-    
-    // 绘制标示牌
-    tempCtx.drawImage(signCanvas, finalSignX, finalSignY, finalSignWidth, finalSignHeight);
 
-    // 创建下载链接
-    const a = document.createElement('a');
-    a.download = "門市照片_標示牌.png";
-    
-    // 使用最高质量的PNG设置
-    a.href = tempCanvas.toDataURL('image/png', 1.0);
-    
-    // 触发下载
-    a.click();
-
+    const ratio = finalWidth / previewCanvas.width;
+    tempCtx.drawImage(
+        signCanvas,
+        signX * ratio,
+        signY * ratio,
+        signCanvas.width * signScale * ratio,
+        signCanvas.height * signScale * ratio
+    );
+    return tempCanvas;
 }
 
+async function downloadFinal() {
+    const canvas = buildFinalCanvas();
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) {
+        alert('圖片產生失敗，請再試一次');
+        return;
+    }
+    lastBlob = blob;
+
+    const file = new File([blob], '門市照片_標示牌.png', { type: 'image/png' });
+
+    // 方法一：手機系統分享選單（iOS 選「儲存影像」、Android 可存到相簿/檔案）
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+            await navigator.share({ files: [file], title: '標示牌' });
+            return;
+        } catch (err) {
+            if (err && err.name === 'AbortError') return;
+        }
+    }
+
+    // 方法二：備用 - 顯示圖片，讓使用者長按儲存（電腦則可直接下載）
+    if (lastUrl) URL.revokeObjectURL(lastUrl);
+    lastUrl = URL.createObjectURL(blob);
+    document.getElementById('saveImg').src = lastUrl;
+    document.getElementById('saveMask').classList.add('show');
+}
+
+function directDownload() {
+    if (!lastUrl) return;
+    const a = document.createElement('a');
+    a.href = lastUrl;
+    a.download = '門市照片_標示牌.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+function closeMask() {
+    document.getElementById('saveMask').classList.remove('show');
+}
+
+/* ---------- 初始化 ---------- */
 drawSign();
+setBackground(makeDefaultBg());
+ensureFont();
 </script>
 </body>
 </html>
