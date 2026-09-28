@@ -107,7 +107,7 @@
     position:relative;
     width:100%;
     aspect-ratio:3/1;
-    border-radius:var(--radius-md);
+    border-radius:0;
     overflow:hidden;
     background:var(--glass-strong);
     border:1px solid var(--glass-border);
@@ -1466,7 +1466,7 @@
       font:"'Poppins', sans-serif", weight:800, sizeRatio:.36, spacing:.06,
       color:'trippy', palette:['#8a4a2c','#7a2c3a'], trippyColors:['rgba(255,160,120,0.5)','rgba(255,90,150,0.5)'],
       rot:16, jitter:.26 },
-    { id:'tvStatic', name:'雜訊', bg:bgTVStatic, dark:true,
+    { id:'tvStatic', name:'雜訊', bg:bgTVStatic, dark:true, noiseOutline:true,
       font:"'Righteous', sans-serif", weight:400, sizeRatio:.38, spacing:.07,
       color:'outline', palette:['#ffffff'], strokeColor:'#000000', outlineWidthRatio:.14, rot:14, jitter:.22 },
     { id:'waterRipple', name:'水紋', bg:bgWaterRipple,
@@ -1510,7 +1510,25 @@
   ];
 
   /* ---------- 文字繪製 ---------- */
+  // 產生彩色雜訊圖樣，可當作 strokeStyle 讓文字外框帶有雜訊顆粒
+  function makeNoisePattern(ctx, rng){
+    const size = 48;
+    const off = document.createElement('canvas');
+    off.width = size; off.height = size;
+    const octx = off.getContext('2d');
+    const img = octx.createImageData(size, size);
+    for(let i=0;i<size*size;i++){
+      img.data[i*4]   = Math.floor(rng()*255);
+      img.data[i*4+1] = Math.floor(rng()*255);
+      img.data[i*4+2] = Math.floor(rng()*255);
+      img.data[i*4+3] = 255;
+    }
+    octx.putImageData(img, 0, 0);
+    return ctx.createPattern(off, 'repeat');
+  }
+
   function drawStyledText(ctx,w,h,text,style,rng,fontOverride){
+    const noisePattern = style.noiseOutline ? makeNoisePattern(ctx, rng) : null;
     const isCJK = CJK_RE.test(text);
     const chosenFamily = fontOverride ? fontOverride.family : style.font;
     const weight = fontOverride ? fontOverride.weight : style.weight;
@@ -1637,6 +1655,13 @@
         ctx.strokeStyle = style.strokeColor;
         ctx.lineJoin='round';
         ctx.strokeText(p.ch,0,0);
+        if(noisePattern){
+          ctx.save();
+          ctx.globalAlpha = 0.65;
+          ctx.strokeStyle = noisePattern;
+          ctx.strokeText(p.ch,0,0);
+          ctx.restore();
+        }
         ctx.fillStyle = col;
         ctx.fillText(p.ch,0,0);
       } else if(style.color==='neon'){
@@ -1741,7 +1766,7 @@
     ctx.setTransform(dpr,0,0,dpr,0,0);
     ctx.clearRect(0,0,logicalW,logicalH);
     const rng = mulberry32(seed);
-    const radius = Math.min(14, logicalH*0.14);
+    const radius = 0;
 
     ctx.save();
     roundedClip(ctx, logicalW, logicalH, radius);
