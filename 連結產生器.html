@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>液態玻璃導航網頁產生器</title>
+  <title>連結產生器</title>
   <style>
     :root {
       --bg-color: #f0f2f5;
@@ -97,12 +97,6 @@
       letter-spacing: -0.5px;
     }
 
-    .header-title p {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      margin-top: 4px;
-    }
-
     .controls {
       display: flex;
       gap: 12px;
@@ -122,7 +116,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
     }
 
     .btn:hover {
@@ -353,12 +347,11 @@
   <div class="container">
     <header>
       <div class="header-title">
-        <h1>液態玻璃導航產生器</h1>
-        <p>點擊「新增」編排連結，完成後點擊「複製 HTML 代碼」貼至 GitHub 即可！</p>
+        <h1>連結產生器</h1>
       </div>
       <div class="controls">
-        <button class="btn" id="addBtn">＋ 新增連結</button>
-        <button class="btn btn-primary" id="copyCodeBtn">📋 複製 HTML 代碼</button>
+        <button class="btn" id="addBtn">新增連結</button>
+        <button class="btn btn-primary" id="copyCodeBtn">複製代碼</button>
       </div>
     </header>
 
@@ -372,16 +365,16 @@
       <form id="cardForm">
         <input type="hidden" id="cardId">
         <div class="form-group">
-          <label for="inputName">網站名稱</label>
-          <input type="text" id="inputName" placeholder="例如：Google" required />
+          <label for="inputName">名稱</label>
+          <input type="text" id="inputName" required />
         </div>
         <div class="form-group">
-          <label for="inputUrl">網站網址 (URL)</label>
-          <input type="url" id="inputUrl" placeholder="https://www.google.com" required />
+          <label for="inputUrl">網址</label>
+          <input type="url" id="inputUrl" required />
         </div>
         <div class="form-group">
-          <label for="inputImg">預覽圖片網址 (圖片可直可橫，自動裁切)</label>
-          <input type="url" id="inputImg" placeholder="https://... (留空則自動抓取網站 Favicon)" />
+          <label for="inputImg">圖片</label>
+          <input type="url" id="inputImg" />
         </div>
         <div class="modal-actions">
           <button type="button" class="btn" id="cancelBtn">取消</button>
@@ -391,7 +384,7 @@
     </div>
   </div>
 
-  <div class="toast" id="toast">已成功複製 HTML 代碼！可以直接貼到 GitHub index.html</div>
+  <div class="toast" id="toast">複製成功</div>
 
   <script>
     let cards = JSON.parse(localStorage.getItem('generator_cards')) || [
@@ -495,7 +488,7 @@
     addBtn.addEventListener('click', () => openModal());
     cancelBtn.addEventListener('click', closeModal);
 
-    // 核心功能：生成並複製乾淨的最終 HTML 代碼 (不帶任何編輯控制項)
+    // 生成並複製乾淨的最終 HTML 代碼
     copyCodeBtn.addEventListener('click', () => {
       const generatedHtml = `<!DOCTYPE html>
 <html lang="zh-TW">
