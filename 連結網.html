@@ -2,17 +2,18 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>KARMAWEI_</title>
   <style>
     :root {
       --bg-color: #f0f2f5;
       --glass-bg: rgba(255, 255, 255, 0.65);
       --glass-border: rgba(255, 255, 255, 0.85);
-      --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.05);
+      --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
       --text-main: #2c3e50;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow-x: hidden; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg-color);
@@ -21,51 +22,46 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
+      padding: 24px 16px;
       position: relative;
     }
-    .liquid-blob {
+    body::before {
+      content: '';
       position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      z-index: 0;
-      opacity: 0.6;
-      animation: float 12s infinite alternate ease-in-out;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 10% 10%, rgba(219, 234, 254, 0.6) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(243, 244, 246, 0.8) 0%, transparent 40%);
       pointer-events: none;
+      z-index: 0;
     }
-    .blob-1 { width: 450px; height: 450px; background: radial-gradient(circle, rgba(219, 234, 254, 1) 0%, rgba(255, 255, 255, 0) 70%); top: -100px; left: -100px; }
-    .blob-2 { width: 550px; height: 550px; background: radial-gradient(circle, rgba(243, 244, 246, 1) 0%, rgba(229, 231, 235, 0) 70%); bottom: -150px; right: -100px; animation-delay: -6s; }
-    @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 40px) scale(1.08); } }
-    .container { width: 100%; max-width: 1100px; z-index: 1; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    @media (min-width: 640px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    .container { width: 100%; max-width: 960px; z-index: 1; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
     @media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); } }
-    @media (min-width: 1280px) { .grid { grid-template-columns: repeat(6, 1fr); } }
     .card {
       position: relative;
       background: var(--glass-bg);
       backdrop-filter: blur(20px) saturate(160%);
       -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border-radius: 20px;
+      border-radius: 16px;
       border: 1px solid var(--glass-border);
-      padding: 16px 12px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-decoration: none;
       color: var(--text-main);
       box-shadow: var(--glass-shadow);
-      overflow: hidden;
-      /* 點擊不位移 */
       transform: none !important;
       transition: none !important;
     }
     .card-img-wrapper {
       width: 100%;
       aspect-ratio: 1 / 1;
-      border-radius: 14px;
-      margin-bottom: 10px;
+      border-radius: 12px;
+      margin-bottom: 6px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--glass-border);
@@ -78,15 +74,13 @@
       display: block;
     }
     .card-title {
-      font-size: 0.95rem; font-weight: 600; margin-top: 2px;
-      text-align: center; width: 100%; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
+      font-size: 0.85rem; font-weight: 600; text-align: center;
+      width: 100%; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; padding: 0 2px;
     }
   </style>
 </head>
 <body>
-  <div class="liquid-blob blob-1"></div>
-  <div class="liquid-blob blob-2"></div>
   <div class="container">
     <div class="grid">
       <a href="https://zang577.github.io/karmawei/%E6%A8%99%E7%A4%BA%E7%89%8C.html" target="_blank" rel="noopener noreferrer" class="card">
