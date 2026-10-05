@@ -114,6 +114,21 @@ body {
 .position-btn:hover { background: rgba(255,255,255,0.6) !important; transform: translateY(-1px); }
 .position-btn:active { transform: translateY(0) scale(0.96); }
 
+input[type="color"] {
+  box-sizing: border-box;
+  padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0.375rem; }
+#textColor, #textOutlineColor {
+  width: 3rem !important;
+  height: 2.25rem !important;
+  min-width: 3rem;
+  min-height: 2.25rem;
+}
+
 textarea#dialogueText, input#imageUpload {
   background: rgba(255,255,255,0.45) !important;
   backdrop-filter: blur(14px) saturate(180%);
@@ -184,9 +199,19 @@ main > div.bg-white {
         <div data-group="transparent" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-3"></div>
 
       </div>
-      <div>
-        <label class="control-label block">文字顏色</label>
-        <input type="color" id="textColor" value="#000000" class="w-full h-9 border-0 rounded-md cursor-pointer">
+      <div class="grid gap-1" style="grid-template-columns: 90px 1fr;">
+        <div>
+          <label class="control-label block">文字顏色</label>
+          <input type="color" id="textColor" value="#000000" class="w-12 h-9 border-0 rounded-md cursor-pointer">
+        </div>
+        <div>
+          <label class="control-label block">文字外框</label>
+          <div class="flex items-center gap-3">
+            <input type="color" id="textOutlineColor" value="#FFFFFF" class="w-12 h-9 shrink-0 border-0 rounded-md cursor-pointer" disabled>
+            <input type="range" id="textOutlineWidth" min="0" max="20" step="1" value="0" class="w-full accent-primary">
+            <span id="textOutlineWidthValue" class="text-xs text-neutral/60 w-8 shrink-0 text-right">無</span>
+          </div>
+        </div>
       </div>
       <div>
         <label class="control-label block">對話框透明度</label>
@@ -266,6 +291,9 @@ const emptyHint     = document.getElementById('emptyPreviewHint');
 const downloadBtn   = document.getElementById('downloadBtn');
 const dialogueText  = document.getElementById('dialogueText');
 const textColor     = document.getElementById('textColor');
+const textOutlineColor = document.getElementById('textOutlineColor');
+const textOutlineWidth = document.getElementById('textOutlineWidth');
+const textOutlineWidthValue = document.getElementById('textOutlineWidthValue');
 const boxOpacity    = document.getElementById('boxOpacity');
 const boxOpacityValue   = document.getElementById('boxOpacityValue');
 const textSizeSlider    = document.getElementById('textSizeSlider');
@@ -291,8 +319,8 @@ let currentStyle = 'game1';
 let currentFont  = 'sans';
 
 const styleGroups = {
-  classic:[{key:'game1',name:'黑白'},{key:'style1',name:'純紫'},{key:'style2',name:'藍'},{key:'style3',name:'紫'},{key:'style12',name:'粉'},{key:'style14',name:'白雲天空'},{key:'style15',name:'純粉'},{key:'mora1',name:'莫蘭迪咖'},{key:'mora2',name:'莫蘭迪灰'},{key:'maca1',name:'淺粉'},{key:'maca2',name:'薄荷'}],
-  new:[{key:'new3',name:'浪漫'},{key:'new8',name:'甜蜜'},{key:'new12',name:'藍波雲'},{key:'sum1',name:'夏日清涼'},{key:'pea1',name:'水蜜桃'},{key:'school1',name:'信紙藍'},{key:'new7',name:'信紙咖'}],
+  classic:[{key:'game1',name:'黑白'},{key:'style2',name:'藍'},{key:'style12',name:'粉'},{key:'style3',name:'紫'},{key:'mora2',name:'灰'},{key:'mora1',name:'咖'},{key:'maca2',name:'薄荷'},{key:'maca1',name:'淺粉'},{key:'style15',name:'純粉'},{key:'style1',name:'純紫'}],
+  new:[{key:'new3',name:'浪漫'},{key:'new8',name:'甜蜜'},{key:'new12',name:'藍波雲'},{key:'sum1',name:'夏日清涼'},{key:'style14',name:'白雲天空'},{key:'school1',name:'信紙藍'},{key:'new7',name:'信紙咖'}],
   transparent:[{key:'ani1',name:'白透'},{key:'ani2',name:'磨砂'},{key:'glass',name:'玻璃'}]
 };
 const styleMap = {
@@ -302,7 +330,7 @@ const styleMap = {
   mora1:{bg:'#EAE2E2',border:'#BFA8A8'}, mora2:{bg:'#E2E8F0',border:'#94A3B8'}, ani1:{bg:'rgba(255,255,255,0.88)',border:'#D1D5DB'},
   ani2:{bg:'rgba(255,255,250,0.92)',border:'rgba(200,200,200,0.7)'}, glass:{bg:'rgba(80,200,240,0.30)',border:'rgba(255,255,255,0.90)',glass:1}, new3:{bg:'#FFEEF6',border:'#FFB7C5'}, new7:{bg:'#F5EFE2',border:'#A89078'}, new8:{bg:'#FFEEF2',border:'#F472B6'},
   new12:{bg:'#E0F7FA',border:'#FFFFFF'}, sum1:{bg:'#E6FFFA',border:'#22D3EE'},
-  pea1:{bg:'#FFECEC',border:'#FDA4AF'}, school1:{bg:'#EFF6FF',border:'#60A5FA'},
+  school1:{bg:'#EFF6FF',border:'#60A5FA'},
 };
 
 // ── 字型載入 ─────────────────────────────────────────────────
@@ -695,9 +723,21 @@ function drawCore(ctx, cw, ch) {
   // 再加上 (lineH - metrics.height)/2 讓每行文字在行高中垂直置中
   const lineOffset = (lineH - metrics.height) / 2;
   const startY = bt + pad + metrics.ascent + lineOffset;
+  const outlineW = +textOutlineWidth.value;
+  if (outlineW > 0) {
+    ctx.lineWidth = outlineW * s;
+    ctx.strokeStyle = textOutlineColor.value;
+    ctx.lineJoin = 'round';
+    ctx.miterLimit = 2;
+  }
   lines.forEach((l, i) => {
     let x = bl + pad;
-    [...l].forEach(c => { ctx.fillText(c, x, startY + i * lineH); x += ctx.measureText(c).width + letterW; });
+    [...l].forEach(c => {
+      const y = startY + i * lineH;
+      if (outlineW > 0) ctx.strokeText(c, x, y);
+      ctx.fillText(c, x, y);
+      x += ctx.measureText(c).width + letterW;
+    });
   });
   ctx.restore();
 }
@@ -755,6 +795,10 @@ function updateSliderValues() {
   boxOpacityValue.textContent  = Math.round(boxOpacity.value * 100) + '%';
   textSizeValue.textContent    = textSizeSlider.value + '%';
   bottomMarginValue.textContent = bottomMarginSlider.value + '%';
+  const ow = +textOutlineWidth.value;
+  textOutlineWidthValue.textContent = ow === 0 ? '無' : (ow + 'px');
+  textOutlineColor.disabled = ow === 0;
+  textOutlineColor.style.opacity = ow === 0 ? '0.4' : '1';
 }
 
 function bindAllEvent() {
@@ -801,7 +845,8 @@ function bindAllEvent() {
   boxOpacity.addEventListener('input',       () => { updateSliderValues(); drawAll(); });
   textSizeSlider.addEventListener('input',   () => { updateSliderValues(); drawAll(); });
   bottomMarginSlider.addEventListener('input', () => { updateSliderValues(); drawAll(); });
-  [dialogueText, textColor].forEach(el => el.oninput = drawAll);
+  textOutlineWidth.addEventListener('input', () => { updateSliderValues(); drawAll(); });
+  [dialogueText, textColor, textOutlineColor].forEach(el => el.oninput = drawAll);
 }
 </script>
 </body>
