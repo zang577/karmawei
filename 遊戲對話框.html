@@ -725,7 +725,9 @@ function drawCore(ctx, cw, ch) {
   const startY = bt + pad + metrics.ascent + lineOffset;
   const outlineW = +textOutlineWidth.value;
   if (outlineW > 0) {
-    ctx.lineWidth = outlineW * s;
+    // strokeText 是以筆畫路徑「置中」畫線，一半寬度會被之後疊上的文字填色蓋掉，
+    // 因此實際線寬要加倍，露出來的外框可見寬度才會等於使用者設定的 px 數值
+    ctx.lineWidth = outlineW * s * 2;
     ctx.strokeStyle = textOutlineColor.value;
     ctx.lineJoin = 'round';
     ctx.miterLimit = 2;
