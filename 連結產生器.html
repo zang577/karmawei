@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>KARMAWEI_ 連結產生器</title>
-  <!-- Cropper.js CSS -->
+  <title>KARMAWEI_</title>
+  <!-- Cropper.js CSS (裁切工具) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
   <style>
     :root {
-      --bg-color: #f2f4f7;
-      --glass-bg: rgba(255, 255, 255, 0.68);
-      --glass-border: rgba(255, 255, 255, 0.85);
-      --glass-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-      --text-main: #2c3e50;
-      --text-sub: #8a96a3;
+      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e2e8f0 100%);
+      --glass-bg: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      --text-main: #334155;
+      --text-sub: #64748b;
       --danger: #ef4444;
     }
 
@@ -21,83 +21,82 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      letter-spacing: 1.2px; /* 所有文字增加字元間距 */
     }
 
-    html {
+    html, body {
+      width: 100%;
       height: 100%;
+      overflow-x: hidden;
     }
 
     body {
-      width: 100%;
-      min-height: 100vh;
-      background-color: var(--bg-color);
-      color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow-x: hidden;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px;
+      padding: 24px 16px;
       position: relative;
     }
 
-    /* 固定全螢幕柔和光暈（不增加任何實體尺寸） */
+    /* 3D 擬物風格低調藍天白雲背景質感 */
     body::before {
       content: '';
       position: fixed;
-      inset: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: 
-        radial-gradient(circle at 15% 15%, rgba(219, 234, 254, 0.55) 0%, transparent 35%),
-        radial-gradient(circle at 85% 85%, rgba(243, 244, 246, 0.75) 0%, transparent 35%);
+        radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.7) 0%, transparent 35%),
+        radial-gradient(circle at 85% 80%, rgba(186, 230, 253, 0.4) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.5) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
 
     .container {
       width: 100%;
-      max-width: 880px;
+      max-width: 960px;
       z-index: 1;
     }
 
     header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      padding: 10px 16px;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 12px 18px;
       background: var(--glass-bg);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-radius: 16px;
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      border-radius: 20px;
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
     }
 
-    .header-title h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-
     .controls {
       display: flex;
-      gap: 8px;
+      gap: 10px;
+      width: 100%;
+      justify-content: flex-end;
     }
 
+    /* 全白液態玻璃 3D 擬物風格按鈕 */
     .btn {
-      padding: 6px 14px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      padding: 8px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.85);
       color: var(--text-main);
-      border-radius: 10px;
-      font-size: 0.8rem;
+      border-radius: 14px;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: all 0.2s ease;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(148, 163, 184, 0.1), inset 0 1px 1px rgba(255, 255, 255, 1);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -106,7 +105,7 @@
     .btn:hover {
       background: #ffffff;
       transform: translateY(-1px);
-      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 6px 16px rgba(148, 163, 184, 0.18), inset 0 1px 2px rgba(255, 255, 255, 1);
     }
 
     .btn:active {
@@ -114,66 +113,66 @@
     }
 
     .btn-sm {
-      padding: 4px 8px;
-      font-size: 0.72rem;
-      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      border-radius: 10px;
     }
 
-    /* 加大卡片與卡片的間距 (Gap 加大) */
+    /* 卡片網格與間距 */
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
 
-    @media (min-width: 520px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 18px; } }
-    @media (min-width: 720px) { .grid { grid-template-columns: repeat(5, 1fr); gap: 20px; } }
-    @media (min-width: 900px) { .grid { grid-template-columns: repeat(6, 1fr); gap: 20px; } }
+    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); } }
 
     .card {
       position: relative;
       background: var(--glass-bg);
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
-      border-radius: 12px;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-radius: 18px;
       border: 1px solid var(--glass-border);
-      padding: 6px;
+      padding: 12px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       box-shadow: var(--glass-shadow);
-      user-select: none;
+      transform: none !important;
+      transition: none !important;
     }
 
-    /* 精緻控制按鈕 (排序、編輯、刪除) */
     .card-actions {
       position: absolute;
-      top: 4px;
-      right: 4px;
+      top: 6px;
+      right: 6px;
       display: flex;
-      gap: 2px;
+      gap: 3px;
       z-index: 2;
     }
 
     .icon-btn {
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.9);
       color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 8px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-      transition: all 0.15s ease;
+      font-size: 10px;
+      box-shadow: 0 2px 6px rgba(148, 163, 184, 0.1);
+      transition: all 0.2s;
     }
 
     .icon-btn:hover {
       background: #ffffff;
-      transform: scale(1.15);
+      transform: scale(1.1);
     }
 
     .icon-btn.delete:hover {
@@ -185,10 +184,10 @@
     .card-img-wrapper {
       width: 100%;
       aspect-ratio: 1 / 1;
-      border-radius: 8px;
-      margin-bottom: 4px;
+      border-radius: 12px;
+      margin-bottom: 8px;
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--glass-border);
       display: flex;
       align-items: center;
@@ -204,7 +203,7 @@
     }
 
     .card-title {
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 600;
       text-align: center;
       width: 100%;
@@ -212,23 +211,23 @@
       overflow: hidden;
       text-overflow: ellipsis;
       padding: 0 2px;
-      color: var(--text-main);
     }
 
+    /* Modal 視窗 */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.22);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(15, 23, 42, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 100;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease;
-      padding: 12px;
+      transition: opacity 0.25s ease;
+      padding: 16px;
     }
 
     .modal-overlay.active {
@@ -238,64 +237,64 @@
 
     .modal {
       background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(25px) saturate(200%);
-      -webkit-backdrop-filter: blur(25px) saturate(200%);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
       border: 1px solid var(--glass-border);
-      border-radius: 18px;
+      border-radius: 24px;
       width: 100%;
-      max-width: 360px;
-      padding: 20px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
       max-height: 90vh;
       overflow-y: auto;
     }
 
     .modal h2 {
-      margin-bottom: 14px;
-      font-size: 1rem;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
     }
 
     .form-group {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .form-group label {
       display: block;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
       color: var(--text-sub);
     }
 
     .form-group input[type="text"],
     .form-group input[type="url"] {
       width: 100%;
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
       background: rgba(255, 255, 255, 0.85);
       outline: none;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
     }
 
     .form-group input:focus {
-      border-color: rgba(0, 0, 0, 0.25);
+      border-color: rgba(51, 65, 85, 0.4);
       background: #ffffff;
     }
 
     .file-input-wrapper {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .crop-container {
       width: 100%;
-      max-height: 220px;
-      margin-top: 6px;
-      background: rgba(0,0,0,0.04);
-      border-radius: 10px;
+      max-height: 240px;
+      margin-top: 8px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 12px;
       overflow: hidden;
       display: none;
     }
@@ -308,33 +307,34 @@
     .crop-actions {
       display: none;
       gap: 6px;
-      margin-top: 6px;
+      margin-top: 8px;
       justify-content: flex-end;
     }
 
     .modal-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 6px;
-      margin-top: 16px;
+      gap: 8px;
+      margin-top: 20px;
     }
 
+    /* Toast 提示 */
     .toast {
       position: fixed;
-      bottom: 20px;
+      bottom: 24px;
       background: rgba(255, 255, 255, 0.95);
       color: var(--text-main);
       border: 1px solid var(--glass-border);
-      padding: 8px 20px;
+      padding: 10px 24px;
       border-radius: 50px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      transform: translateY(80px);
+      transform: translateY(100px);
       opacity: 0;
-      transition: all 0.25s ease;
+      transition: all 0.3s ease;
       z-index: 200;
     }
 
@@ -343,363 +343,3 @@
       opacity: 1;
     }
   </style>
-</head>
-<body>
-
-  <div class="container">
-    <header>
-      <div class="header-title">
-        <h1>KARMAWEI_ 產生器</h1>
-      </div>
-      <div class="controls">
-        <button class="btn" id="addBtn">新增連結</button>
-        <button class="btn" id="copyCodeBtn">複製代碼</button>
-      </div>
-    </header>
-
-    <div class="grid" id="cardGrid"></div>
-  </div>
-
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2 id="modalTitle">新增連結</h2>
-      <form id="cardForm">
-        <input type="hidden" id="cardId">
-        <div class="form-group">
-          <label for="inputName">名稱</label>
-          <input type="text" id="inputName" placeholder="如：官方網站" required />
-        </div>
-        <div class="form-group">
-          <label for="inputUrl">網址</label>
-          <input type="url" id="inputUrl" placeholder="https://..." required />
-        </div>
-        <div class="form-group">
-          <label>圖片</label>
-          <div class="file-input-wrapper">
-            <button type="button" class="btn btn-sm" onclick="document.getElementById('fileInput').click()">選擇手機/電腦圖片</button>
-            <input type="file" id="fileInput" accept="image/*" style="display: none;" />
-          </div>
-          <input type="url" id="inputImg" placeholder="或貼上圖片網址" />
-          
-          <div class="crop-container" id="cropContainer">
-            <img id="cropImage" src="" alt="Cropper">
-          </div>
-          <div class="crop-actions" id="cropActions">
-            <button type="button" class="btn btn-sm" id="rotateBtn">旋轉 90°</button>
-            <button type="button" class="btn btn-sm" id="resetCropBtn">重置裁切</button>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn" id="cancelBtn">取消</button>
-          <button type="submit" class="btn" id="saveBtn">儲存</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="toast" id="toast">已複製網頁原始碼至剪貼簿！</div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-  <script>
-    let cards = JSON.parse(localStorage.getItem('generator_cards')) || [];
-
-    const cardGrid = document.getElementById('cardGrid');
-    const addBtn = document.getElementById('addBtn');
-    const copyCodeBtn = document.getElementById('copyCodeBtn');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const cardForm = document.getElementById('cardForm');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const toast = document.getElementById('toast');
-    
-    const fileInput = document.getElementById('fileInput');
-    const inputImg = document.getElementById('inputImg');
-    const cropContainer = document.getElementById('cropContainer');
-    const cropImage = document.getElementById('cropImage');
-    const cropActions = document.getElementById('cropActions');
-    const rotateBtn = document.getElementById('rotateBtn');
-    const resetCropBtn = document.getElementById('resetCropBtn');
-
-    let cropper = null;
-    let originalRawImage = '';
-
-    function saveLocal() {
-      localStorage.setItem('generator_cards', JSON.stringify(cards));
-    }
-
-    function moveCard(index, direction) {
-      const newIndex = index + direction;
-      if (newIndex < 0 || newIndex >= cards.length) return;
-      const temp = cards[index];
-      cards[index] = cards[newIndex];
-      cards[newIndex] = temp;
-      saveLocal();
-      render();
-    }
-
-    function render() {
-      cardGrid.innerHTML = '';
-      cards.forEach((card, index) => {
-        const cardEl = document.createElement('div');
-        cardEl.className = 'card';
-        const imgSrc = card.croppedImg || card.img || `https://www.google.com/s2/favicons?domain=${card.url}&sz=128`;
-
-        cardEl.innerHTML = `
-          <div class="card-actions">
-            ${index > 0 ? `<button class="icon-btn" onclick="moveCard(${index}, -1)" title="左移">◄</button>` : ''}
-            ${index < cards.length - 1 ? `<button class="icon-btn" onclick="moveCard(${index}, 1)" title="右移">►</button>` : ''}
-            <button class="icon-btn" onclick="editCard('${card.id}')">✏️</button>
-            <button class="icon-btn delete" onclick="deleteCard('${card.id}')">✕</button>
-          </div>
-          <div class="card-img-wrapper">
-            <img class="card-img" src="${imgSrc}" alt="${card.name}" onerror="this.src='https://via.placeholder.com/150/ffffff/808080?text=Link'">
-          </div>
-          <div class="card-title">${card.name}</div>
-        `;
-        cardGrid.appendChild(cardEl);
-      });
-    }
-
-    function initCropper(imageSrc) {
-      if (cropper) cropper.destroy();
-      cropImage.src = imageSrc;
-      cropContainer.style.display = 'block';
-      cropActions.style.display = 'flex';
-
-      cropper = new Cropper(cropImage, {
-        aspectRatio: 1,
-        viewMode: 1,
-        autoCropArea: 1,
-        background: false,
-        responsive: true
-      });
-    }
-
-    function destroyCropper() {
-      if (cropper) {
-        cropper.destroy();
-        cropper = null;
-      }
-      cropContainer.style.display = 'none';
-      cropActions.style.display = 'none';
-      cropImage.src = '';
-    }
-
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          originalRawImage = event.target.result;
-          inputImg.value = '';
-          initCropper(originalRawImage);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    inputImg.addEventListener('change', () => {
-      const url = inputImg.value.trim();
-      if (url) {
-        originalRawImage = url;
-        initCropper(url);
-      }
-    });
-
-    rotateBtn.addEventListener('click', () => { if (cropper) cropper.rotate(90); });
-    resetCropBtn.addEventListener('click', () => { if (cropper) cropper.reset(); });
-
-    function openModal(card = null) {
-      modalOverlay.classList.add('active');
-      destroyCropper();
-      originalRawImage = '';
-
-      if (card) {
-        document.getElementById('modalTitle').textContent = '編輯連結';
-        document.getElementById('cardId').value = card.id;
-        document.getElementById('inputName').value = card.name;
-        document.getElementById('inputUrl').value = card.url;
-        document.getElementById('inputImg').value = card.img || '';
-        originalRawImage = card.originalRawImage || card.img || card.croppedImg || '';
-        if (originalRawImage) initCropper(originalRawImage);
-      } else {
-        document.getElementById('modalTitle').textContent = '新增連結';
-        cardForm.reset();
-        document.getElementById('cardId').value = '';
-      }
-    }
-
-    function closeModal() {
-      modalOverlay.classList.remove('active');
-      cardForm.reset();
-      destroyCropper();
-    }
-
-    window.editCard = function(id) {
-      const card = cards.find(c => c.id === id);
-      if (card) openModal(card);
-    };
-
-    window.deleteCard = function(id) {
-      cards = cards.filter(c => c.id !== id);
-      saveLocal();
-      render();
-    };
-
-    cardForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const id = document.getElementById('cardId').value;
-      const name = document.getElementById('inputName').value;
-      const url = document.getElementById('inputUrl').value;
-      const rawImgUrl = document.getElementById('inputImg').value;
-
-      let croppedDataUrl = '';
-      if (cropper) {
-        croppedDataUrl = cropper.getCroppedCanvas({ width: 280, height: 280 }).toDataURL('image/jpeg', 0.85);
-      }
-
-      const finalOriginalImage = originalRawImage || rawImgUrl;
-
-      if (id) {
-        const card = cards.find(c => c.id === id);
-        if (card) {
-          card.name = name;
-          card.url = url;
-          card.img = rawImgUrl;
-          card.croppedImg = croppedDataUrl || card.croppedImg;
-          card.originalRawImage = finalOriginalImage;
-        }
-      } else {
-        cards.push({
-          id: Date.now().toString(),
-          name,
-          url,
-          img: rawImgUrl,
-          croppedImg: croppedDataUrl,
-          originalRawImage: finalOriginalImage
-        });
-      }
-
-      saveLocal();
-      render();
-      closeModal();
-    });
-
-    addBtn.addEventListener('click', () => openModal());
-    cancelBtn.addEventListener('click', closeModal);
-
-    /* 產出的最終網頁（包含嚴格鎖定滾動軸邏輯與加大 Gap） */
-    copyCodeBtn.addEventListener('click', () => {
-      const generatedHtml = `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>KARMAWEI_</title>
-  <style>
-    :root {
-      --bg-color: #f2f4f7;
-      --glass-bg: rgba(255, 255, 255, 0.68);
-      --glass-border: rgba(255, 255, 255, 0.85);
-      --glass-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-      --text-main: #2c3e50;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { height: 100%; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 16px;
-      position: relative;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: 
-        radial-gradient(circle at 15% 15%, rgba(219, 234, 254, 0.55) 0%, transparent 35%),
-        radial-gradient(circle at 85% 85%, rgba(243, 244, 246, 0.75) 0%, transparent 35%);
-      pointer-events: none;
-      z-index: 0;
-    }
-    .container { width: 100%; max-width: 880px; z-index: 1; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    @media (min-width: 520px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 18px; } }
-    @media (min-width: 720px) { .grid { grid-template-columns: repeat(5, 1fr); gap: 20px; } }
-    @media (min-width: 900px) { .grid { grid-template-columns: repeat(6, 1fr); gap: 20px; } }
-    .card {
-      position: relative;
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
-      border-radius: 12px;
-      border: 1px solid var(--glass-border);
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      color: var(--text-main);
-      box-shadow: var(--glass-shadow);
-      transform: none !important;
-      transition: none !important;
-    }
-    .card-img-wrapper {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 8px;
-      margin-bottom: 4px;
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid var(--glass-border);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .card-img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-    .card-title {
-      font-size: 0.78rem; font-weight: 600; text-align: center;
-      width: 100%; white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; padding: 0 2px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="grid">
-${cards.map(c => {
-  const imgSrc = c.croppedImg || c.img || `https://www.google.com/s2/favicons?domain=${c.url}&sz=128`;
-  return `      <a href="${c.url}" target="_blank" rel="noopener noreferrer" class="card">
-        <div class="card-img-wrapper">
-          <img class="card-img" src="${imgSrc}" alt="${c.name}" onerror="this.src='https://via.placeholder.com/150/ffffff/808080?text=Link'">
-        </div>
-        <div class="card-title">${c.name}</div>
-      </a>`;
-}).join('\n')}
-    </div>
-  </div>
-</body>
-</html>`;
-
-      navigator.clipboard.writeText(generatedHtml).then(() => {
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-      });
-    });
-
-    render();
-  </script>
-</body>
-</html>
