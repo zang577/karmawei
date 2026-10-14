@@ -6,7 +6,7 @@
   <title>KARMAWEI_</title>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e2e8f0 100%);
+      --bg-gradient: linear-gradient(135deg, #cbe4fd 0%, #e0f2fe 50%, #f0f9ff 100%);
       --glass-bg: rgba(255, 255, 255, 0.72);
       --glass-border: rgba(255, 255, 255, 0.9);
       --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
@@ -22,6 +22,12 @@
       letter-spacing: 1.2px;
     }
 
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-gradient);
@@ -31,11 +37,28 @@
       flex-direction: column;
       align-items: center;
       padding: 24px 16px;
+      position: relative;
+    }
+
+    /* 藍天白雲柔和漸層背景與雲朵光暈 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 30%),
+        radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
+        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(186, 230, 253, 0.6) 0%, transparent 50%),
+        radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 35%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .container {
       width: 100%;
       max-width: 960px;
+      z-index: 1;
     }
 
     .top-controls {
@@ -49,6 +72,7 @@
       padding: 12px 24px;
       background: var(--glass-bg);
       backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border-radius: 20px;
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
@@ -63,12 +87,16 @@
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      box-shadow: 0 4px 12px rgba(148, 163, 184, 0.1), inset 0 1px 1px rgba(255, 255, 255, 1);
     }
 
     .btn:hover {
       background: #ffffff;
     }
 
+    /* 網格與精巧卡片尺寸 */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -83,6 +111,7 @@
       position: relative;
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-radius: 18px;
       border: 1px solid var(--glass-border);
       padding: 12px 10px;
@@ -90,6 +119,8 @@
       flex-direction: column;
       align-items: center;
       box-shadow: var(--glass-shadow);
+      transform: none !important;
+      transition: none !important;
     }
 
     .card-actions {
@@ -113,6 +144,7 @@
       justify-content: center;
       cursor: pointer;
       font-size: 11px;
+      box-shadow: 0 2px 6px rgba(148, 163, 184, 0.1);
     }
 
     .icon-btn.delete:hover {
@@ -127,6 +159,7 @@
       margin-bottom: 8px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--glass-border);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -146,6 +179,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      padding: 0 2px;
     }
 
     .modal-overlay {
@@ -153,6 +187,7 @@
       inset: 0;
       background: rgba(15, 23, 42, 0.3);
       backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -166,10 +201,13 @@
 
     .modal {
       background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border);
       border-radius: 24px;
       width: 100%;
       max-width: 400px;
       padding: 24px;
+      box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
     }
 
     .form-group {
@@ -189,6 +227,7 @@
       padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(255, 255, 255, 0.85);
       outline: none;
     }
 
@@ -204,7 +243,8 @@
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: white;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--glass-border);
       padding: 10px 24px;
       border-radius: 50px;
       font-size: 0.85rem;
@@ -212,6 +252,7 @@
       box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);
       opacity: 0;
       transition: all 0.3s ease;
+      z-index: 200;
     }
 
     .toast.show {
@@ -267,7 +308,7 @@
     ];
 
     try {
-      const saved = localStorage.getItem('generator_cards_v2');
+      const saved = localStorage.getItem('generator_cards_v4');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -278,7 +319,7 @@
 
     function saveAndRender() {
       try {
-        localStorage.setItem('generator_cards_v2', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v4', JSON.stringify(cards));
       } catch (e) {}
       render();
     }
@@ -306,7 +347,6 @@
         grid.appendChild(el);
       });
 
-      // 綁定卡片內的動態按鈕事件
       document.querySelectorAll('.move-left').forEach(btn => {
         btn.onclick = () => {
           const idx = parseInt(btn.dataset.index);
@@ -367,7 +407,6 @@
       document.getElementById('modalOverlay').classList.remove('active');
     }
 
-    // 綁定頂部按鈕
     document.getElementById('addBtn').onclick = () => openModal();
     document.getElementById('cancelBtn').onclick = () => closeModal();
 
@@ -401,7 +440,7 @@
   <title>KARMAWEI_</title>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e2e8f0 100%);
+      --bg-gradient: linear-gradient(135deg, #cbe4fd 0%, #e0f2fe 50%, #f0f9ff 100%);
       --glass-bg: rgba(255, 255, 255, 0.72);
       --glass-border: rgba(255, 255, 255, 0.9);
       --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
@@ -411,9 +450,19 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-gradient); color: var(--text-main);
-      min-height: 100vh; padding: 24px 16px;
+      min-height: 100vh; padding: 24px 16px; position: relative;
     }
-    .container { max-width: 960px; margin: 0 auto; }
+    body::before {
+      content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 30%),
+        radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
+        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(186, 230, 253, 0.6) 0%, transparent 50%),
+        radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 35%);
+      pointer-events: none; z-index: 0;
+    }
+    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; }
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
     @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
@@ -423,13 +472,15 @@
       border-radius: 18px; border: 1px solid var(--glass-border);
       padding: 12px 10px; display: flex; flex-direction: column; align-items: center;
       text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);
+      transform: none !important; transition: none !important;
     }
     .card-img-wrapper {
       width: 100%; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 8px;
       overflow: hidden; background: rgba(255,255,255,0.8);
+      border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;
     }
     .card-img { width: 100%; height: 100%; object-fit: cover; }
-    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
   </style>
 </head>
 <body>
@@ -451,7 +502,6 @@ ${cards.map(c => `      <a href="${c.url}" target="_blank" class="card">
       });
     };
 
-    // 初始化渲染
     render();
   </script>
 </body>
