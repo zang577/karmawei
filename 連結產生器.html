@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KARMAWEI_</title>
   <style>
     :root {
@@ -22,14 +22,8 @@
       letter-spacing: 1.2px;
     }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow-x: hidden;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-gradient);
       color: var(--text-main);
       min-height: 100vh;
@@ -37,25 +31,11 @@
       flex-direction: column;
       align-items: center;
       padding: 24px 16px;
-      position: relative;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: 
-        radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.7) 0%, transparent 35%),
-        radial-gradient(circle at 85% 80%, rgba(186, 230, 253, 0.4) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.5) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
     }
 
     .container {
       width: 100%;
       max-width: 960px;
-      z-index: 1;
     }
 
     .top-controls {
@@ -68,8 +48,7 @@
       gap: 16px;
       padding: 12px 24px;
       background: var(--glass-bg);
-      backdrop-filter: blur(25px) saturate(180%);
-      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      backdrop-filter: blur(25px);
       border-radius: 20px;
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
@@ -84,16 +63,10 @@
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 12px rgba(148, 163, 184, 0.1), inset 0 1px 1px rgba(255, 255, 255, 1);
     }
 
     .btn:hover {
       background: #ffffff;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(148, 163, 184, 0.18), inset 0 1px 2px rgba(255, 255, 255, 1);
     }
 
     .grid {
@@ -109,8 +82,7 @@
     .card {
       position: relative;
       background: var(--glass-bg);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      backdrop-filter: blur(20px);
       border-radius: 18px;
       border: 1px solid var(--glass-border);
       padding: 12px 10px;
@@ -141,13 +113,11 @@
       justify-content: center;
       cursor: pointer;
       font-size: 11px;
-      box-shadow: 0 2px 6px rgba(148, 163, 184, 0.1);
     }
 
     .icon-btn.delete:hover {
       background: var(--danger);
       color: white;
-      border-color: var(--danger);
     }
 
     .card-img-wrapper {
@@ -157,7 +127,6 @@
       margin-bottom: 8px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.8);
-      border: 1px solid var(--glass-border);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -177,7 +146,6 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 0 2px;
     }
 
     .modal-overlay {
@@ -185,7 +153,6 @@
       inset: 0;
       background: rgba(15, 23, 42, 0.3);
       backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -199,18 +166,10 @@
 
     .modal {
       background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(30px);
-      border: 1px solid var(--glass-border);
       border-radius: 24px;
       width: 100%;
       max-width: 400px;
       padding: 24px;
-      box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
-    }
-
-    .modal h2 {
-      margin-bottom: 16px;
-      font-size: 1.1rem;
     }
 
     .form-group {
@@ -230,9 +189,7 @@
       padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid rgba(148, 163, 184, 0.2);
-      background: rgba(255, 255, 255, 0.85);
       outline: none;
-      font-size: 0.9rem;
     }
 
     .modal-actions {
@@ -247,9 +204,7 @@
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--text-main);
-      border: 1px solid var(--glass-border);
+      background: white;
       padding: 10px 24px;
       border-radius: 50px;
       font-size: 0.85rem;
@@ -257,7 +212,6 @@
       box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);
       opacity: 0;
       transition: all 0.3s ease;
-      z-index: 200;
     }
 
     .toast.show {
@@ -271,8 +225,8 @@
   <div class="container">
     <div class="top-controls">
       <div class="controls-box">
-        <button class="btn" onclick="openModal()">新增連結</button>
-        <button class="btn" onclick="copyCode()">複製代碼</button>
+        <button class="btn" id="addBtn">新增連結</button>
+        <button class="btn" id="copyCodeBtn">複製代碼</button>
       </div>
     </div>
 
@@ -281,8 +235,8 @@
 
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-      <h2 id="modalTitle">新增連結</h2>
-      <form id="cardForm" onsubmit="saveCard(event)">
+      <h2 id="modalTitle" style="margin-bottom:16px;font-size:1.1rem;">新增連結</h2>
+      <form id="cardForm">
         <input type="hidden" id="cardId">
         <div class="form-group">
           <label>名稱</label>
@@ -297,7 +251,7 @@
           <input type="url" id="inputImg" placeholder="請輸入圖片網址" required />
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn" onclick="closeModal()">取消</button>
+          <button type="button" class="btn" id="cancelBtn">取消</button>
           <button type="submit" class="btn">儲存</button>
         </div>
       </form>
@@ -307,34 +261,42 @@
   <div class="toast" id="toast">複製成功</div>
 
   <script>
-    let cards = [];
-    try {
-      const saved = localStorage.getItem('generator_cards');
-      cards = saved ? JSON.parse(saved) : null;
-    } catch (err) {
-      cards = null;
-    }
+    let cards = [
+      { id: '1', name: 'Google', url: 'https://www.google.com', img: 'https://www.google.com/favicon.ico' },
+      { id: '2', name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.png' }
+    ];
 
-    if (!cards || !Array.isArray(cards) || cards.length === 0) {
-      cards = [
-        { id: '1', name: 'Google', url: 'https://www.google.com', img: 'https://www.google.com/favicon.ico' },
-        { id: '2', name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.png' }
-      ];
+    try {
+      const saved = localStorage.getItem('generator_cards_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          cards = parsed;
+        }
+      }
+    } catch (e) {}
+
+    function saveAndRender() {
+      try {
+        localStorage.setItem('generator_cards_v2', JSON.stringify(cards));
+      } catch (e) {}
+      render();
     }
 
     function render() {
       const grid = document.getElementById('cardGrid');
       if (!grid) return;
       grid.innerHTML = '';
+      
       cards.forEach((card, index) => {
         const el = document.createElement('div');
         el.className = 'card';
         el.innerHTML = `
           <div class="card-actions">
-            ${index > 0 ? `<button class="icon-btn" onclick="moveCard(${index}, -1)">◄</button>` : ''}
-            ${index < cards.length - 1 ? `<button class="icon-btn" onclick="moveCard(${index}, 1)">►</button>` : ''}
-            <button class="icon-btn" onclick="editCard('${card.id}')">✎</button>
-            <button class="icon-btn delete" onclick="deleteCard('${card.id}')">✕</button>
+            ${index > 0 ? `<button type="button" class="icon-btn move-left" data-index="${index}">◄</button>` : ''}
+            ${index < cards.length - 1 ? `<button type="button" class="icon-btn move-right" data-index="${index}">►</button>` : ''}
+            <button type="button" class="icon-btn edit-btn" data-id="${card.id}">✎</button>
+            <button type="button" class="icon-btn delete delete-btn" data-id="${card.id}">✕</button>
           </div>
           <div class="card-img-wrapper">
             <img class="card-img" src="${card.img}" alt="${card.name}">
@@ -343,28 +305,51 @@
         `;
         grid.appendChild(el);
       });
-      try {
-        localStorage.setItem('generator_cards', JSON.stringify(cards));
-      } catch (e) {}
+
+      // 綁定卡片內的動態按鈕事件
+      document.querySelectorAll('.move-left').forEach(btn => {
+        btn.onclick = () => {
+          const idx = parseInt(btn.dataset.index);
+          if (idx > 0) {
+            const temp = cards[idx];
+            cards[idx] = cards[idx - 1];
+            cards[idx - 1] = temp;
+            saveAndRender();
+          }
+        };
+      });
+
+      document.querySelectorAll('.move-right').forEach(btn => {
+        btn.onclick = () => {
+          const idx = parseInt(btn.dataset.index);
+          if (idx < cards.length - 1) {
+            const temp = cards[idx];
+            cards[idx] = cards[idx + 1];
+            cards[idx + 1] = temp;
+            saveAndRender();
+          }
+        };
+      });
+
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const card = cards.find(c => c.id === id);
+          if (card) openModal(card);
+        };
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          cards = cards.filter(c => c.id !== id);
+          saveAndRender();
+        };
+      });
     }
 
-    window.moveCard = function(index, direction) {
-      const target = index + direction;
-      if (target < 0 || target >= cards.length) return;
-      const temp = cards[index];
-      cards[index] = cards[target];
-      cards[target] = temp;
-      render();
-    };
-
-    window.deleteCard = function(id) {
-      cards = cards.filter(c => c.id !== id);
-      render();
-    };
-
-    window.openModal = function(card = null) {
-      const overlay = document.getElementById('modalOverlay');
-      if (overlay) overlay.classList.add('active');
+    function openModal(card = null) {
+      document.getElementById('modalOverlay').classList.add('active');
       if (card) {
         document.getElementById('modalTitle').textContent = '編輯連結';
         document.getElementById('cardId').value = card.id;
@@ -373,23 +358,20 @@
         document.getElementById('inputImg').value = card.img;
       } else {
         document.getElementById('modalTitle').textContent = '新增連結';
-        const form = document.getElementById('cardForm');
-        if (form) form.reset();
+        document.getElementById('cardForm').reset();
         document.getElementById('cardId').value = '';
       }
-    };
+    }
 
-    window.closeModal = function() {
-      const overlay = document.getElementById('modalOverlay');
-      if (overlay) overlay.classList.remove('active');
-    };
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
 
-    window.editCard = function(id) {
-      const card = cards.find(c => c.id === id);
-      if (card) openModal(card);
-    };
+    // 綁定頂部按鈕
+    document.getElementById('addBtn').onclick = () => openModal();
+    document.getElementById('cancelBtn').onclick = () => closeModal();
 
-    window.saveCard = function(e) {
+    document.getElementById('cardForm').onsubmit = (e) => {
       e.preventDefault();
       const id = document.getElementById('cardId').value;
       const name = document.getElementById('inputName').value;
@@ -406,11 +388,11 @@
       } else {
         cards.push({ id: Date.now().toString(), name, url, img });
       }
-      render();
+      saveAndRender();
       closeModal();
     };
 
-    window.copyCode = function() {
+    document.getElementById('copyCodeBtn').onclick = () => {
       const html = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -447,4 +429,30 @@
       overflow: hidden; background: rgba(255,255,255,0.8);
     }
     .card-img { width: 100%; height: 100%; object-fit: cover; }
-    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden;
+    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="grid">
+${cards.map(c => `      <a href="${c.url}" target="_blank" class="card">
+        <div class="card-img-wrapper"><img class="card-img" src="${c.img}" alt="${c.name}"></div>
+        <div class="card-title">${c.name}</div>
+      </a>`).join('\n')}
+    </div>
+  </div>
+</body>
+</html>`;
+
+      navigator.clipboard.writeText(html).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      });
+    };
+
+    // 初始化渲染
+    render();
+  </script>
+</body>
+</html>
