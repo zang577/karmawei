@@ -2,13 +2,16 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>KARMAWEI_</title>
+  <!-- Cropper.js CSS (裁切工具) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
   <style>
     :root {
-      --glass-bg: rgba(255, 255, 255, 0.75);
-      --glass-border: rgba(255, 255, 255, 0.95);
-      --glass-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      --bg-gradient: linear-gradient(135deg, #cbe4fd 0%, #e0f2fe 50%, #f0f9ff 100%);
+      --glass-bg: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
       --text-main: #334155;
       --text-sub: #64748b;
       --danger: #ef4444;
@@ -23,26 +26,35 @@
 
     html, body {
       width: 100%;
-      min-height: 100vh;
+      height: 100%;
       overflow-x: hidden;
     }
 
-    /* 真正擁有雲朵與藍天的背景 */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: 
-        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
-        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
-        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
-        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
-      background-attachment: fixed;
-      background-size: cover;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-gradient);
       color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 24px 16px;
+      position: relative;
+    }
+
+    /* 藍天白雲柔和漸層背景與雲朵光暈 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.95) 0%, transparent 30%),
+        radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
+        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(186, 230, 253, 0.6) 0%, transparent 50%),
+        radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 35%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .container {
@@ -59,439 +71,18 @@
     .controls-box {
       display: inline-flex;
       gap: 16px;
-      padding: 10px 20px;
+      padding: 12px 24px;
       background: var(--glass-bg);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-radius: 18px;
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow);
-    }
-
-    .btn {
-      padding: 6px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.95);
-      background: rgba(255, 255, 255, 0.85);
-      color: var(--text-main);
-      border-radius: 12px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-    }
-
-    .btn:hover {
-      background: #ffffff;
-    }
-
-    /* 真正變小的精巧卡片網格 */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      max-width: 500px;
-      margin: 0 auto;
-      justify-items: center;
-    }
-
-    @media (min-width: 480px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }
-
-    .card {
-      position: relative;
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 12px;
-      border: 1px solid var(--glass-border);
-      padding: 6px 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: var(--glass-shadow);
-      width: 100%;
-      max-width: 95px; /* 強制超小寬度 */
-      transform: none !important;
-      transition: none !important;
-    }
-
-    .card-actions {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      display: flex;
-      gap: 1px;
-      z-index: 2;
-    }
-
-    .icon-btn {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.95);
-      background: rgba(255, 255, 255, 0.9);
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 8px;
-    }
-
-    .icon-btn.delete:hover {
-      background: var(--danger);
-      color: white;
-    }
-
-    .card-img-wrapper {
-      width: 48px; /* 極小精緻圖片區塊 */
-      height: 48px;
-      border-radius: 8px;
-      margin-bottom: 4px;
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card-title {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-align: center;
-      width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 2px;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.3);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 16px;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(30px);
-      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
       border-radius: 20px;
-      width: 100%;
-      max-width: 360px;
-      padding: 20px;
-      box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: var(--text-sub);
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      background: rgba(255, 255, 255, 0.85);
-      outline: none;
-      font-size: 0.85rem;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(255, 255, 255, 0.95);
       border: 1px solid var(--glass-border);
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 200;
+      box-shadow: var(--glass-shadow);
     }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <div class="top-controls">
-      <div class="controls-box">
-        <button class="btn" id="addBtn">新增連結</button>
-        <button class="btn" id="copyCodeBtn">複製代碼</button>
-      </div>
-    </div>
-
-    <div class="grid" id="cardGrid"></div>
-  </div>
-
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2 id="modalTitle" style="margin-bottom:14px;font-size:1rem;">新增連結</h2>
-      <form id="cardForm">
-        <input type="hidden" id="cardId">
-        <div class="form-group">
-          <label>名稱</label>
-          <input type="text" id="inputName" required />
-        </div>
-        <div class="form-group">
-          <label>網址</label>
-          <input type="url" id="inputUrl" required />
-        </div>
-        <div class="form-group">
-          <label>圖片網址</label>
-          <input type="url" id="inputImg" placeholder="請輸入圖片網址" required />
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn" id="cancelBtn">取消</button>
-          <button type="submit" class="btn">儲存</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="toast" id="toast">複製成功</div>
-
-  <script>
-    let cards = [
-      { id: '1', name: 'Google', url: 'https://www.google.com', img: 'https://www.google.com/favicon.ico' },
-      { id: '2', name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.png' }
-    ];
-
-    try {
-      const saved = localStorage.getItem('generator_cards_v7');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          cards = parsed;
-        }
-      }
-    } catch (e) {}
-
-    function saveAndRender() {
-      try {
-        localStorage.setItem('generator_cards_v7', JSON.stringify(cards));
-      } catch (e) {}
-      render();
-    }
-
-    function render() {
-      const grid = document.getElementById('cardGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-      
-      cards.forEach((card, index) => {
-        const el = document.createElement('div');
-        el.className = 'card';
-        el.innerHTML = `
-          <div class="card-actions">
-            ${index > 0 ? `<button type="button" class="icon-btn move-left" data-index="${index}">◄</button>` : ''}
-            ${index < cards.length - 1 ? `<button type="button" class="icon-btn move-right" data-index="${index}">►</button>` : ''}
-            <button type="button" class="icon-btn edit-btn" data-id="${card.id}">✎</button>
-            <button type="button" class="icon-btn delete delete-btn" data-id="${card.id}">✕</button>
-          </div>
-          <div class="card-img-wrapper">
-            <img class="card-img" src="${card.img}" alt="${card.name}">
-          </div>
-          <div class="card-title">${card.name}</div>
-        `;
-        grid.appendChild(el);
-      });
-
-      document.querySelectorAll('.move-left').forEach(btn => {
-        btn.onclick = () => {
-          const idx = parseInt(btn.dataset.index);
-          if (idx > 0) {
-            const temp = cards[idx];
-            cards[idx] = cards[idx - 1];
-            cards[idx - 1] = temp;
-            saveAndRender();
-          }
-        };
-      });
-
-      document.querySelectorAll('.move-right').forEach(btn => {
-        btn.onclick = () => {
-          const idx = parseInt(btn.dataset.index);
-          if (idx < cards.length - 1) {
-            const temp = cards[idx];
-            cards[idx] = cards[idx + 1];
-            cards[idx + 1] = temp;
-            saveAndRender();
-          }
-        };
-      });
-
-      document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.dataset.id;
-          const card = cards.find(c => c.id === id);
-          if (card) openModal(card);
-        };
-      });
-
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.dataset.id;
-          cards = cards.filter(c => c.id !== id);
-          saveAndRender();
-        };
-      });
-    }
-
-    function openModal(card = null) {
-      document.getElementById('modalOverlay').classList.add('active');
-      if (card) {
-        document.getElementById('modalTitle').textContent = '編輯連結';
-        document.getElementById('cardId').value = card.id;
-        document.getElementById('inputName').value = card.name;
-        document.getElementById('inputUrl').value = card.url;
-        document.getElementById('inputImg').value = card.img;
-      } else {
-        document.getElementById('modalTitle').textContent = '新增連結';
-        document.getElementById('cardForm').reset();
-        document.getElementById('cardId').value = '';
-      }
-    }
-
-    function closeModal() {
-      document.getElementById('modalOverlay').classList.remove('active');
-    }
-
-    document.getElementById('addBtn').onclick = () => openModal();
-    document.getElementById('cancelBtn').onclick = () => closeModal();
-
-    document.getElementById('cardForm').onsubmit = (e) => {
-      e.preventDefault();
-      const id = document.getElementById('cardId').value;
-      const name = document.getElementById('inputName').value;
-      const url = document.getElementById('inputUrl').value;
-      const img = document.getElementById('inputImg').value;
-
-      if (id) {
-        const card = cards.find(c => c.id === id);
-        if (card) {
-          card.name = name;
-          card.url = url;
-          card.img = img;
-        }
-      } else {
-        cards.push({ id: Date.now().toString(), name, url, img });
-      }
-      saveAndRender();
-      closeModal();
-    };
-
-    document.getElementById('copyCodeBtn').onclick = () => {
-      const html = `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KARMAWEI_</title>
-  <style>
-    :root {
-      --glass-bg: rgba(255, 255, 255, 0.75);
-      --glass-border: rgba(255, 255, 255, 0.95);
-      --glass-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
-      --text-main: #334155;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }
-    html, body { width: 100%; min-height: 100vh; overflow-x: hidden; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: 
-        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
-        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
-        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
-        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
-      background-attachment: fixed; background-size: cover; color: var(--text-main);
-      display: flex; flex-direction: column; align-items: center; padding: 24px 16px;
-    }
-    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 500px; margin: 0 auto; justify-items: center; }
-    @media (min-width: 480px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }
-    .card {
-      background: var(--glass-bg); backdrop-filter: blur(20px);
-      border-radius: 12px; border: 1px solid var(--glass-border);
-      padding: 6px 4px; display: flex; flex-direction: column; align-items: center;
-      text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);
-      width: 100%; max-width: 95px;
-      transform: none !important; transition: none !important;
-    }
-    .card-img-wrapper {
-      width: 48px; height: 48px; border-radius: 8px; margin-bottom: 4px;
-      overflow: hidden; background: rgba(255,255,255,0.8);
-      border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;
-    }
-    .card-img { width: 100%; height: 100%; object-fit: cover; }
-    .card-title { font-size: 0.7rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="grid">
-${cards.map(c => `      <a href="${c.url}" target="_blank" class="card">
-        <div class="card-img-wrapper"><img class="card-img" src="${c.img}" alt="${c.name}"></div>
-        <div class="card-title">${c.name}</div>
-      </a>`).join('\n')}
-    </div>
-  </div>
-</body>
-</html>`;
-
-      navigator.clipboard.writeText(html).then(() => {
-        const toast = document.getElementById('toast');
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
-      });
-    };
-
-    render();
-  </script>
-</body>
-</html>
+    /* 3D 擬物風格按鈕 */
+    .btn {
+      padding: 8px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text-main);
