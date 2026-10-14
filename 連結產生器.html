@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>KARMAWEI_</title>
-  <!-- Cropper.js CSS (裁切工具) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e2e8f0 100%);
@@ -42,7 +40,6 @@
       position: relative;
     }
 
-    /* 3D 擬物風格低調藍天白雲背景質感 */
     body::before {
       content: '';
       position: fixed;
@@ -59,16 +56,16 @@
       width: 100%;
       max-width: 960px;
       z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
 
-    header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .top-controls {
+      text-align: center;
       margin-bottom: 24px;
+    }
+
+    .controls-box {
+      display: inline-flex;
+      gap: 16px;
       padding: 12px 24px;
       background: var(--glass-bg);
       backdrop-filter: blur(25px) saturate(180%);
@@ -76,19 +73,8 @@
       border-radius: 20px;
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
-      width: fit-content;
-      margin-left: auto;
-      margin-right: auto;
     }
 
-    .controls {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* 全白液態玻璃 3D 擬物風格按鈕 */
     .btn {
       padding: 8px 22px;
       border: 1px solid rgba(255, 255, 255, 0.95);
@@ -102,10 +88,6 @@
       -webkit-backdrop-filter: blur(15px);
       transition: all 0.25s ease;
       box-shadow: 0 4px 12px rgba(148, 163, 184, 0.1), inset 0 1px 1px rgba(255, 255, 255, 1);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
     }
 
     .btn:hover {
@@ -114,19 +96,7 @@
       box-shadow: 0 6px 16px rgba(148, 163, 184, 0.18), inset 0 1px 2px rgba(255, 255, 255, 1);
     }
 
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .btn-sm {
-      padding: 5px 10px;
-      font-size: 0.78rem;
-      border-radius: 10px;
-    }
-
-    /* 卡片網格與間距 */
     .grid {
-      width: 100%;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
@@ -148,8 +118,6 @@
       flex-direction: column;
       align-items: center;
       box-shadow: var(--glass-shadow);
-      transform: none !important;
-      transition: none !important;
     }
 
     .card-actions {
@@ -174,12 +142,6 @@
       cursor: pointer;
       font-size: 10px;
       box-shadow: 0 2px 6px rgba(148, 163, 184, 0.1);
-      transition: all 0.2s;
-    }
-
-    .icon-btn:hover {
-      background: #ffffff;
-      transform: scale(1.1);
     }
 
     .icon-btn.delete:hover {
@@ -205,8 +167,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
-      display: block;
     }
 
     .card-title {
@@ -220,40 +180,32 @@
       padding: 0 2px;
     }
 
-    /* Modal 視窗 */
     .modal-overlay {
       position: fixed;
       inset: 0;
       background: rgba(15, 23, 42, 0.3);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
       padding: 16px;
     }
 
     .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
+      display: flex;
     }
 
     .modal {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(30px) saturate(200%);
-      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(30px);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
       width: 100%;
       max-width: 400px;
       padding: 24px;
       box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
-      max-height: 90vh;
-      overflow-y: auto;
     }
 
     .modal h2 {
@@ -273,10 +225,257 @@
       color: var(--text-sub);
     }
 
-    .form-group input[type="text"],
-    .form-group input[type="url"] {
+    .form-group input {
       width: 100%;
       padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid rgba(148, 163, 184, 0.2);
-      background: rgba(255, 255,
+      background: rgba(255, 255, 255, 0.85);
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text-main);
+      border: 1px solid var(--glass-border);
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-controls">
+      <div class="controls-box">
+        <button class="btn" onclick="openModal()">新增連結</button>
+        <button class="btn" onclick="copyCode()">複製代碼</button>
+      </div>
+    </div>
+
+    <div class="grid" id="cardGrid"></div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2 id="modalTitle">新增連結</h2>
+      <form id="cardForm" onsubmit="saveCard(event)">
+        <input type="hidden" id="cardId">
+        <div class="form-group">
+          <label>名稱</label>
+          <input type="text" id="inputName" required />
+        </div>
+        <div class="form-group">
+          <label>網址</label>
+          <input type="url" id="inputUrl" required />
+        </div>
+        <div class="form-group">
+          <label>圖片網址</label>
+          <input type="url" id="inputImg" placeholder="請輸入圖片網址" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeModal()">取消</button>
+          <button type="submit" class="btn">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">複製成功</div>
+
+  <script>
+    // 嚴格隔離的防呆儲存讀取機制
+    let cards = [];
+    try {
+      const saved = localStorage.getItem('generator_cards');
+      cards = saved ? JSON.parse(saved) : null;
+    } catch (err) {
+      cards = null;
+    }
+
+    if (!cards || !Array.isArray(cards) || cards.length === 0) {
+      cards = [
+        { id: '1', name: 'Google', url: 'https://www.google.com', img: 'https://www.google.com/favicon.ico' },
+        { id: '2', name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.png' }
+      ];
+    }
+
+    function render() {
+      const grid = document.getElementById('cardGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      cards.forEach((card, index) => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `
+          <div class="card-actions">
+            ${index > 0 ? `<button class="icon-btn" onclick="moveCard(${index}, -1)">◄</button>` : ''}
+            ${index < cards.length - 1 ? `<button class="icon-btn" onclick="moveCard(${index}, 1)">►</button>` : ''}
+            <button class="icon-btn" onclick="editCard('${card.id}')">✏️</button>
+            <button class="icon-btn delete" onclick="deleteCard('${card.id}')">✕</button>
+          </div>
+          <div class="card-img-wrapper">
+            <img class="card-img" src="${card.img}" alt="${card.name}">
+          </div>
+          <div class="card-title">${card.name}</div>
+        `;
+        grid.appendChild(el);
+      });
+      try {
+        localStorage.setItem('generator_cards', JSON.stringify(cards));
+      } catch (e) {}
+    }
+
+    function moveCard(index, direction) {
+      const target = index + direction;
+      if (target < 0 || target >= cards.length) return;
+      const temp = cards[index];
+      cards[index] = cards[target];
+      cards[target] = temp;
+      render();
+    }
+
+    function deleteCard(id) {
+      cards = cards.filter(c => c.id !== id);
+      render();
+    }
+
+    function openModal(card = null) {
+      const overlay = document.getElementById('modalOverlay');
+      if (overlay) overlay.classList.add('active');
+      if (card) {
+        document.getElementById('modalTitle').textContent = '編輯連結';
+        document.getElementById('cardId').value = card.id;
+        document.getElementById('inputName').value = card.name;
+        document.getElementById('inputUrl').value = card.url;
+        document.getElementById('inputImg').value = card.img;
+      } else {
+        document.getElementById('modalTitle').textContent = '新增連結';
+        const form = document.getElementById('cardForm');
+        if (form) form.reset();
+        document.getElementById('cardId').value = '';
+      }
+    }
+
+    function closeModal() {
+      const overlay = document.getElementById('modalOverlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    function editCard(id) {
+      const card = cards.find(c => c.id === id);
+      if (card) openModal(card);
+    }
+
+    function saveCard(e) {
+      e.preventDefault();
+      const id = document.getElementById('cardId').value;
+      const name = document.getElementById('inputName').value;
+      const url = document.getElementById('inputUrl').value;
+      const img = document.getElementById('inputImg').value;
+
+      if (id) {
+        const card = cards.find(c => c.id === id);
+        if (card) {
+          card.name = name;
+          card.url = url;
+          card.img = img;
+        }
+      } else {
+        cards.push({ id: Date.now().toString(), name, url, img });
+      }
+      render();
+      closeModal();
+    }
+
+    function copyCode() {
+      const html = `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KARMAWEI_</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e2e8f0 100%);
+      --glass-bg: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      --text-main: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient); color: var(--text-main);
+      min-height: 100vh; padding: 24px 16px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); } }
+    .card {
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border-radius: 18px; border: 1px solid var(--glass-border);
+      padding: 12px 10px; display: flex; flex-direction: column; align-items: center;
+      text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);
+    }
+    .card-img-wrapper {
+      width: 100%; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 8px;
+      overflow: hidden; background: rgba(255,255,255,0.8);
+    }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="grid">
+${cards.map(c => `      <a href="${c.url}" target="_blank" class="card">
+        <div class="card-img-wrapper"><img class="card-img" src="${c.img}" alt="${c.name}"></div>
+        <div class="card-title">${c.name}</div>
+      </a>`).join('\n')}
+    </div>
+  </div>
+</body>
+</html>`;
+
+      navigator.clipboard.writeText(html).then(() => {
+        const toast = document.getElementById('toast');
+        if (toast) {
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+      });
+    }
+
+    // 確保頁面載入完成後執行渲染
+    window.addEventListener('DOMContentLoaded', () => {
+      render();
+    });
+  </script>
+</body>
+</html>
