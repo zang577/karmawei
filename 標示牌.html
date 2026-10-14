@@ -563,16 +563,16 @@ function makeDefaultBg() {
     g.beginPath(); g.ellipse(362, 762, 28, 15, 0, 0, Math.PI * 2); g.fill();
     g.beginPath(); g.ellipse(470, 762, 28, 15, 0, 0, Math.PI * 2); g.fill();
 
-    // 右側小盆栽，增添清新感
+    // 左側小盆栽，增添清新感（避開右側標示牌放置區）
     g.fillStyle = '#ddc9a8';
     g.beginPath();
-    g.moveTo(918, 698); g.lineTo(1018, 698); g.lineTo(1004, 778); g.lineTo(934, 778);
+    g.moveTo(90, 712); g.lineTo(190, 712); g.lineTo(176, 790); g.lineTo(106, 790);
     g.closePath();
     g.fill();
     g.fillStyle = 'rgba(120,90,50,0.08)';
-    g.beginPath(); g.ellipse(968, 782, 56, 8, 0, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(140, 794, 56, 8, 0, 0, Math.PI * 2); g.fill();
     const leafColor = '#9bc79e';
-    [[968, 636, 20, 62, 0], [942, 658, 16, 48, -0.55], [996, 658, 16, 48, 0.55]].forEach(l => {
+    [[140, 650, 20, 62, 0], [114, 672, 16, 48, -0.55], [168, 672, 16, 48, 0.55]].forEach(l => {
         g.fillStyle = leafColor;
         g.beginPath();
         g.ellipse(l[0], l[1], l[2], l[3], l[4], 0, Math.PI * 2);
@@ -863,7 +863,7 @@ async function downloadFinal() {
     }
     lastBlob = blob;
 
-    const file = new File([blob], '門市照片_標示牌.png', { type: 'image/png' });
+    const file = new File([blob], '標示牌.png', { type: 'image/png' });
 
     // 方法一：手機系統分享選單（iOS 選「儲存影像」、Android 可存到相簿/檔案）
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -886,7 +886,7 @@ function directDownload() {
     if (!lastUrl) return;
     const a = document.createElement('a');
     a.href = lastUrl;
-    a.download = '門市照片_標示牌.png';
+    a.download = '標示牌.png';
     document.body.appendChild(a);
     a.click();
     a.remove();
