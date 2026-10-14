@@ -24,15 +24,16 @@
 
     html, body {
       width: 100%;
-      height: 100%;
+      min-height: 100vh;
       overflow-x: hidden;
     }
 
+    /* 修正背景斷層：改用無縫全螢幕固定漸層與雲朵 */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-gradient);
+      background-attachment: fixed;
       color: var(--text-main);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -40,11 +41,10 @@
       position: relative;
     }
 
-    /* 藍天白雲柔和漸層背景與雲朵光暈 */
     body::before {
       content: '';
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: 
         radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 30%),
         radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
@@ -96,11 +96,13 @@
       background: #ffffff;
     }
 
-    /* 網格與精巧卡片尺寸 */
+    /* 網格與更精巧、更小的卡片尺寸 */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      gap: 14px;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
     @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
@@ -112,9 +114,9 @@
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 18px;
+      border-radius: 16px;
       border: 1px solid var(--glass-border);
-      padding: 12px 10px;
+      padding: 10px 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -125,16 +127,16 @@
 
     .card-actions {
       position: absolute;
-      top: 6px;
-      right: 6px;
+      top: 5px;
+      right: 5px;
       display: flex;
-      gap: 3px;
+      gap: 2px;
       z-index: 2;
     }
 
     .icon-btn {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       border: 1px solid rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.9);
@@ -143,7 +145,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 11px;
+      font-size: 10px;
       box-shadow: 0 2px 6px rgba(148, 163, 184, 0.1);
     }
 
@@ -155,8 +157,8 @@
     .card-img-wrapper {
       width: 100%;
       aspect-ratio: 1 / 1;
-      border-radius: 12px;
-      margin-bottom: 8px;
+      border-radius: 10px;
+      margin-bottom: 6px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--glass-border);
@@ -172,7 +174,7 @@
     }
 
     .card-title {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
       text-align: center;
       width: 100%;
@@ -308,7 +310,7 @@
     ];
 
     try {
-      const saved = localStorage.getItem('generator_cards_v4');
+      const saved = localStorage.getItem('generator_cards_v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -319,7 +321,7 @@
 
     function saveAndRender() {
       try {
-        localStorage.setItem('generator_cards_v4', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v5', JSON.stringify(cards));
       } catch (e) {}
       render();
     }
@@ -447,13 +449,14 @@
       --text-main: #334155;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }
+    html, body { width: 100%; min-height: 100vh; overflow-x: hidden; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-gradient); color: var(--text-main);
-      min-height: 100vh; padding: 24px 16px; position: relative;
+      background: var(--bg-gradient); background-attachment: fixed; color: var(--text-main);
+      display: flex; flex-direction: column; align-items: center; padding: 24px 16px; position: relative;
     }
     body::before {
-      content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      content: ''; position: fixed; inset: 0;
       background: 
         radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 30%),
         radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
@@ -462,25 +465,25 @@
         radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 35%);
       pointer-events: none; z-index: 0;
     }
-    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 800px; margin: 0 auto; }
     @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
     @media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); } }
     .card {
       background: var(--glass-bg); backdrop-filter: blur(20px);
-      border-radius: 18px; border: 1px solid var(--glass-border);
-      padding: 12px 10px; display: flex; flex-direction: column; align-items: center;
+      border-radius: 16px; border: 1px solid var(--glass-border);
+      padding: 10px 8px; display: flex; flex-direction: column; align-items: center;
       text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);
       transform: none !important; transition: none !important;
     }
     .card-img-wrapper {
-      width: 100%; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 8px;
+      width: 100%; aspect-ratio: 1/1; border-radius: 10px; margin-bottom: 6px;
       overflow: hidden; background: rgba(255,255,255,0.8);
       border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;
     }
     .card-img { width: 100%; height: 100%; object-fit: cover; }
-    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
+    .card-title { font-size: 0.78rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
   </style>
 </head>
 <body>
