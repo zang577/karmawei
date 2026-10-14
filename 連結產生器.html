@@ -2,10 +2,11 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>KARMAWEI_</title>
   <style>
     :root {
+      --bg-gradient: linear-gradient(135deg, #cbe4fd 0%, #e0f2fe 50%, #f0f9ff 100%);
       --glass-bg: rgba(255, 255, 255, 0.75);
       --glass-border: rgba(255, 255, 255, 0.95);
       --glass-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
@@ -27,15 +28,10 @@
       overflow-x: hidden;
     }
 
-    /* 真正擁有雲朵與藍天的背景 */
+    /* 確保藍天白雲背景無縫覆蓋 */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: 
-        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
-        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
-        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
-        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
+      background: var(--bg-gradient);
       background-attachment: fixed;
       background-size: cover;
       color: var(--text-main);
@@ -43,6 +39,21 @@
       flex-direction: column;
       align-items: center;
       padding: 24px 16px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
+        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
+        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .container {
@@ -85,7 +96,7 @@
       background: #ffffff;
     }
 
-    /* 真正變小的精巧卡片網格 */
+    /* 極致小巧卡片網格 */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -111,9 +122,7 @@
       align-items: center;
       box-shadow: var(--glass-shadow);
       width: 100%;
-      max-width: 95px; /* 強制超小寬度 */
-      transform: none !important;
-      transition: none !important;
+      max-width: 95px;
     }
 
     .card-actions {
@@ -145,7 +154,7 @@
     }
 
     .card-img-wrapper {
-      width: 48px; /* 極小精緻圖片區塊 */
+      width: 48px;
       height: 48px;
       border-radius: 8px;
       margin-bottom: 4px;
@@ -295,123 +304,131 @@
   <div class="toast" id="toast">複製成功</div>
 
   <script>
-    let cards = [
+    // 預設的範例資料（兜底方案）
+    var defaultCards = [
       { id: '1', name: 'Google', url: 'https://www.google.com', img: 'https://www.google.com/favicon.ico' },
       { id: '2', name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.png' }
     ];
 
-    try {
-      const saved = localStorage.getItem('generator_cards_v7');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          cards = parsed;
-        }
-      }
-    } catch (e) {}
+    var cards = [];
 
-    function saveAndRender() {
+    // 極致防呆的資料載入機制：確保資料絕對可用
+    function loadData() {
       try {
-        localStorage.setItem('generator_cards_v7', JSON.stringify(cards));
-      } catch (e) {}
-      render();
+        var saved = localStorage.getItem('generator_cards_final');
+        if (saved) {
+          var parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        // 即使 localStorage 損壞或被封鎖，也忽略錯誤
+      }
+      // 如果讀取失敗或資料為空，則使用預設資料
+      return defaultCards;
     }
 
     function render() {
-      const grid = document.getElementById('cardGrid');
+      // 確保 DOM 元素存在，防止拋錯
+      var grid = document.getElementById('cardGrid');
       if (!grid) return;
       grid.innerHTML = '';
       
-      cards.forEach((card, index) => {
-        const el = document.createElement('div');
+      // 確保 cards 是陣列
+      if (!Array.isArray(cards)) {
+        cards = defaultCards;
+      }
+
+      cards.forEach(function(card, index) {
+        var el = document.createElement('div');
         el.className = 'card';
-        el.innerHTML = `
-          <div class="card-actions">
-            ${index > 0 ? `<button type="button" class="icon-btn move-left" data-index="${index}">◄</button>` : ''}
-            ${index < cards.length - 1 ? `<button type="button" class="icon-btn move-right" data-index="${index}">►</button>` : ''}
-            <button type="button" class="icon-btn edit-btn" data-id="${card.id}">✎</button>
-            <button type="button" class="icon-btn delete delete-btn" data-id="${card.id}">✕</button>
-          </div>
-          <div class="card-img-wrapper">
-            <img class="card-img" src="${card.img}" alt="${card.name}">
-          </div>
-          <div class="card-title">${card.name}</div>
-        `;
+        // 使用原生 onclick，省去脆弱的事件繫結邏輯
+        el.innerHTML = [
+          '<div class="card-actions">',
+            index > 0 ? '<button type="button" class="icon-btn" onclick="moveCard(' + index + ', -1)">◄</button>' : '',
+            index < cards.length - 1 ? '<button type="button" class="icon-btn" onclick="moveCard(' + index + ', 1)">►</button>' : '',
+            '<button type="button" class="icon-btn" onclick="editCard(\'' + card.id + '\')">✎</button>',
+            '<button type="button" class="icon-btn delete" onclick="deleteCard(\'' + card.id + '\')">✕</button>',
+          '</div>',
+          '<div class="card-img-wrapper">',
+            '<img class="card-img" src="' + card.img + '" alt="' + card.name + '" onerror="this.src=\'https://via.placeholder.com/48/ffffff/000000?text=Error\'">',
+          '</div>',
+          '<div class="card-title">' + card.name + '</div>'
+        ].join('');
         grid.appendChild(el);
       });
 
-      document.querySelectorAll('.move-left').forEach(btn => {
-        btn.onclick = () => {
-          const idx = parseInt(btn.dataset.index);
-          if (idx > 0) {
-            const temp = cards[idx];
-            cards[idx] = cards[idx - 1];
-            cards[idx - 1] = temp;
-            saveAndRender();
-          }
-        };
-      });
-
-      document.querySelectorAll('.move-right').forEach(btn => {
-        btn.onclick = () => {
-          const idx = parseInt(btn.dataset.index);
-          if (idx < cards.length - 1) {
-            const temp = cards[idx];
-            cards[idx] = cards[idx + 1];
-            cards[idx + 1] = temp;
-            saveAndRender();
-          }
-        };
-      });
-
-      document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.dataset.id;
-          const card = cards.find(c => c.id === id);
-          if (card) openModal(card);
-        };
-      });
-
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.dataset.id;
-          cards = cards.filter(c => c.id !== id);
-          saveAndRender();
-        };
-      });
+      // 極致防呆的資料儲存
+      try {
+        localStorage.setItem('generator_cards_final', JSON.stringify(cards));
+      } catch (e) {}
     }
 
-    function openModal(card = null) {
-      document.getElementById('modalOverlay').classList.add('active');
+    // 將函式掛載到 window，確保內聯 onclick 抓得到
+    window.moveCard = function(index, direction) {
+      var target = index + direction;
+      if (target < 0 || target >= cards.length) return;
+      var temp = cards[index];
+      cards[index] = cards[target];
+      cards[target] = temp;
+      render();
+    };
+
+    window.deleteCard = function(id) {
+      cards = cards.filter(function(c) { return c.id !== id; });
+      render();
+    };
+
+    window.openModal = function(card) {
+      var overlay = document.getElementById('modalOverlay');
+      var title = document.getElementById('modalTitle');
+      var idInput = document.getElementById('cardId');
+      var nameInput = document.getElementById('inputName');
+      var urlInput = document.getElementById('inputUrl');
+      var imgInput = document.getElementById('inputImg');
+      var form = document.getElementById('cardForm');
+
+      if (!overlay || !form) return;
+
+      overlay.classList.add('active');
+
       if (card) {
-        document.getElementById('modalTitle').textContent = '編輯連結';
-        document.getElementById('cardId').value = card.id;
-        document.getElementById('inputName').value = card.name;
-        document.getElementById('inputUrl').value = card.url;
-        document.getElementById('inputImg').value = card.img;
+        title.textContent = '編輯連結';
+        idInput.value = card.id;
+        nameInput.value = card.name;
+        urlInput.value = card.url;
+        imgInput.value = card.img;
       } else {
-        document.getElementById('modalTitle').textContent = '新增連結';
-        document.getElementById('cardForm').reset();
-        document.getElementById('cardId').value = '';
+        title.textContent = '新增連結';
+        form.reset();
+        idInput.value = '';
       }
-    }
+    };
 
-    function closeModal() {
-      document.getElementById('modalOverlay').classList.remove('active');
-    }
+    window.closeModal = function() {
+      var overlay = document.getElementById('modalOverlay');
+      if (overlay) overlay.classList.remove('active');
+    };
 
-    document.getElementById('addBtn').onclick = () => openModal();
-    document.getElementById('cancelBtn').onclick = () => closeModal();
+    window.editCard = function(id) {
+      var card = cards.find(function(c) { return c.id === id; });
+      if (card) openModal(card);
+    };
 
-    document.getElementById('cardForm').onsubmit = (e) => {
+    // 繫結靜態按鈕事件
+    document.getElementById('addBtn').onclick = function() { openModal(); };
+    document.getElementById('cancelBtn').onclick = closeModal;
+
+    document.getElementById('cardForm').onsubmit = function(e) {
       e.preventDefault();
-      const id = document.getElementById('cardId').value;
-      const name = document.getElementById('inputName').value;
-      const url = document.getElementById('inputUrl').value;
-      const img = document.getElementById('inputImg').value;
+      var id = document.getElementById('cardId').value;
+      var name = document.getElementById('inputName').value;
+      var url = document.getElementById('inputUrl').value;
+      var img = document.getElementById('inputImg').value;
 
       if (id) {
-        const card = cards.find(c => c.id === id);
+        var card = cards.find(function(c) { return c.id === id; });
         if (card) {
           card.name = name;
           card.url = url;
@@ -420,77 +437,92 @@
       } else {
         cards.push({ id: Date.now().toString(), name, url, img });
       }
-      saveAndRender();
+      render();
       closeModal();
     };
 
-    document.getElementById('copyCodeBtn').onclick = () => {
-      const html = `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KARMAWEI_</title>
-  <style>
-    :root {
-      --glass-bg: rgba(255, 255, 255, 0.75);
-      --glass-border: rgba(255, 255, 255, 0.95);
-      --glass-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
-      --text-main: #334155;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }
-    html, body { width: 100%; min-height: 100vh; overflow-x: hidden; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: 
-        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
-        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
-        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
-        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
-      background-attachment: fixed; background-size: cover; color: var(--text-main);
-      display: flex; flex-direction: column; align-items: center; padding: 24px 16px;
-    }
-    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 500px; margin: 0 auto; justify-items: center; }
-    @media (min-width: 480px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }
-    .card {
-      background: var(--glass-bg); backdrop-filter: blur(20px);
-      border-radius: 12px; border: 1px solid var(--glass-border);
-      padding: 6px 4px; display: flex; flex-direction: column; align-items: center;
-      text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);
-      width: 100%; max-width: 95px;
-      transform: none !important; transition: none !important;
-    }
-    .card-img-wrapper {
-      width: 48px; height: 48px; border-radius: 8px; margin-bottom: 4px;
-      overflow: hidden; background: rgba(255,255,255,0.8);
-      border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;
-    }
-    .card-img { width: 100%; height: 100%; object-fit: cover; }
-    .card-title { font-size: 0.7rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="grid">
-${cards.map(c => `      <a href="${c.url}" target="_blank" class="card">
-        <div class="card-img-wrapper"><img class="card-img" src="${c.img}" alt="${c.name}"></div>
-        <div class="card-title">${c.name}</div>
-      </a>`).join('\n')}
-    </div>
-  </div>
-</body>
-</html>`;
+    window.copyCode = function() {
+      var html = [
+'<!DOCTYPE html>',
+'<html lang="zh-TW">',
+'<head>',
+'  <meta charset="UTF-8" />',
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+'  <title>KARMAWEI_</title>',
+'  <style>',
+'    :root {',
+'      --bg-gradient: linear-gradient(135deg, #cbe4fd 0%, #e0f2fe 50%, #f0f9ff 100%);',
+'      --glass-bg: rgba(255, 255, 255, 0.75);',
+'      --glass-border: rgba(255, 255, 255, 0.95);',
+'      --glass-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);',
+'      --text-main: #334155;',
+'    }',
+'    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }',
+'    html, body { width: 100%; min-height: 100vh; overflow-x: hidden; }',
+'    body {',
+'      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;',
+'      background: var(--bg-gradient); background-attachment: fixed; background-size: cover; color: var(--text-main);',
+'      display: flex; flex-direction: column; align-items: center; padding: 24px 16px; position: relative;',
+'    }',
+'    body::before {',
+'      content: \'\'; position: fixed; inset: 0;',
+'      background: ',
+'        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),',
+'        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),',
+'        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),',
+'        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),',
+'        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);',
+'      pointer-events: none; z-index: 0;',
+'    }',
+'    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }',
+'    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 500px; margin: 0 auto; justify-items: center; }',
+'    @media (min-width: 480px) { .grid { grid-template-columns: repeat(4, 1fr); } }',
+'    @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }',
+'    .card {',
+'      background: var(--glass-bg); backdrop-filter: blur(20px);',
+'      border-radius: 12px; border: 1px solid var(--glass-border);',
+'      padding: 6px 4px; display: flex; flex-direction: column; align-items: center;',
+'      text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);',
+'      width: 100%; max-width: 95px;',
+'      transform: none !important; transition: none !important;',
+'    }',
+'    .card-img-wrapper {',
+'      width: 48px; height: 48px; border-radius: 8px; margin-bottom: 4px;',
+'      overflow: hidden; background: rgba(255,255,255,0.8);',
+'      border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;',
+'    }',
+'    .card-img { width: 100%; height: 100%; object-fit: cover; }',
+'    .card-title { font-size: 0.7rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }',
+'  </style>',
+'</head>',
+'<body>',
+'  <div class="container">',
+'    <div class="grid">',
+cards.map(function(c) {
+  return [
+'      <a href="' + c.url + '" target="_blank" class="card">',
+'        <div class="card-img-wrapper"><img class="card-img" src="' + c.img + '" alt="' + c.name + '" onerror="this.src=\'https://via.placeholder.com/48/ffffff/000000?text=Error\'"></div>',
+'        <div class="card-title">' + c.name + '</div>',
+'      </a>'
+  ].join('\n');
+}).join('\n'),
+'    </div>',
+'  </div>',
+'</body>',
+'</html>'
+      ].join('\n');
 
-      navigator.clipboard.writeText(html).then(() => {
-        const toast = document.getElementById('toast');
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
+      navigator.clipboard.writeText(html).then(function() {
+        var toast = document.getElementById('toast');
+        if (toast) {
+          toast.classList.add('show');
+          setTimeout(function() { toast.classList.remove('show'); }, 2500);
+        }
       });
     };
 
+    // 立即初始化資料並渲染
+    cards = loadData();
     render();
   </script>
 </body>
