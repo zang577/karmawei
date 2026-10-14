@@ -322,4 +322,129 @@
       ];
     }
 
-    
+    function render() {
+      const grid = document.getElementById('cardGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      cards.forEach((card, index) => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `
+          <div class="card-actions">
+            ${index > 0 ? `<button class="icon-btn" onclick="moveCard(${index}, -1)">◄</button>` : ''}
+            ${index < cards.length - 1 ? `<button class="icon-btn" onclick="moveCard(${index}, 1)">►</button>` : ''}
+            <button class="icon-btn" onclick="editCard('${card.id}')">✎</button>
+            <button class="icon-btn delete" onclick="deleteCard('${card.id}')">✕</button>
+          </div>
+          <div class="card-img-wrapper">
+            <img class="card-img" src="${card.img}" alt="${card.name}">
+          </div>
+          <div class="card-title">${card.name}</div>
+        `;
+        grid.appendChild(el);
+      });
+      try {
+        localStorage.setItem('generator_cards', JSON.stringify(cards));
+      } catch (e) {}
+    }
+
+    window.moveCard = function(index, direction) {
+      const target = index + direction;
+      if (target < 0 || target >= cards.length) return;
+      const temp = cards[index];
+      cards[index] = cards[target];
+      cards[target] = temp;
+      render();
+    };
+
+    window.deleteCard = function(id) {
+      cards = cards.filter(c => c.id !== id);
+      render();
+    };
+
+    window.openModal = function(card = null) {
+      const overlay = document.getElementById('modalOverlay');
+      if (overlay) overlay.classList.add('active');
+      if (card) {
+        document.getElementById('modalTitle').textContent = '編輯連結';
+        document.getElementById('cardId').value = card.id;
+        document.getElementById('inputName').value = card.name;
+        document.getElementById('inputUrl').value = card.url;
+        document.getElementById('inputImg').value = card.img;
+      } else {
+        document.getElementById('modalTitle').textContent = '新增連結';
+        const form = document.getElementById('cardForm');
+        if (form) form.reset();
+        document.getElementById('cardId').value = '';
+      }
+    };
+
+    window.closeModal = function() {
+      const overlay = document.getElementById('modalOverlay');
+      if (overlay) overlay.classList.remove('active');
+    };
+
+    window.editCard = function(id) {
+      const card = cards.find(c => c.id === id);
+      if (card) openModal(card);
+    };
+
+    window.saveCard = function(e) {
+      e.preventDefault();
+      const id = document.getElementById('cardId').value;
+      const name = document.getElementById('inputName').value;
+      const url = document.getElementById('inputUrl').value;
+      const img = document.getElementById('inputImg').value;
+
+      if (id) {
+        const card = cards.find(c => c.id === id);
+        if (card) {
+          card.name = name;
+          card.url = url;
+          card.img = img;
+        }
+      } else {
+        cards.push({ id: Date.now().toString(), name, url, img });
+      }
+      render();
+      closeModal();
+    };
+
+    window.copyCode = function() {
+      const html = `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KARMAWEI_</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e2e8f0 100%);
+      --glass-bg: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      --text-main: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient); color: var(--text-main);
+      min-height: 100vh; padding: 24px 16px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); } }
+    .card {
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border-radius: 18px; border: 1px solid var(--glass-border);
+      padding: 12px 10px; display: flex; flex-direction: column; align-items: center;
+      text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);
+    }
+    .card-img-wrapper {
+      width: 100%; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 8px;
+      overflow: hidden; background: rgba(255,255,255,0.8);
+    }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden;
