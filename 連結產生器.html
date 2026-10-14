@@ -6,10 +6,9 @@
   <title>KARMAWEI_</title>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #cbe4fd 0%, #e0f2fe 50%, #f0f9ff 100%);
-      --glass-bg: rgba(255, 255, 255, 0.72);
-      --glass-border: rgba(255, 255, 255, 0.9);
-      --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.95);
+      --glass-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
       --text-main: #334155;
       --text-sub: #64748b;
       --danger: #ef4444;
@@ -28,31 +27,22 @@
       overflow-x: hidden;
     }
 
-    /* 修正背景斷層：改用無縫全螢幕固定漸層與雲朵 */
+    /* 真正擁有雲朵與藍天的背景 */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-gradient);
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
+        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
+        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
       background-attachment: fixed;
+      background-size: cover;
       color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 24px 16px;
-      position: relative;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: 
-        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 30%),
-        radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
-        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 45%),
-        radial-gradient(circle at 85% 85%, rgba(186, 230, 253, 0.6) 0%, transparent 50%),
-        radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 35%);
-      pointer-events: none;
-      z-index: 0;
     }
 
     .container {
@@ -69,74 +59,75 @@
     .controls-box {
       display: inline-flex;
       gap: 16px;
-      padding: 12px 24px;
+      padding: 10px 20px;
       background: var(--glass-bg);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
     }
 
     .btn {
-      padding: 8px 22px;
+      padding: 6px 18px;
       border: 1px solid rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.85);
       color: var(--text-main);
-      border-radius: 14px;
-      font-size: 0.85rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      box-shadow: 0 4px 12px rgba(148, 163, 184, 0.1), inset 0 1px 1px rgba(255, 255, 255, 1);
     }
 
     .btn:hover {
       background: #ffffff;
     }
 
-    /* 網格與更精巧、更小的卡片尺寸 */
+    /* 真正變小的精巧卡片網格 */
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      max-width: 800px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 500px;
       margin: 0 auto;
+      justify-items: center;
     }
 
-    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); } }
+    @media (min-width: 480px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }
 
     .card {
       position: relative;
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 16px;
+      border-radius: 12px;
       border: 1px solid var(--glass-border);
-      padding: 10px 8px;
+      padding: 6px 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
       box-shadow: var(--glass-shadow);
+      width: 100%;
+      max-width: 95px; /* 強制超小寬度 */
       transform: none !important;
       transition: none !important;
     }
 
     .card-actions {
       position: absolute;
-      top: 5px;
-      right: 5px;
+      top: 3px;
+      right: 3px;
       display: flex;
-      gap: 2px;
+      gap: 1px;
       z-index: 2;
     }
 
     .icon-btn {
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       border: 1px solid rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.9);
@@ -145,8 +136,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 10px;
-      box-shadow: 0 2px 6px rgba(148, 163, 184, 0.1);
+      font-size: 8px;
     }
 
     .icon-btn.delete:hover {
@@ -155,10 +145,10 @@
     }
 
     .card-img-wrapper {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 10px;
-      margin-bottom: 6px;
+      width: 48px; /* 極小精緻圖片區塊 */
+      height: 48px;
+      border-radius: 8px;
+      margin-bottom: 4px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--glass-border);
@@ -174,7 +164,7 @@
     }
 
     .card-title {
-      font-size: 0.78rem;
+      font-size: 0.7rem;
       font-weight: 600;
       text-align: center;
       width: 100%;
@@ -205,39 +195,40 @@
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(30px);
       border: 1px solid var(--glass-border);
-      border-radius: 24px;
+      border-radius: 20px;
       width: 100%;
-      max-width: 400px;
-      padding: 24px;
+      max-width: 360px;
+      padding: 20px;
       box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
     }
 
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .form-group label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       color: var(--text-sub);
     }
 
     .form-group input {
       width: 100%;
-      padding: 10px 14px;
-      border-radius: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1px solid rgba(148, 163, 184, 0.2);
       background: rgba(255, 255, 255, 0.85);
       outline: none;
+      font-size: 0.85rem;
     }
 
     .modal-actions {
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 20px;
+      margin-top: 16px;
     }
 
     .toast {
@@ -247,9 +238,9 @@
       transform: translateX(-50%) translateY(100px);
       background: rgba(255, 255, 255, 0.95);
       border: 1px solid var(--glass-border);
-      padding: 10px 24px;
+      padding: 8px 20px;
       border-radius: 50px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);
       opacity: 0;
@@ -278,7 +269,7 @@
 
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-      <h2 id="modalTitle" style="margin-bottom:16px;font-size:1.1rem;">新增連結</h2>
+      <h2 id="modalTitle" style="margin-bottom:14px;font-size:1rem;">新增連結</h2>
       <form id="cardForm">
         <input type="hidden" id="cardId">
         <div class="form-group">
@@ -310,7 +301,7 @@
     ];
 
     try {
-      const saved = localStorage.getItem('generator_cards_v5');
+      const saved = localStorage.getItem('generator_cards_v7');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -321,7 +312,7 @@
 
     function saveAndRender() {
       try {
-        localStorage.setItem('generator_cards_v5', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v7', JSON.stringify(cards));
       } catch (e) {}
       render();
     }
@@ -442,48 +433,43 @@
   <title>KARMAWEI_</title>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #cbe4fd 0%, #e0f2fe 50%, #f0f9ff 100%);
-      --glass-bg: rgba(255, 255, 255, 0.72);
-      --glass-border: rgba(255, 255, 255, 0.9);
-      --glass-shadow: 0 10px 30px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.95);
+      --glass-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
       --text-main: #334155;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }
     html, body { width: 100%; min-height: 100vh; overflow-x: hidden; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-gradient); background-attachment: fixed; color: var(--text-main);
-      display: flex; flex-direction: column; align-items: center; padding: 24px 16px; position: relative;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0;
       background: 
-        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 30%),
-        radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
-        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 45%),
-        radial-gradient(circle at 85% 85%, rgba(186, 230, 253, 0.6) 0%, transparent 50%),
-        radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 35%);
-      pointer-events: none; z-index: 0;
+        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
+        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
+        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
+      background-attachment: fixed; background-size: cover; color: var(--text-main);
+      display: flex; flex-direction: column; align-items: center; padding: 24px 16px;
     }
     .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 800px; margin: 0 auto; }
-    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); } }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 500px; margin: 0 auto; justify-items: center; }
+    @media (min-width: 480px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }
     .card {
       background: var(--glass-bg); backdrop-filter: blur(20px);
-      border-radius: 16px; border: 1px solid var(--glass-border);
-      padding: 10px 8px; display: flex; flex-direction: column; align-items: center;
+      border-radius: 12px; border: 1px solid var(--glass-border);
+      padding: 6px 4px; display: flex; flex-direction: column; align-items: center;
       text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);
+      width: 100%; max-width: 95px;
       transform: none !important; transition: none !important;
     }
     .card-img-wrapper {
-      width: 100%; aspect-ratio: 1/1; border-radius: 10px; margin-bottom: 6px;
+      width: 48px; height: 48px; border-radius: 8px; margin-bottom: 4px;
       overflow: hidden; background: rgba(255,255,255,0.8);
       border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;
     }
     .card-img { width: 100%; height: 100%; object-fit: cover; }
-    .card-title { font-size: 0.78rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
+    .card-title { font-size: 0.7rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
   </style>
 </head>
 <body>
