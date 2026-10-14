@@ -63,9 +63,8 @@
 
     header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       align-items: center;
-      gap: 12px;
       margin-bottom: 24px;
       padding: 12px 18px;
       background: var(--glass-bg);
@@ -78,14 +77,14 @@
 
     .controls {
       display: flex;
-      gap: 10px;
+      gap: 16px; /* 增加按鈕之間的間隔距離 */
       width: 100%;
-      justify-content: flex-end;
+      justify-content: center; /* 讓兩個按鈕置中 */
     }
 
     /* 全白液態玻璃 3D 擬物風格按鈕 */
     .btn {
-      padding: 8px 18px;
+      padding: 8px 22px;
       border: 1px solid rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.85);
       color: var(--text-main);
@@ -178,250 +177,4 @@
     .icon-btn.delete:hover {
       background: var(--danger);
       color: white;
-      border-color: var(--danger);
-    }
-
-    .card-img-wrapper {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 12px;
-      margin-bottom: 8px;
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-
-    .card-title {
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-align: center;
-      width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 2px;
-    }
-
-    /* Modal 視窗 */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.3);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      padding: 16px;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(30px) saturate(200%);
-      -webkit-backdrop-filter: blur(30px) saturate(200%);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      width: 100%;
-      max-width: 400px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal h2 {
-      margin-bottom: 16px;
-      font-size: 1.1rem;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 5px;
-      color: var(--text-sub);
-    }
-
-    .form-group input[type="text"],
-    .form-group input[type="url"] {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      background: rgba(255, 255, 255, 0.85);
-      outline: none;
-      font-size: 0.9rem;
-    }
-
-    .form-group input:focus {
-      border-color: rgba(51, 65, 85, 0.4);
-      background: #ffffff;
-    }
-
-    .file-input-wrapper {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .crop-container {
-      width: 100%;
-      max-height: 240px;
-      margin-top: 8px;
-      background: rgba(0,0,0,0.05);
-      border-radius: 12px;
-      overflow: hidden;
-      display: none;
-    }
-
-    .crop-container img {
-      max-width: 100%;
-      display: block;
-    }
-
-    .crop-actions {
-      display: none;
-      gap: 6px;
-      margin-top: 8px;
-      justify-content: flex-end;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 20px;
-    }
-
-    /* Toast 提示 */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--text-main);
-      border: 1px solid var(--glass-border);
-      padding: 10px 24px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 200;
-    }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <header>
-      <div class="controls">
-        <button class="btn" id="addBtn">新增連結</button>
-        <button class="btn" id="copyCodeBtn">複製代碼</button>
-      </div>
-    </header>
-
-    <div class="grid" id="cardGrid"></div>
-  </div>
-
-  <!-- 新增/編輯 Modal -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2 id="modalTitle">新增連結</h2>
-      <form id="cardForm">
-        <input type="hidden" id="cardId">
-        <div class="form-group">
-          <label for="inputName">名稱</label>
-          <input type="text" id="inputName" required />
-        </div>
-        <div class="form-group">
-          <label for="inputUrl">網址</label>
-          <input type="url" id="inputUrl" required />
-        </div>
-        <div class="form-group">
-          <label>圖片</label>
-          <div class="file-input-wrapper">
-            <button type="button" class="btn btn-sm" onclick="document.getElementById('fileInput').click()">選擇手機/電腦圖片</button>
-            <input type="file" id="fileInput" accept="image/*" style="display: none;" />
-          </div>
-          <input type="url" id="inputImg" placeholder="或貼上圖片網址" />
-          
-          <div class="crop-container" id="cropContainer">
-            <img id="cropImage" src="" alt="Cropper">
-          </div>
-          <div class="crop-actions" id="cropActions">
-            <button type="button" class="btn btn-sm" id="rotateBtn">旋轉 90°</button>
-            <button type="button" class="btn btn-sm" id="resetCropBtn">重置區塊</button>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn" id="cancelBtn">取消</button>
-          <button type="submit" class="btn" id="saveBtn">儲存</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="toast" id="toast">複製成功</div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-  <script>
-    let cards = [];
-    try {
-      cards = JSON.parse(localStorage.getItem('generator_cards')) || [
-        { id: '1', name: 'Google', url: 'https://www.google.com', img: 'https://www.google.com/favicon.ico' },
-        { id: '2', name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.png' }
-      ];
-    } catch(e) {
-      cards = [
-        { id: '1', name: 'Google', url: 'https://www.google.com', img: 'https://www.google.com/favicon.ico' },
-        { id: '2', name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.png' }
-      ];
-    }
-
-    const cardGrid = document.getElementById('cardGrid');
-    const addBtn = document.getElementById('addBtn');
-    const copyCodeBtn = document.getElementById('copyCodeBtn');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const cardForm = document.getElementById('cardForm');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const toast = document.getElementById('toast');
-    
-    const fileInput = document.getElementById('fileInput');
-    const inputImg = document.getElementById('inputImg');
-    const cropContainer = document.getElementById('cropContainer');
-    const cropImage = document.getElementById('cropImage');
-    const cropActions = document.getElementById('cropActions');
+      
