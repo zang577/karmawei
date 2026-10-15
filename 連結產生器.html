@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>KARMAWEI_</title>
   <style>
     :root {
@@ -21,37 +21,50 @@
       letter-spacing: 1.2px;
     }
 
-    /* 讓根目錄與 body 從頂端 0 開始填滿，並設定固定藍天白雲背景 */
+    /* 鎖死根目錄與 body，防止 iOS 捲動白邊外露 */
     html, body {
       width: 100%;
-      min-height: 100vh;
-      overflow-x: hidden;
+      height: 100%;
+      overflow: hidden;
       margin: 0;
       padding: 0;
+      background: #b9e3fd;
+    }
+
+    /* 滿版絕對固定背景層，徹底覆蓋所有行動裝置空白 */
+    .bg-sky {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
       background: 
         radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
         radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
         radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
         radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
         linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
-      background-attachment: fixed;
       background-size: cover;
       background-position: center;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: var(--text-main);
+    /* 獨立捲動視窗容器，將捲動限制在內部，杜絕頂部留白 */
+    .scroll-container {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 24px 16px;
     }
 
     .container {
       width: 100%;
       max-width: 960px;
       z-index: 1;
-      padding: 24px 16px; /* 將內距改由容器承擔，確保頂端完全貼齊無白邊 */
     }
 
     .top-controls {
@@ -293,15 +306,21 @@
 </head>
 <body>
 
-  <div class="container">
-    <div class="top-controls">
-      <div class="controls-box">
-        <button class="btn" id="addBtn">新增連結</button>
-        <button class="btn" id="copyCodeBtn">複製代碼</button>
-      </div>
-    </div>
+  <!-- 滿版固定背景層 -->
+  <div class="bg-sky"></div>
 
-    <div class="grid" id="cardGrid"></div>
+  <!-- 內部獨立捲動視窗，杜絕 iOS 頂部空白 -->
+  <div class="scroll-container">
+    <div class="container">
+      <div class="top-controls">
+        <div class="controls-box">
+          <button class="btn" id="addBtn">新增連結</button>
+          <button class="btn" id="copyCodeBtn">複製代碼</button>
+        </div>
+      </div>
+
+      <div class="grid" id="cardGrid"></div>
+    </div>
   </div>
 
   <!-- 新增/編輯 Modal -->
@@ -346,7 +365,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v13');
+        var saved = localStorage.getItem('generator_cards_v14');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -385,7 +404,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v13', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v14', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -459,7 +478,7 @@
 '<html lang="zh-TW">',
 '<head>',
 '  <meta charset="UTF-8" />',
-'  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />',
 '  <title>KARMAWEI_</title>',
 '  <style>',
 '    :root {',
@@ -469,18 +488,22 @@
 '      --text-main: #334155;',
 '    }',
 '    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }',
-'    html, body {',
-'      width: 100%; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0;',
+'    html, body { width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; background: #b9e3fd; }',
+'    .bg-sky {',
+'      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;',
 '      background: ',
 '        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),',
 '        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),',
 '        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),',
 '        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),',
 '        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);',
-'      background-attachment: fixed; background-size: cover; background-position: center;',
+'      background-size: cover; background-position: center;',
 '    }',
-'    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--text-main); display: flex; flex-direction: column; align-items: center; }',
-'    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; padding: 24px 16px; }',
+'    .scroll-container {',
+'      width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;',
+'      display: flex; flex-direction: column; align-items: center; padding: 24px 16px;',
+'    }',
+'    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }',
 '    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 650px; margin: 0 auto; justify-items: center; }',
 '    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }',
 '    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }',
@@ -502,16 +525,19 @@
 '  </style>',
 '</head>',
 '<body>',
-'  <div class="container">',
-'    <div class="grid">',
+'  <div class="bg-sky"></div>',
+'  <div class="scroll-container">',
+'    <div class="container">',
+'      <div class="grid">',
 cards.map(function(c) {
   return [
-'      <a href="' + c.url + '" target="_blank" class="card">',
-'        <div class="card-img-wrapper"><img class="card-img" src="' + c.img + '" alt="' + c.name + '" onerror="this.src=\'https://via.placeholder.com/72/ffffff/000000?text=Error\'"></div>',
-'        <div class="card-title">' + c.name + '</div>',
-'      </a>'
+'        <a href="' + c.url + '" target="_blank" class="card">',
+'          <div class="card-img-wrapper"><img class="card-img" src="' + c.img + '" alt="' + c.name + '" onerror="this.src=\'https://via.placeholder.com/72/ffffff/000000?text=Error\'"></div>',
+'          <div class="card-title">' + c.name + '</div>',
+'        </a>'
   ].join('\n');
 }).join('\n'),
+'      </div>',
 '    </div>',
 '  </div>',
 '</body>',
@@ -522,7 +548,7 @@ cards.map(function(c) {
         var toast = document.getElementById('toast');
         if (toast) {
           toast.classList.add('show');
-          setTimeout(function() { toast.classList.remove('show'), 2500 });
+          setTimeout(function() { toast.classList.remove('show'); }, 2500);
         }
       });
     };
