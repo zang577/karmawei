@@ -30,7 +30,7 @@
       background: #b9e3fd;
     }
 
-    /* 真正擁有雲朵與藍天的固定背景層 */
+    /* 真正的藍天白雲雲朵背景層（完整保留 radial-gradient 雲朵效果） */
     .bg-sky {
       position: fixed;
       top: 0;
@@ -48,7 +48,7 @@
       background-position: center;
     }
 
-    /* 內部獨立捲動視窗，杜絕頂部白邊與反彈空白 */
+    /* 內部獨立捲動視窗，杜絕手機頂部白邊與反彈空白 */
     .scroll-container {
       width: 100%;
       height: 100%;
@@ -100,7 +100,7 @@
       background: #ffffff;
     }
 
-    /* 網格與卡片設定 */
+    /* 網格與放大後的卡片設定 */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -364,7 +364,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v15');
+        var saved = localStorage.getItem('generator_cards_v16');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -403,7 +403,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v15', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v16', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -477,7 +477,7 @@
 '<html lang="zh-TW">',
 '<head>',
 '  <meta charset="UTF-8" />',
-'  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />',
 '  <title>KARMAWEI_</title>',
 '  <style>',
 '    :root {',
