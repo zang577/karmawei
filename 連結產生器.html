@@ -29,23 +29,32 @@
       padding: 0;
     }
 
-    /* 徹底解決頂部留白與背景斷層的藍天白雲背景 */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      position: relative;
+    }
+
+    /* 使用固定定位底層容器，徹底解決手機瀏覽器背景留白與斷層問題 */
+    .bg-sky {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
       background: 
         radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
         radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
         radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
         radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
         linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
-      background-attachment: fixed;
       background-size: cover;
       background-position: center;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 16px;
     }
 
     .container {
@@ -293,6 +302,9 @@
 </head>
 <body>
 
+  <!-- 滿版固定背景層 -->
+  <div class="bg-sky"></div>
+
   <div class="container">
     <div class="top-controls">
       <div class="controls-box">
@@ -346,7 +358,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v11');
+        var saved = localStorage.getItem('generator_cards_v12');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -385,7 +397,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v11', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v12', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -470,16 +482,16 @@
 '    }',
 '    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }',
 '    html, body { width: 100%; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; }',
-'    body {',
-'      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;',
+'    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--text-main); display: flex; flex-direction: column; align-items: center; padding: 24px 16px; position: relative; }',
+'    .bg-sky {',
+'      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;',
 '      background: ',
 '        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),',
 '        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),',
 '        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),',
 '        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),',
 '        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);',
-'      background-attachment: fixed; background-size: cover; background-position: center; color: var(--text-main);',
-'      display: flex; flex-direction: column; align-items: center; padding: 24px 16px;',
+'      background-size: cover; background-position: center;',
 '    }',
 '    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }',
 '    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 650px; margin: 0 auto; justify-items: center; }',
@@ -503,6 +515,7 @@
 '  </style>',
 '</head>',
 '<body>',
+'  <div class="bg-sky"></div>',
 '  <div class="container">',
 '    <div class="grid">',
 cards.map(function(c) {
