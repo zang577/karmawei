@@ -21,7 +21,6 @@
       letter-spacing: 1.2px;
     }
 
-    /* 鎖死根目錄與 body，防止 iOS 捲動白邊外露 */
     html, body {
       width: 100%;
       height: 100%;
@@ -31,7 +30,7 @@
       background: #b9e3fd;
     }
 
-    /* 滿版絕對固定背景層，徹底覆蓋所有行動裝置空白 */
+    /* 真正擁有雲朵與藍天的固定背景層 */
     .bg-sky {
       position: fixed;
       top: 0;
@@ -49,7 +48,7 @@
       background-position: center;
     }
 
-    /* 獨立捲動視窗容器，將捲動限制在內部，杜絕頂部留白 */
+    /* 內部獨立捲動視窗，杜絕頂部白邊與反彈空白 */
     .scroll-container {
       width: 100%;
       height: 100%;
@@ -306,10 +305,10 @@
 </head>
 <body>
 
-  <!-- 滿版固定背景層 -->
+  <!-- 真正擁有雲朵的滿版背景層 -->
   <div class="bg-sky"></div>
 
-  <!-- 內部獨立捲動視窗，杜絕 iOS 頂部空白 -->
+  <!-- 內部獨立捲動視窗 -->
   <div class="scroll-container">
     <div class="container">
       <div class="top-controls">
@@ -365,7 +364,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v14');
+        var saved = localStorage.getItem('generator_cards_v15');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -404,7 +403,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v14', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v15', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -478,7 +477,7 @@
 '<html lang="zh-TW">',
 '<head>',
 '  <meta charset="UTF-8" />',
-'  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />',
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
 '  <title>KARMAWEI_</title>',
 '  <style>',
 '    :root {',
