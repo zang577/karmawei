@@ -21,16 +21,16 @@
       letter-spacing: 1.2px;
     }
 
+    /* 強制鎖定視窗，並用固定滿版背景層徹底解決手機白邊與斷層 */
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
       margin: 0;
       padding: 0;
-      background: #b9e3fd;
+      overflow-x: hidden;
+      background-color: #b9e3fd;
     }
 
-    /* 真正的藍天白雲雲朵背景層（完整保留 radial-gradient 雲朵效果） */
     .bg-sky {
       position: fixed;
       top: 0;
@@ -48,16 +48,16 @@
       background-position: center;
     }
 
-    /* 內部獨立捲動視窗，杜絕手機頂部白邊與反彈空白 */
-    .scroll-container {
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 24px 16px;
+      min-height: 100vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .container {
@@ -305,21 +305,18 @@
 </head>
 <body>
 
-  <!-- 真正擁有雲朵的滿版背景層 -->
+  <!-- 滿版藍天白雲雲朵背景層 -->
   <div class="bg-sky"></div>
 
-  <!-- 內部獨立捲動視窗 -->
-  <div class="scroll-container">
-    <div class="container">
-      <div class="top-controls">
-        <div class="controls-box">
-          <button class="btn" id="addBtn">新增連結</button>
-          <button class="btn" id="copyCodeBtn">複製代碼</button>
-        </div>
+  <div class="container">
+    <div class="top-controls">
+      <div class="controls-box">
+        <button class="btn" id="addBtn">新增連結</button>
+        <button class="btn" id="copyCodeBtn">複製代碼</button>
       </div>
-
-      <div class="grid" id="cardGrid"></div>
     </div>
+
+    <div class="grid" id="cardGrid"></div>
   </div>
 
   <!-- 新增/編輯 Modal -->
@@ -364,7 +361,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v16');
+        var saved = localStorage.getItem('generator_cards_v18');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -403,7 +400,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v16', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v18', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -487,7 +484,7 @@
 '      --text-main: #334155;',
 '    }',
 '    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }',
-'    html, body { width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; background: #b9e3fd; }',
+'    html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow-x: hidden; background-color: #b9e3fd; }',
 '    .bg-sky {',
 '      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;',
 '      background: ',
@@ -498,9 +495,10 @@
 '        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);',
 '      background-size: cover; background-position: center;',
 '    }',
-'    .scroll-container {',
-'      width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;',
-'      display: flex; flex-direction: column; align-items: center; padding: 24px 16px;',
+'    body {',
+'      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;',
+'      color: var(--text-main); display: flex; flex-direction: column; align-items: center;',
+'      padding: 24px 16px; min-height: 100vh; overflow-y: auto; -webkit-overflow-scrolling: touch;',
 '    }',
 '    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }',
 '    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 650px; margin: 0 auto; justify-items: center; }',
@@ -525,18 +523,16 @@
 '</head>',
 '<body>',
 '  <div class="bg-sky"></div>',
-'  <div class="scroll-container">',
-'    <div class="container">',
-'      <div class="grid">',
+'  <div class="container">',
+'    <div class="grid">',
 cards.map(function(c) {
   return [
-'        <a href="' + c.url + '" target="_blank" class="card">',
-'          <div class="card-img-wrapper"><img class="card-img" src="' + c.img + '" alt="' + c.name + '" onerror="this.src=\'https://via.placeholder.com/72/ffffff/000000?text=Error\'"></div>',
-'          <div class="card-title">' + c.name + '</div>',
-'        </a>'
+'      <a href="' + c.url + '" target="_blank" class="card">',
+'        <div class="card-img-wrapper"><img class="card-img" src="' + c.img + '" alt="' + c.name + '" onerror="this.src=\'https://via.placeholder.com/72/ffffff/000000?text=Error\'"></div>',
+'        <div class="card-title">' + c.name + '</div>',
+'      </a>'
   ].join('\n');
 }).join('\n'),
-'      </div>',
 '    </div>',
 '  </div>',
 '</body>',
