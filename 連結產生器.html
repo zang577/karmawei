@@ -21,7 +21,6 @@
       letter-spacing: 1.2px;
     }
 
-    /* 根目錄與本體基本設定 */
     html, body {
       width: 100%;
       min-height: 100%;
@@ -30,13 +29,10 @@
       background-color: #b9e3fd;
     }
 
-    /* 核心修復：使用 position: fixed 滿版鎖死背景，徹底根治 iOS 捲動白邊與渲染失敗 */
+    /* 完美修復：移除錯誤的 cover，改用 inset: 0 確保雲朵漸層完美渲染且永不露白邊 */
     .bg-sky {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      inset: 0;
       z-index: -999;
       background: 
         radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
@@ -44,8 +40,6 @@
         radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),
         radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),
         linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);
-      background-size: cover;
-      background-position: center;
       pointer-events: none;
     }
 
@@ -305,7 +299,7 @@
 </head>
 <body>
 
-  <!-- 滿版固定藍天白雲背景層（徹底避開 background-attachment: fixed 帶來的 Safari 白邊問題） -->
+  <!-- 滿版固定藍天白雲雲朵背景層 -->
   <div class="bg-sky"></div>
 
   <div class="container">
@@ -361,7 +355,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v20');
+        var saved = localStorage.getItem('generator_cards_v21');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -400,7 +394,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v20', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v21', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -486,14 +480,14 @@
 '    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }',
 '    html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; background-color: #b9e3fd; }',
 '    .bg-sky {',
-'      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -999;',
+'      position: fixed; inset: 0; z-index: -999;',
 '      background: ',
 '        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),',
 '        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),',
 '        radial-gradient(ellipse at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 35%),',
 '        radial-gradient(ellipse at 10% 70%, rgba(255, 255, 255, 0.8) 0%, transparent 30%),',
 '        linear-gradient(135deg, #b9e3fd 0%, #d8f0ff 50%, #eef6ff 100%);',
-'      background-size: cover; background-position: center; pointer-events: none;',
+'      pointer-events: none;',
 '    }',
 '    body {',
 '      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;',
