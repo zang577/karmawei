@@ -78,11 +78,12 @@ button:active,.btn:active{transform:scale(.97)}
     <div class="row"><label>垂直位置 <span id="vy">0</span></label><input type="range" id="oy" min="-100" max="100" step="1" value="0"></div>
     <div class="row"><label>旋轉 <span id="vr">0°</span></label><input type="range" id="rot" min="-180" max="180" step="1" value="0"></div>
     <div class="row"><label>金黃色調 <span id="vt">90</span></label><input type="range" id="tint" min="0" max="100" step="1" value="90"></div>
+    <div class="row"><label>照片範圍 <span id="vp">68</span></label><input type="range" id="pr" min="20" max="100" step="1" value="68"></div>
     <div class="row"><label>外圍光暈 <span id="vg">80</span></label><input type="range" id="glow" min="0" max="100" step="1" value="80"></div>
     <div class="row"><label>邊緣漸層 <span id="ve">70</span></label><input type="range" id="edge" min="0" max="100" step="1" value="70"></div>
     <div class="row"><label>反光強度 <span id="vs">80</span></label><input type="range" id="rs" min="0" max="100" step="1" value="80"></div>
     <div class="row"><label>反光樣式</label>
-      <div class="seg" id="refl"><button data-r="soft" class="on">柔光</button><button data-r="arc">雙弧</button><button data-r="spot">光斑</button><button data-r="top">頂光</button><button data-r="left">左弧</button><button data-r="band">光帶</button><button data-r="tophaze">頂部霧光</button><button data-r="tlbloom">左上暈光</button><button data-r="trrim">右上緣光</button><button data-r="floor">地面暖光</button><button data-r="rimhaze">全緣霧光</button><button data-r="sides">雙側緣光</button><button data-r="bokeh">散景光點</button><button data-r="tlarc">左上弧暈</button><button data-r="core">內核暖光</button><button data-r="vfade">上下漸霧</button><button data-r="ledge">左緣細光</button><button data-r="tedge">上緣亮帶</button><button data-r="lilac">粉紫暈</button><button data-r="bl">左下暖輝</button><button data-r="toporange">頂部橘暈</button><button data-r="water">水面漣漪</button><button data-r="rain">雨絲光</button><button data-r="diag">對角柔光</button><button data-r="none">無</button></div></div>
+      <div class="seg" id="refl"><button data-r="tlbloom" class="on">左上暈光</button><button data-r="dual">雙光源</button><button data-r="soft">柔光</button><button data-r="dot">點高光</button><button data-r="bounce">反彈光</button><button data-r="shade">立體明暗</button><button data-r="fresnel">緣光環繞</button><button data-r="back">透光球心</button><button data-r="twoarc">雙條弧光</button><button data-r="arc">雙弧</button><button data-r="spot">光斑</button><button data-r="top">頂光</button><button data-r="left">左弧</button><button data-r="band">光帶</button><button data-r="tophaze">頂部霧光</button><button data-r="trrim">右上緣光</button><button data-r="floor">地面暖光</button><button data-r="rimhaze">全緣霧光</button><button data-r="sides">雙側緣光</button><button data-r="bokeh">散景光點</button><button data-r="tlarc">左上弧暈</button><button data-r="core">內核暖光</button><button data-r="vfade">上下漸霧</button><button data-r="ledge">左緣細光</button><button data-r="tedge">上緣亮帶</button><button data-r="lilac">粉紫暈</button><button data-r="bl">左下暖輝</button><button data-r="toporange">頂部橘暈</button><button data-r="rain">雨絲光</button><button data-r="diag">對角柔光</button><button data-r="none">無</button></div></div>
     <div class="row"><label>背景</label>
       <div class="seg"><button id="bgd" class="on">深色</button><button id="bgc">透明</button></div></div>
     <button class="full" id="reset">恢復預設</button>
@@ -98,11 +99,11 @@ const W=1080,CX=540,CY=540,R=330,D=360;
 const off=document.createElement('canvas');off.width=off.height=D;
 const octx=off.getContext('2d',{willReadFrequently:true});
 let img=null,dark=true;
-const ids=['zoom','ox','oy','rot','tint','glow','edge','rs'];
-const def={zoom:1,ox:0,oy:0,rot:0,tint:90,glow:80,edge:70,rs:80};
+const ids=['zoom','ox','oy','rot','tint','glow','edge','rs','pr'];
+const def={zoom:1,ox:0,oy:0,rot:0,tint:90,glow:80,edge:70,rs:80,pr:68};
 
 const lerp=(a,b,t)=>a+(b-a)*t;
-const C0=[196,108,22],C1=[250,196,84],C2=[255,244,190];
+const C0=[165,76,14],C1=[247,172,48],C2=[255,236,150];
 
 function drawPhoto(){
   octx.clearRect(0,0,D,D);
@@ -126,12 +127,16 @@ function drawPhoto(){
     const j=(sy*D+sx)*4;
     if(!q[j+3]){p[i+3]=0;continue}
     let l=(.299*q[j]+.587*q[j+1]+.114*q[j+2])/255;
-    l=Math.min(1,Math.max(0,(l-.5)*.85+.58));
+    l=Math.min(1,Math.max(0,(l-.5)*.95+.52));
     const t=l<.5?l*2:(l-.5)*2,A=l<.5?C0:C1,B=l<.5?C1:C2;
     for(let c=0;c<3;c++)p[i+c]=lerp(q[j+c],lerp(A[c],B[c],t),a);
     p[i+3]=q[j+3];
   }
   octx.putImageData(d,0,0);
+  const m=+$('pr').value/100,g=octx.createRadialGradient(D/2,D/2,D/2*m,D/2,D/2,D/2*Math.min(1,m+.16));
+  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');
+  octx.globalCompositeOperation='destination-in';octx.fillStyle=g;octx.fillRect(0,0,D,D);
+  octx.globalCompositeOperation='source-over';
 }
 
 function radial(x,y,r0,r1,stops,r0x=x,r0y=y){
@@ -139,7 +144,7 @@ function radial(x,y,r0,r1,stops,r0x=x,r0y=y){
   stops.forEach(s=>g.addColorStop(s[0],s[1]));return g;
 }
 
-let refl='soft';
+let refl='tlbloom';
 function softArc(r,a0,a1,w,al){
   ctx.save();ctx.lineCap='round';ctx.shadowColor='rgba(255,248,210,.9)';ctx.shadowBlur=26;
   for(let i=0;i<6;i++){ctx.strokeStyle=`rgba(255,250,222,${al})`;ctx.lineWidth=w*(1-i*.12);
@@ -164,114 +169,70 @@ function blob(x,y,r,col,sx=1,sy=1,rot=0){
   ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();ctx.restore();
 }
 function drawRefl(){ctx.save();ctx.globalAlpha=+$('rs').value/100;drawReflRaw();ctx.restore()}
-function drawReflRaw(){
-  if(refl==='none')return;
-  if(refl==='soft'){
-    ctx.save();ctx.translate(CX+R*.42,CY+R*.5);ctx.rotate(.78);ctx.scale(1,.38);
-    ctx.fillStyle=radial(0,0,0,R*.6,[[0,'rgba(255,250,225,.5)'],[.55,'rgba(255,245,200,.18)'],[1,'rgba(255,245,200,0)']]);
-    ctx.beginPath();ctx.arc(0,0,R*.6,0,Math.PI*2);ctx.fill();ctx.restore();
-    softArc(R*.9,.3,.95,22,.05);
-  }else if(refl==='moon'){
-    ctx.save();ctx.shadowColor='rgba(255,248,210,.95)';ctx.shadowBlur=34;ctx.fillStyle='rgba(255,250,225,.4)';
-    ctx.beginPath();ctx.arc(CX,CY,R*.93,.05,1.35);ctx.arc(CX-R*.07,CY-R*.07,R*.89,1.3,.1,true);ctx.closePath();ctx.fill();ctx.restore();
-  }else if(refl==='arc'){
-    softArc(R*.9,.15,1.2,16,.08);softArc(R*.78,.45,1.0,9,.07);
-  }else if(refl==='window'){
-    ctx.save();ctx.translate(CX-R*.38,CY-R*.34);ctx.rotate(-.5);ctx.shadowColor='rgba(255,250,225,.9)';ctx.shadowBlur=18;
-    ctx.fillStyle='rgba(255,252,235,.32)';const w=R*.2,g=R*.045;
-    [[-1,-1],[0,-1],[-1,0],[0,0]].forEach(([i,j])=>{ctx.beginPath();ctx.roundRect?ctx.roundRect(i*(w+g)+g/2,j*(w+g)+g/2,w,w,12):ctx.rect(i*(w+g)+g/2,j*(w+g)+g/2,w,w);ctx.fill()});
-    ctx.restore();
-  }else if(refl==='star'){
-    ctx.save();ctx.translate(CX-R*.46,CY-R*.46);
-    [[1,.07],[.07,1]].forEach(([sx,sy])=>{ctx.save();ctx.scale(sx,sy);
-      ctx.fillStyle=radial(0,0,0,R*.4,[[0,'rgba(255,255,255,.95)'],[.4,'rgba(255,250,225,.4)'],[1,'rgba(255,250,225,0)']]);
-      ctx.beginPath();ctx.arc(0,0,R*.4,0,Math.PI*2);ctx.fill();ctx.restore()});
-    ctx.restore();
-  }else if(refl==='ring'){
-    softArc(R*.93,0,Math.PI*2,16,.07);
-  }else if(refl==='top'){
-    ctx.save();ctx.translate(CX,CY-R*.6);ctx.scale(1,.3);
-    ctx.fillStyle=radial(0,0,0,R*.65,[[0,'rgba(255,255,255,.6)'],[.6,'rgba(255,252,235,.2)'],[1,'rgba(255,252,235,0)']]);
-    ctx.beginPath();ctx.arc(0,0,R*.65,0,Math.PI*2);ctx.fill();ctx.restore();
-  }else if(refl==='twin'){
-    crescent(.05,1.35,.38);crescent(Math.PI+.05,Math.PI+1.05,.26);
-  }else if(refl==='left'){
-    softArc(R*.9,2.35,3.95,18,.08);
-  }else if(refl==='band'){
+function curvedHL(a0,a1,r0,r1,al,blur=26){
+  // 多層疊加：外層寬而淡、內層窄而亮，兩端逐漸收尖，邊緣完全羽化
+  ctx.save();ctx.shadowColor='rgba(255,250,225,.8)';ctx.shadowBlur=blur*1.8;
+  const N=6;
+  for(let k=0;k<N;k++){
+    const e=(N-1-k)*.03,t=k*.07,q0=r0-e,q1=Math.min(1,r1+e);
+    ctx.fillStyle=`rgba(255,252,236,${al*.22})`;
+    ctx.beginPath();ctx.arc(CX,CY,R*q1,a0+t,a1-t);ctx.arc(CX,CY,R*q0,a1-t,a0+t,true);ctx.closePath();ctx.fill();
+  }
+  ctx.restore();
+}
+// 球體底光：光源在左上，右下略暗並有反彈光，所有樣式共用
+function sphereBase(){
+  ctx.fillStyle=radial(CX-R*.35,CY-R*.4,R*.15,R*1.45,[[0,'rgba(255,252,230,.3)'],[.4,'rgba(255,245,200,.06)'],[1,'rgba(205,120,30,.14)']]);
+  ctx.fillRect(CX-R,CY-R,R*2,R*2);
+  softArc(R*.93,.25,1.45,16,.05);
+}
+const RF={
+  soft(){curvedHL(3.45,4.95,.6,.84,.5,28);blob(CX-R*.43,CY-R*.5,R*.18,'rgba(255,255,248,.85)');blob(CX,CY+R*.8,R*.8,'rgba(255,245,190,.4)',1,.35)},
+  arc(){curvedHL(3.6,4.85,.8,.88,.5,24);curvedHL(3.85,4.6,.68,.74,.4,22)},
+  spot(){blob(CX-R*.4,CY-R*.45,R*.5,'rgba(255,255,245,.6)',1,.8,-.7);blob(CX-R*.43,CY-R*.48,R*.17,'rgba(255,255,255,.9)',1.3,.8,-.7)},
+  top(){curvedHL(-2.6,-.55,.7,.9,.55,30)},
+  left(){curvedHL(2.5,3.9,.78,.94,.55,24)},
+  band(){
     ctx.save();ctx.translate(CX-R*.05,CY-R*.08);ctx.rotate(-.7);
     const g=ctx.createLinearGradient(0,-R*.28,0,R*.28);
     g.addColorStop(0,'rgba(255,252,232,0)');g.addColorStop(.5,'rgba(255,252,232,.32)');g.addColorStop(1,'rgba(255,252,232,0)');
     ctx.fillStyle=g;ctx.fillRect(-R,-R*.28,R*2,R*.56);ctx.restore();
-  }else if(refl==='bottom'){
-    blob(CX,CY+R*.72,R*.7,'rgba(255,250,215,.7)',1,.35);
-  }else if(refl==='drop'){
-    blob(CX-R*.4,CY-R*.42,R*.32,'rgba(255,255,255,.75)',.42,1,.62);
-    blob(CX-R*.52,CY-R*.1,R*.06,'rgba(255,255,255,.8)');
-  }else if(refl==='iri'){
-    blob(CX+R*.55,CY+R*.55,R*.75,'rgba(255,170,205,.26)');
-    blob(CX-R*.55,CY+R*.5,R*.65,'rgba(185,165,255,.24)');
-    blob(CX+R*.1,CY-R*.7,R*.5,'rgba(150,215,255,.16)');
-  }else if(refl==='twinstar'){
-    sparkle(CX-R*.46,CY-R*.46,R*.4,1);sparkle(CX+R*.42,CY+R*.4,R*.22,.85);
-  }else if(refl==='dust'){
-    [[-.5,-.45,.08],[-.2,-.7,.05],[.3,-.55,.06],[.6,-.1,.05],[.55,.35,.07],[.05,.5,.05],[-.45,.25,.06],[-.7,-.05,.04],[.2,.1,.04],[-.1,-.2,.05],[.35,.65,.04],[-.3,.62,.05]]
-      .forEach(([x,y,r])=>blob(CX+R*x,CY+R*y,R*r,'rgba(255,255,240,.85)'));
-  }else if(refl==='focus'){
-    blob(CX-R*.15,CY-R*.15,R*.6,'rgba(255,255,240,.5)');
-  }else if(refl==='inner'){
-    softArc(R*.78,0,Math.PI*2,10,.07);
-  }else if(refl==='tophaze'){
-    blob(CX,CY-R*.8,R*.85,'rgba(255,255,248,.95)',1.15,.5);blob(CX,CY-R*.66,R*.5,'rgba(255,255,255,.7)',1,.4);
-  }else if(refl==='tlbloom'){
-    blob(CX-R*.42,CY-R*.45,R*.7,'rgba(255,255,245,.85)',1,.8,-.6);blob(CX-R*.5,CY-R*.52,R*.28,'rgba(255,255,255,.9)');
-  }else if(refl==='trrim'){
-    softArc(R*.92,-1.25,-.2,24,.07);blob(CX+R*.55,CY-R*.55,R*.4,'rgba(255,250,215,.3)',.7,1,.8);
-  }else if(refl==='floor'){
-    blob(CX,CY+R*.8,R*1.0,'rgba(255,250,205,.98)',1,.42);blob(CX,CY+R*.5,R*.65,'rgba(255,245,170,.5)',1,.6);
-  }else if(refl==='rimhaze'){
-    ctx.fillStyle=radial(CX,CY,R*.55,R,[[0,'rgba(255,250,225,0)'],[.7,'rgba(255,250,225,.2)'],[1,'rgba(255,252,235,.55)']]);
-    ctx.fillRect(CX-R,CY-R,R*2,R*2);
-  }else if(refl==='sides'){
-    blob(CX-R*.92,CY,R*.65,'rgba(255,255,240,.95)',.55,1.4);blob(CX+R*.92,CY-R*.05,R*.65,'rgba(255,255,240,.95)',.55,1.4);
-  }else if(refl==='bokeh'){
-    [[-.45,-.45,.3,.7],[.1,-.62,.2,.6],[.5,-.3,.26,.55],[-.1,-.1,.16,.4],[.35,.2,.2,.4],[-.55,.2,.2,.5]]
-      .forEach(([x,y,r,a])=>blob(CX+R*x,CY+R*y,R*r,`rgba(255,255,245,${a})`));
-  }else if(refl==='tlarc'){
-    softArc(R*.88,3.5,5.0,40,.05);softArc(R*.88,3.7,4.8,16,.07);
-  }else if(refl==='core'){
-    blob(CX,CY+R*.2,R*.65,'rgba(255,242,170,.6)');blob(CX,CY+R*.25,R*.3,'rgba(255,252,215,.5)');
-  }else if(refl==='vfade'){
-    const g=ctx.createLinearGradient(0,CY-R,0,CY+R);
-    g.addColorStop(0,'rgba(255,252,228,.5)');g.addColorStop(.5,'rgba(255,252,228,0)');g.addColorStop(1,'rgba(255,244,180,.45)');
-    ctx.fillStyle=g;ctx.fillRect(CX-R,CY-R,R*2,R*2);
-  }else if(refl==='ledge'){
-    softArc(R*.95,2.4,3.9,34,.07);softArc(R*.96,2.55,3.75,8,.28);
-  }else if(refl==='tedge'){
-    softArc(R*.95,-2.55,-.6,34,.07);softArc(R*.96,-2.35,-.8,8,.26);
-  }else if(refl==='lilac'){
-    blob(CX+R*.72,CY+R*.5,R*.75,'rgba(205,175,255,.65)');blob(CX+R*.55,CY+R*.75,R*.5,'rgba(255,175,205,.5)');blob(CX-R*.1,CY-R*.85,R*.45,'rgba(190,175,255,.35)',1.4,.6);
-  }else if(refl==='bl'){
-    blob(CX-R*.6,CY+R*.65,R*.75,'rgba(255,244,175,.9)');blob(CX-R*.55,CY+R*.7,R*.3,'rgba(255,255,230,.8)');
-  }else if(refl==='toporange'){
-    blob(CX,CY-R*.85,R*1.0,'rgba(215,105,28,.55)',1.25,.62);
-  }else if(refl==='water'){
-    blob(CX,CY+R*.48,R*.85,'rgba(255,246,190,.8)',1,.24);
-    ctx.save();ctx.shadowColor='rgba(255,250,220,.9)';ctx.shadowBlur=10;ctx.lineWidth=3;
-    [[.55,.1,.4],[.4,.07,.5],[.25,.04,.6]].forEach(([rx,ry,a])=>{ctx.strokeStyle=`rgba(255,252,225,${a})`;ctx.beginPath();ctx.ellipse(CX,CY+R*.5,R*rx,R*ry,0,0,Math.PI*2);ctx.stroke()});ctx.restore();
-  }else if(refl==='rain'){
+  },
+  tophaze(){blob(CX,CY-R*.8,R*.85,'rgba(255,255,248,.95)',1.15,.5);blob(CX,CY-R*.66,R*.5,'rgba(255,255,255,.7)',1,.4)},
+  tlbloom(){blob(CX-R*.42,CY-R*.45,R*.7,'rgba(255,255,245,.85)',1,.8,-.6);blob(CX-R*.5,CY-R*.52,R*.28,'rgba(255,255,255,.9)')},
+  trrim(){softArc(R*.92,-1.25,-.2,24,.07);blob(CX+R*.55,CY-R*.55,R*.4,'rgba(255,250,215,.3)',.7,1,.8)},
+  floor(){blob(CX,CY+R*.8,R*1.0,'rgba(255,250,205,.98)',1,.42);blob(CX,CY+R*.5,R*.65,'rgba(255,245,170,.5)',1,.6)},
+  rimhaze(){ctx.fillStyle=radial(CX,CY,R*.55,R,[[0,'rgba(255,250,225,0)'],[.7,'rgba(255,250,225,.2)'],[1,'rgba(255,252,235,.55)']]);ctx.fillRect(CX-R,CY-R,R*2,R*2)},
+  sides(){curvedHL(2.6,3.7,.74,.97,.55,30);curvedHL(-.55,.55,.74,.97,.55,30)},
+  bokeh(){[[-.45,-.45,.3,.7],[.1,-.62,.2,.6],[.5,-.3,.26,.55],[-.1,-.1,.16,.4],[.35,.2,.2,.4],[-.55,.2,.2,.5]].forEach(([x,y,r,a])=>blob(CX+R*x,CY+R*y,R*r,`rgba(255,255,245,${a})`))},
+  tlarc(){softArc(R*.88,3.5,5.0,40,.05);softArc(R*.88,3.7,4.8,16,.07)},
+  core(){blob(CX,CY+R*.2,R*.65,'rgba(255,242,170,.6)');blob(CX,CY+R*.25,R*.3,'rgba(255,252,215,.5)')},
+  vfade(){const g=ctx.createLinearGradient(0,CY-R,0,CY+R);g.addColorStop(0,'rgba(255,252,228,.5)');g.addColorStop(.5,'rgba(255,252,228,0)');g.addColorStop(1,'rgba(255,244,180,.45)');ctx.fillStyle=g;ctx.fillRect(CX-R,CY-R,R*2,R*2)},
+  ledge(){softArc(R*.95,2.4,3.9,34,.07);softArc(R*.96,2.55,3.75,8,.28)},
+  tedge(){softArc(R*.95,-2.55,-.6,34,.07);softArc(R*.96,-2.35,-.8,8,.26)},
+  lilac(){blob(CX+R*.72,CY+R*.5,R*.75,'rgba(205,175,255,.65)');blob(CX+R*.55,CY+R*.75,R*.5,'rgba(255,175,205,.5)');blob(CX-R*.1,CY-R*.85,R*.45,'rgba(190,175,255,.35)',1.4,.6)},
+  bl(){blob(CX-R*.6,CY+R*.65,R*.75,'rgba(255,244,175,.9)');blob(CX-R*.55,CY+R*.7,R*.3,'rgba(255,255,230,.8)')},
+  toporange(){blob(CX,CY-R*.85,R*1.0,'rgba(215,105,28,.55)',1.25,.62)},
+  rain(){
     ctx.save();ctx.shadowColor='rgba(255,250,220,.8)';ctx.shadowBlur=6;ctx.lineCap='round';ctx.lineWidth=2.5;
     for(let i=0;i<42;i++){const x=CX+R*(((i*53)%100)/50-1)*.92,y=CY+R*(((i*37)%100)/50-1)*.8,l=R*(.08+((i*17)%10)/100);
       ctx.strokeStyle=`rgba(255,252,230,${.2+((i*7)%5)/20})`;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-l*.15,y+l);ctx.stroke()}
     ctx.restore();
-  }else if(refl==='diag'){
-    const g=ctx.createLinearGradient(CX-R,CY-R,CX+R*.3,CY+R*.3);
-    g.addColorStop(0,'rgba(255,255,245,.85)');g.addColorStop(.5,'rgba(255,252,230,.25)');g.addColorStop(1,'rgba(255,252,230,0)');
-    ctx.fillStyle=g;ctx.fillRect(CX-R,CY-R,R*2,R*2);
-  }else if(refl==='spot'){
-    [[.45,.42,.2,.5],[.2,.62,.1,.4],[.62,.18,.07,.35]].forEach(([x,y,r,a])=>{
-      ctx.fillStyle=radial(CX+R*x,CY+R*y,0,R*r,[[0,`rgba(255,250,225,${a})`],[1,'rgba(255,250,225,0)']]);
-      ctx.beginPath();ctx.arc(CX+R*x,CY+R*y,R*r,0,Math.PI*2);ctx.fill()});
-  }
+  },
+  diag(){const g=ctx.createLinearGradient(CX-R,CY-R,CX+R*.3,CY+R*.3);g.addColorStop(0,'rgba(255,255,245,.85)');g.addColorStop(.5,'rgba(255,252,230,.25)');g.addColorStop(1,'rgba(255,252,230,0)');ctx.fillStyle=g;ctx.fillRect(CX-R,CY-R,R*2,R*2)},
+  // ── 球體感強化樣式 ──
+  dual(){RF.tlbloom();curvedHL(.2,1.5,.82,.96,.45,24)},
+  dot(){blob(CX-R*.43,CY-R*.47,R*.35,'rgba(255,255,245,.5)');blob(CX-R*.43,CY-R*.47,R*.1,'rgba(255,255,255,.95)')},
+  bounce(){curvedHL(.15,1.55,.76,.97,.5,30);blob(CX+R*.5,CY+R*.55,R*.5,'rgba(255,240,170,.35)')},
+  shade(){ctx.fillStyle=radial(CX-R*.4,CY-R*.45,R*.1,R*1.6,[[0,'rgba(255,252,235,.45)'],[.35,'rgba(255,245,200,.1)'],[.7,'rgba(220,130,35,.12)'],[1,'rgba(180,85,20,.34)']]);ctx.fillRect(CX-R,CY-R,R*2,R*2)},
+  fresnel(){softArc(R*.95,0,Math.PI*2,30,.06);curvedHL(3.2,5.1,.82,.97,.45,22)},
+  back(){blob(CX,CY+R*.1,R*.7,'rgba(255,248,200,.65)');ctx.fillStyle=radial(CX,CY,R*.6,R,[[0,'rgba(225,125,35,0)'],[1,'rgba(225,125,35,.25)']]);ctx.fillRect(CX-R,CY-R,R*2,R*2)},
+  twoarc(){curvedHL(3.75,4.5,.52,.62,.5,24);curvedHL(3.55,4.7,.7,.78,.42,24)}
+};
+function drawReflRaw(){
+  if(refl==='none')return;
+  sphereBase();
+  (RF[refl]||(()=>{}))();
 }
 $('refl').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;refl=b.dataset.r;
@@ -282,32 +243,34 @@ function render(){
   if(dark){ctx.fillStyle=radial(CX,CY,0,W*.75,[[0,'#0b1220'],[1,'#02040a']]);ctx.fillRect(0,0,W,W)}
   const gl=+$('glow').value/100;
   // 外圍光暈：金橘 → 粉 → 淡紫
-  ctx.fillStyle=radial(CX,CY,R*.85,R*1.62,[[0,`rgba(255,215,95,${.95*gl})`],[.18,`rgba(255,185,70,${.6*gl})`],[.4,`rgba(255,150,120,${.38*gl})`],[.65,`rgba(175,140,255,${.22*gl})`],[1,'rgba(160,130,255,0)']]);
+  ctx.fillStyle=radial(CX,CY,R*.9,R*1.7,[[0,`rgba(255,226,110,${.98*gl})`],[.125,`rgba(255,214,90,${.95*gl})`],[.25,`rgba(255,190,75,${.72*gl})`],[.44,`rgba(255,160,115,${.44*gl})`],[.69,`rgba(190,140,255,${.3*gl})`],[1,'rgba(160,130,255,0)']]);
   ctx.fillRect(0,0,W,W);
 
   ctx.save();
   ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.clip();
   // 琥珀底色
-  ctx.fillStyle=radial(CX,CY-30,0,R,[[0,'#ffe08a'],[.65,'#fabb3c'],[1,'#e9892a']]);
+  ctx.fillStyle=radial(CX,CY-30,0,R,[[0,'#fee79a'],[.6,'#fcdc80'],[1,'#f9cf68']]);
   ctx.fillRect(CX-R,CY-R,R*2,R*2);
-  if(img){drawPhoto();ctx.globalAlpha=.88;ctx.imageSmoothingQuality='high';ctx.drawImage(off,CX-R,CY-R,R*2,R*2);ctx.globalAlpha=1}
+  if(img){drawPhoto();ctx.globalAlpha=.96;ctx.imageSmoothingQuality='high';ctx.drawImage(off,CX-R,CY-R,R*2,R*2);ctx.globalAlpha=1}
   // 金色罩染：邊緣較深，像厚玻璃
-  ctx.fillStyle=radial(CX,CY,0,R,[[0,'rgba(255,225,130,.22)'],[.7,'rgba(250,190,70,.2)'],[1,'rgba(235,140,30,.3)']]);
+  ctx.fillStyle=radial(CX,CY,0,R,[[0,'rgba(255,225,130,.1)'],[.7,'rgba(250,195,80,.08)'],[1,'rgba(240,160,50,.12)']]);
   ctx.fillRect(CX-R,CY-R,R*2,R*2);
-  ctx.fillStyle='rgba(255,226,140,.16)';ctx.fillRect(CX-R,CY-R,R*2,R*2);
+  {const v=ctx.createLinearGradient(0,CY-R,0,CY+R);
+   v.addColorStop(0,'rgba(225,115,35,.14)');v.addColorStop(.45,'rgba(225,115,35,0)');v.addColorStop(1,'rgba(255,238,160,.28)');
+   ctx.fillStyle=v;ctx.fillRect(CX-R,CY-R,R*2,R*2)}
   // 底部聚光（玻璃折射的暖光）
-  ctx.fillStyle=radial(CX,CY+R*.62,0,R*.75,[[0,'rgba(255,246,190,.75)'],[1,'rgba(255,230,140,0)']]);
+  ctx.fillStyle=radial(CX,CY+R*.62,0,R*.75,[[0,'rgba(255,244,180,.55)'],[1,'rgba(255,230,140,0)']]);
   ctx.fillRect(CX-R,CY-R,R*2,R*2);
   // 邊緣漸層：橘黃 → 黃 → 淡黃白 → 白（柔和過渡）
   const e=+$('edge').value/100,k=Math.min(1,e*1.3);
-  ctx.fillStyle=radial(CX,CY,R*(.92-.4*e),R,[[0,'rgba(255,165,35,0)'],[.3,`rgba(255,172,45,${.34*k})`],[.6,`rgba(255,214,85,${.5*k})`],[.85,`rgba(255,244,190,${.76*k})`],[1,`rgba(255,255,248,${.95*k})`]]);
+  ctx.fillStyle=radial(CX,CY,R*(.9-.55*e),R,[[0,'rgba(255,215,90,0)'],[.35,`rgba(255,224,110,${.38*k})`],[.65,`rgba(255,236,150,${.58*k})`],[.88,`rgba(255,244,180,${.8*k})`],[1,`rgba(255,255,245,${.95*k})`]]);
   ctx.fillRect(CX-R,CY-R,R*2,R*2);
   drawRefl();
   ctx.restore();
 
-  // 外緣細光環
-  ctx.save();ctx.shadowColor='rgba(255,240,180,.9)';ctx.shadowBlur=14;ctx.strokeStyle=`rgba(255,248,215,${.4*k})`;ctx.lineWidth=3;
-  ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.stroke();ctx.restore();
+  // 外緣柔光：讓球邊緣與外圍光暈自然融合，不留硬邊
+  ctx.fillStyle=radial(CX,CY,R*.94,R*1.16,[[0,'rgba(255,236,170,0)'],[.4,`rgba(255,238,175,${.6*k})`],[1,'rgba(255,215,100,0)']]);
+  ctx.fillRect(0,0,W,W);
 
 
   if(!img){ctx.fillStyle='rgba(90,50,5,.55)';ctx.font='500 38px "Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.fillText('請上傳照片',CX,CY+12)}
@@ -315,7 +278,7 @@ function render(){
 
 function sync(){
   $('vz').textContent=(+$('zoom').value).toFixed(2);$('vx').textContent=$('ox').value;$('vy').textContent=$('oy').value;
-  $('vr').textContent=$('rot').value+'°';$('vt').textContent=$('tint').value;$('vg').textContent=$('glow').value;$('ve').textContent=$('edge').value;$('vs').textContent=$('rs').value;
+  $('vr').textContent=$('rot').value+'°';$('vt').textContent=$('tint').value;$('vg').textContent=$('glow').value;$('ve').textContent=$('edge').value;$('vs').textContent=$('rs').value;$('vp').textContent=$('pr').value;
   render();
 }
 ids.forEach(i=>$(i).addEventListener('input',sync));
