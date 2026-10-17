@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#b9e3fd" />
+  <meta name="theme-color" content="#9ecff8" />
   <title>KARMAWEI_</title>
   <style>
     :root {
@@ -22,30 +22,29 @@
       letter-spacing: 1.2px;
     }
 
-    /* 鎖死 Safari 根目錄，防止彈跳白邊 */
     html, body {
       width: 100%;
       min-height: 100%;
       margin: 0;
       padding: 0;
-      background-color: #b9e3fd;
+      background-color: #9ecff8;
       overscroll-behavior-y: none;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* 專為 Safari 優化的滿版固定雲朵背景：將雲朵圓心拓展至上下左右四個角落，確保頂部與底部都有白雲 */
+    /* 重新設計立體清晰的藍天白雲背景：加強白雲濃度與分佈，確保 Safari 上絕對不會消失 */
     .bg-sky {
       position: fixed;
       inset: 0;
       z-index: -999;
-      background-color: #b9e3fd;
+      background-color: #9ecff8;
       background-image: 
-        radial-gradient(circle at 15% 12%, rgba(255, 255, 255, 0.95) 0%, transparent 45%),
-        radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.85) 0%, transparent 55%),
-        radial-gradient(circle at 20% 88%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
-        radial-gradient(circle at 82% 85%, rgba(255, 255, 255, 0.95) 0%, transparent 45%),
-        linear-gradient(135deg, #a8d8fc 0%, #d8f0ff 50%, #eef6ff 100%);
+        radial-gradient(circle 160px at 15% 12%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),
+        radial-gradient(circle 180px at 85% 20%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 60%, transparent 100%),
+        radial-gradient(circle 220px at 50% 55%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 70%, transparent 100%),
+        radial-gradient(circle.190px at 20% 88%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),
+        radial-gradient(circle 170px at 82% 85%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),
+        linear-gradient(135deg, #7ec2f7 0%, #b3dcff 50%, #e2f2ff 100%);
       pointer-events: none;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
@@ -362,7 +361,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v24');
+        var saved = localStorage.getItem('generator_cards_v25');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -401,7 +400,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v24', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v25', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -476,7 +475,7 @@
 '<head>',
 '  <meta charset="UTF-8" />',
 '  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />',
-'  <meta name="theme-color" content="#b9e3fd" />',
+'  <meta name="theme-color" content="#9ecff8" />',
 '  <title>KARMAWEI_</title>',
 '  <style>',
 '    :root {',
@@ -486,17 +485,17 @@
 '      --text-main: #334155;',
 '    }',
 '    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }',
-'    html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; background-color: #b9e3fd; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }',
+'    html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; background-color: #9ecff8; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }',
 '    .bg-sky {',
 '      position: fixed; inset: 0; z-index: -999;',
-'      background-color: #b9e3fd;',
+'      background-color: #9ecff8;',
 '      background-image: ',
-'        radial-gradient(circle at 15% 12%, rgba(255, 255, 255, 0.95) 0%, transparent 45%),',
-'        radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),',
-'        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.85) 0%, transparent 55%),',
-'        radial-gradient(circle at 20% 88%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),',
-'        radial-gradient(circle at 82% 85%, rgba(255, 255, 255, 0.95) 0%, transparent 45%),',
-'        linear-gradient(135deg, #a8d8fc 0%, #d8f0ff 50%, #eef6ff 100%);',
+'        radial-gradient(circle 160px at 15% 12%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),',
+'        radial-gradient(circle 180px at 85% 20%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 60%, transparent 100%),',
+'        radial-gradient(circle 220px at 50% 55%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 70%, transparent 100%),',
+'        radial-gradient(circle 190px at 20% 88%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),',
+'        radial-gradient(circle 170px at 82% 85%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),',
+'        linear-gradient(135deg, #7ec2f7 0%, #b3dcff 50%, #e2f2ff 100%);',
 '      pointer-events: none;',
 '      -webkit-transform: translateZ(0); transform: translateZ(0);',
 '    }',
@@ -569,6 +568,7 @@ cards.map(function(c) {
       render();
       closeModal();
     };
+
     cards = loadData();
     render();
   </script>
