@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#9ecff8" />
+  <meta name="theme-color" content="#b9e3fd" />
   <title>KARMAWEI_</title>
   <style>
     :root {
@@ -22,59 +22,50 @@
       letter-spacing: 1.2px;
     }
 
+    /* 網頁外層：統一背景色，確保 Safari 上下絕無異色或白邊 */
     html, body {
       width: 100%;
-      min-height: 100%;
+      min-height: 100dvh;
       margin: 0;
       padding: 0;
-      background-color: #9ecff8;
-      overscroll-behavior-y: none;
+      background-color: #b9e3fd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* 重新設計立體清晰的藍天白雲背景：加強白雲濃度與分佈，確保 Safari 上絕對不會消失 */
-    .bg-sky {
-      position: fixed;
-      inset: 0;
-      z-index: -999;
-      background-color: #9ecff8;
-      background-image: 
-        radial-gradient(circle 160px at 15% 12%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),
-        radial-gradient(circle 180px at 85% 20%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 60%, transparent 100%),
-        radial-gradient(circle 220px at 50% 55%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 70%, transparent 100%),
-        radial-gradient(circle.190px at 20% 88%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),
-        radial-gradient(circle 170px at 82% 85%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),
-        linear-gradient(135deg, #7ec2f7 0%, #b3dcff 50%, #e2f2ff 100%);
-      pointer-events: none;
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: var(--text-main);
+    /* 圓角矩形天空容器 */
+    .sky-container {
+      width: 100%;
+      max-width: 480px;
+      min-height: 85dvh;
+      margin: 20px 16px;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 45%),
+        radial-gradient(circle at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 40%),
+        linear-gradient(135deg, #a8d8fc 0%, #d8f0ff 50%, #eef6ff 100%);
+      border-radius: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 20px 40px rgba(148, 163, 184, 0.25);
+      padding: 28px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px;
-      overflow-y: auto;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 960px;
-      z-index: 1;
     }
 
     .top-controls {
       text-align: center;
       margin-bottom: 24px;
+      width: 100%;
     }
 
     .controls-box {
       display: inline-flex;
-      gap: 16px;
-      padding: 12px 24px;
+      gap: 14px;
+      padding: 10px 20px;
       background: var(--glass-bg);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
@@ -84,12 +75,12 @@
     }
 
     .btn {
-      padding: 8px 22px;
+      padding: 8px 18px;
       border: 1px solid rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.85);
       color: var(--text-main);
       border-radius: 14px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       backdrop-filter: blur(15px);
@@ -100,50 +91,51 @@
       background: #ffffff;
     }
 
-    /* 網格與放大後的卡片設定 */
+    /* 網格與縮小後的卡片設定 */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      max-width: 650px;
-      margin: 0 auto;
+      gap: 14px;
+      width: 100%;
+      max-width: 400px;
       justify-items: center;
     }
 
-    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 400px) { 
+      .grid { grid-template-columns: repeat(3, 1fr); } 
+    }
 
     .card {
       position: relative;
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 18px;
+      border-radius: 16px;
       border: 1px solid var(--glass-border);
-      padding: 12px 10px;
+      padding: 10px 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       box-shadow: var(--glass-shadow);
       width: 100%;
-      max-width: 145px;
+      max-width: 120px;
       transform: none !important;
       transition: none !important;
     }
 
     .card-actions {
       position: absolute;
-      top: 6px;
-      right: 6px;
+      top: 5px;
+      right: 5px;
       display: flex;
-      gap: 4px;
+      gap: 3px;
       z-index: 2;
     }
 
-    /* 放大後的右上角三個小按鈕 */
+    /* 右上角操作按鈕 */
     .icon-btn {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       border: 1px solid rgba(255, 255, 255, 0.95);
       background: rgba(255, 255, 255, 0.92);
@@ -152,7 +144,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       box-shadow: 0 2px 6px rgba(148, 163, 184, 0.15);
     }
 
@@ -162,10 +154,10 @@
     }
 
     .card-img-wrapper {
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      margin-bottom: 8px;
+      width: 58px;
+      height: 58px;
+      border-radius: 10px;
+      margin-bottom: 6px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--glass-border);
@@ -181,7 +173,7 @@
     }
 
     .card-title {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
       text-align: center;
       width: 100%;
@@ -215,7 +207,7 @@
       border: 1px solid var(--glass-border);
       border-radius: 24px;
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       padding: 24px;
       box-shadow: 0 20px 50px rgba(148, 163, 184, 0.2);
     }
@@ -243,7 +235,6 @@
       font-size: 0.9rem;
     }
 
-    /* 圖片網址輸入框與上傳按鈕並排 */
     .input-row {
       display: flex;
       gap: 8px;
@@ -255,18 +246,15 @@
     }
 
     .upload-btn {
-      padding: 10px 16px;
+      padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid rgba(148, 163, 184, 0.3);
       background: rgba(255, 255, 255, 0.9);
       color: var(--text-main);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
     }
 
     .upload-btn:hover {
@@ -305,10 +293,8 @@
 </head>
 <body>
 
-  <!-- 滿版固定雲朵背景層 -->
-  <div class="bg-sky"></div>
-
-  <div class="container">
+  <!-- 圓角矩形天空容器 -->
+  <div class="sky-container">
     <div class="top-controls">
       <div class="controls-box">
         <button class="btn" id="addBtn">新增連結</button>
@@ -319,7 +305,7 @@
     <div class="grid" id="cardGrid"></div>
   </div>
 
-  <!-- 新增/編輯 Modal -->
+  <!-- 新增/編輯 Modal 視窗 -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <h2 id="modalTitle" style="margin-bottom:16px;font-size:1.1rem;">新增連結</h2>
@@ -349,6 +335,7 @@
     </div>
   </div>
 
+  <!-- 複製成功提示 Toast -->
   <div class="toast" id="toast">複製成功</div>
 
   <script>
@@ -361,7 +348,7 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v25');
+        var saved = localStorage.getItem('generator_cards_v27');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -392,7 +379,7 @@
             '<button type="button" class="icon-btn delete" onclick="deleteCard(\'' + card.id + '\')">✕</button>',
           '</div>',
           '<div class="card-img-wrapper">',
-            '<img class="card-img" src="' + card.img + '" alt="' + card.name + '" onerror="this.src=\'https://via.placeholder.com/72/ffffff/000000?text=Error\'">',
+            '<img class="card-img" src="' + card.img + '" alt="' + card.name + '" onerror="this.src=\'https://via.placeholder.com/58/ffffff/000000?text=Error\'">',
           '</div>',
           '<div class="card-title">' + card.name + '</div>'
         ].join('');
@@ -400,7 +387,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v25', JSON.stringify(cards));
+        localStorage.setItem('generator_cards_v27', JSON.stringify(cards));
       } catch (e) {}
     }
 
@@ -475,7 +462,7 @@
 '<head>',
 '  <meta charset="UTF-8" />',
 '  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />',
-'  <meta name="theme-color" content="#9ecff8" />',
+'  <meta name="theme-color" content="#b9e3fd" />',
 '  <title>KARMAWEI_</title>',
 '  <style>',
 '    :root {',
@@ -485,50 +472,44 @@
 '      --text-main: #334155;',
 '    }',
 '    * { box-sizing: border-box; margin: 0; padding: 0; letter-spacing: 1.2px; }',
-'    html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; background-color: #9ecff8; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }',
-'    .bg-sky {',
-'      position: fixed; inset: 0; z-index: -999;',
-'      background-color: #9ecff8;',
-'      background-image: ',
-'        radial-gradient(circle 160px at 15% 12%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),',
-'        radial-gradient(circle 180px at 85% 20%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 60%, transparent 100%),',
-'        radial-gradient(circle 220px at 50% 55%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 70%, transparent 100%),',
-'        radial-gradient(circle 190px at 20% 88%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),',
-'        radial-gradient(circle 170px at 82% 85%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 60%, transparent 100%),',
-'        linear-gradient(135deg, #7ec2f7 0%, #b3dcff 50%, #e2f2ff 100%);',
-'      pointer-events: none;',
-'      -webkit-transform: translateZ(0); transform: translateZ(0);',
+'    html, body { width: 100%; min-height: 100dvh; margin: 0; padding: 0; background-color: #b9e3fd; display: flex; justify-content: center; align-items: center; overflow-y: auto; -webkit-overflow-scrolling: touch; }',
+'    .sky-container {',
+'      width: 100%; max-width: 480px; min-height: 85dvh; margin: 20px 16px;',
+'      background: ',
+'        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.95) 0%, transparent 45%),',
+'        radial-gradient(circle at 80% 60%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),',
+'        radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.85) 0%, transparent 40%),',
+'        linear-gradient(135deg, #a8d8fc 0%, #d8f0ff 50%, #eef6ff 100%);',
+'      border-radius: 36px; border: 1px solid rgba(255, 255, 255, 0.9);',
+'      box-shadow: 0 20px 40px rgba(148, 163, 184, 0.25); padding: 28px 16px;',
+'      display: flex; flex-direction: column; align-items: center;',
 '    }',
-'    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--text-main); display: flex; flex-direction: column; align-items: center; padding: 24px 16px; overflow-y: auto; }',
-'    .container { max-width: 960px; margin: 0 auto; z-index: 1; position: relative; width: 100%; }',
-'    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 650px; margin: 0 auto; justify-items: center; }',
-'    @media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }',
-'    @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }',
+'    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: 100%; max-width: 400px; justify-items: center; }',
+'    @media (min-width: 400px) { .grid { grid-template-columns: repeat(3, 1fr); } }',
 '    .card {',
 '      background: var(--glass-bg); backdrop-filter: blur(20px);',
-'      border-radius: 18px; border: 1px solid var(--glass-border);',
-'      padding: 12px 10px; display: flex; flex-direction: column; align-items: center;',
+'      border-radius: 16px; border: 1px solid var(--glass-border);',
+'      padding: 10px 8px; display: flex; flex-direction: column; align-items: center;',
 '      text-decoration: none; color: var(--text-main); box-shadow: var(--glass-shadow);',
-'      width: 100%; max-width: 145px;',
+'      width: 100%; max-width: 120px;',
 '      transform: none !important; transition: none !important;',
 '    }',
 '    .card-img-wrapper {',
-'      width: 72px; height: 72px; border-radius: 12px; margin-bottom: 8px;',
+'      width: 58px; height: 58px; border-radius: 10px; margin-bottom: 6px;',
 '      overflow: hidden; background: rgba(255,255,255,0.8);',
 '      border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;',
 '    }',
 '    .card-img { width: 100%; height: 100%; object-fit: cover; }',
-'    .card-title { font-size: 0.82rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }',
+'    .card-title { font-size: 0.78rem; font-weight: 600; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }',
 '  </style>',
 '</head>',
 '<body>',
-'  <div class="bg-sky"></div>',
-'  <div class="container">',
+'  <div class="sky-container">',
 '    <div class="grid">',
 cards.map(function(c) {
   return [
 '      <a href="' + c.url + '" target="_blank" class="card">',
-'        <div class="card-img-wrapper"><img class="card-img" src="' + c.img + '" alt="' + c.name + '" onerror="this.src=\'https://via.placeholder.com/72/ffffff/000000?text=Error\'"></div>',
+'        <div class="card-img-wrapper"><img class="card-img" src="' + c.img + '" alt="' + c.name + '" onerror="this.src=\'https://via.placeholder.com/58/ffffff/000000?text=Error\'"></div>',
 '        <div class="card-title">' + c.name + '</div>',
 '      </a>'
   ].join('\n');
