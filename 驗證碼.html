@@ -1245,6 +1245,17 @@
     }
   }
 
+  function bgPsychedelic(ctx,w,h,rng){
+    ctx.fillStyle = '#060607'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<3;i++){
+      const cx=rng()*w, cy=rng()*h, r=h*(0.3+rng()*0.4);
+      const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+      g.addColorStop(0,'rgba(40,120,100,0.14)');
+      g.addColorStop(1,'rgba(40,120,100,0)');
+      ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    }
+  }
+
   function bgWaterRipple(ctx,w,h,rng){
     const g = ctx.createLinearGradient(0,0,0,h);
     g.addColorStop(0,'#dceefa'); g.addColorStop(1,'#a8d4ec');
@@ -1482,6 +1493,10 @@
     { id:'tape', name:'膠帶', bg:bgTape, overlay:tapeOverlay,
       font:"'Patrick Hand', cursive", weight:400, sizeRatio:.40, spacing:.06,
       color:'single', palette:['#4a3c30','#3a3a3a'], rot:10, jitter:.16 },
+    { id:'psychedelic', name:'迷幻', bg:bgPsychedelic, dark:true, noiseOutline:true,
+      font:"'Luckiest Guy', cursive", weight:400, sizeRatio:.40, spacing:.07,
+      color:'particleGlow', palette:['#f2d53c','#7ee87a'], glowColor:'rgba(70,230,190,0.9)',
+      rot:10, jitter:.16 },
   ];
 
   /* ---------- 字型清單（可覆寫樣式預設字型） ---------- */
@@ -1545,9 +1560,9 @@
     const widths = chars.map(ch => ctx.measureText(ch).width || fontSize*0.55);
     const seedPhase = rng()*10;
 
-    // 版面分佈模式：一半機率讓文字盡量撐滿整個版面，
-    // 另一半機率整體偏向某一邊或某個角落，製造聚散不一的排版
-    const fillMode = rng() < 0.5;
+    // 版面分佈模式：預設大多數時候讓每個字各自獨立散開（撐滿版面），
+    // 只有少數機率整體偏向某一邊或某個角落、呈現比較聚集的排版
+    const fillMode = rng() < 0.8;
     let biasDir = null;
     if(!fillMode){
       const dirs = ['up','down','left','right','upperLeft','upperRight','lowerLeft','lowerRight'];
@@ -1581,10 +1596,10 @@
     chars.forEach((ch,i)=>{
       const cw = widths[i];
       const followsBias = fillMode || rng() < 0.5;
-      const hDrift = followsBias ? (rng()-0.5)*fontSize*0.30 : (rng()-0.5)*fontSize*0.48;
+      const hDrift = followsBias ? (rng()-0.5)*fontSize*0.40 : (rng()-0.5)*fontSize*0.48;
       const cx = x + cw/2 + hDrift;
       const rawCy = fillMode
-        ? cyCenter + Math.sin(i*1.9+seedPhase)*h*0.28 + (rng()-0.5)*h*0.34
+        ? cyCenter + (rng()-0.5)*h*0.62 + Math.sin(i*1.9+seedPhase)*h*0.12
         : (followsBias
             ? cyCenter + Math.sin(i*1.9+seedPhase)*fontSize*style.jitter*0.85 + (rng()-0.5)*fontSize*style.jitter*0.7
             : h*(0.14+rng()*0.72));
@@ -1668,6 +1683,52 @@
         if(style.glow){ ctx.shadowColor=col; ctx.shadowBlur=fontSize*0.22; }
         ctx.fillStyle = col;
         ctx.fillText(p.ch,0,0);
+      } else if(style.color==='particleGlow'){
+        const glow = style.glowColor || 'rgba(70,230,190,0.9)';
+        const glowBright = style.glowBright || 'rgba(150,255,230,0.95)';
+        ctx.lineJoin='round';
+        // 由寬、淡、模糊逐層收斂到窄、亮、清楚的外框線，每層再加一點點
+        // 隨機位移，打破完美對稱的同心圓感，做出融化、暈染不均勻的效果
+        const haloLayers = [
+          { blur: fontSize*0.30, width: fontSize*0.22, alpha:0.20, color:glow },
+          { blur: fontSize*0.19, width: fontSize*0.15, alpha:0.30, color:glow },
+          { blur: fontSize*0.10, width: fontSize*0.10, alpha:0.48, color:glow },
+          { blur: fontSize*0.045, width: fontSize*0.055, alpha:0.85, color:glowBright }
+        ];
+        haloLayers.forEach(step=>{
+          const dx=(rng()-0.5)*fontSize*0.035;
+          const dy=(rng()-0.5)*fontSize*0.03 + fontSize*0.012;
+          ctx.save();
+          ctx.translate(dx,dy);
+          ctx.filter = `blur(${step.blur}px)`;
+          ctx.globalAlpha = step.alpha;
+          ctx.strokeStyle = step.color;
+          ctx.lineWidth = step.width;
+          ctx.strokeText(p.ch,0,0);
+          ctx.restore();
+        });
+        // 核心文字保留極輕微柔邊，避免與外圍光暈的銜接太生硬
+        ctx.save();
+        ctx.filter = `blur(${fontSize*0.018}px)`;
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = col;
+        ctx.fillText(p.ch,0,0);
+        ctx.restore();
+        // 顆粒質感：用雜訊圖樣直接畫在文字範圍內（fillText／strokeText
+        // 只會在字形內部與外框線上留色，天然貼合字形不需額外裁切），
+        // 以 overlay 混合模式自然融入填色與光暈，做出噴漆顆粒粗糙感
+        if(noisePattern){
+          ctx.save();
+          ctx.globalCompositeOperation = 'overlay';
+          ctx.globalAlpha = 0.5;
+          ctx.fillStyle = noisePattern;
+          ctx.fillText(p.ch,0,0);
+          ctx.filter = `blur(${fontSize*0.03}px)`;
+          ctx.lineWidth = fontSize*0.16;
+          ctx.strokeStyle = noisePattern;
+          ctx.strokeText(p.ch,0,0);
+          ctx.restore();
+        }
       } else if(style.color==='alienGlow'){
         const dark = style.strokeColor || '#1b5e20';
         ctx.save();
