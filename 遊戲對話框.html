@@ -320,7 +320,7 @@ let currentFont  = 'sans';
 
 const styleGroups = {
   classic:[{key:'game1',name:'黑白'},{key:'style2',name:'藍'},{key:'style12',name:'粉'},{key:'style3',name:'紫'},{key:'mora2',name:'灰'},{key:'mora1',name:'咖'},{key:'maca2',name:'薄荷'},{key:'maca1',name:'淺粉'},{key:'style15',name:'純粉'},{key:'style1',name:'純紫'}],
-  new:[{key:'new3',name:'浪漫'},{key:'new8',name:'甜蜜'},{key:'new12',name:'藍波雲'},{key:'sum1',name:'夏日清涼'},{key:'style14',name:'白雲天空'},{key:'school1',name:'信紙藍'},{key:'new7',name:'信紙咖'}],
+  new:[{key:'new3',name:'浪漫'},{key:'new8',name:'甜蜜'},{key:'new12',name:'藍波雲'},{key:'sum1',name:'夏日清涼'},{key:'style14',name:'白雲天空'},{key:'school1',name:'信紙藍'},{key:'new7',name:'信紙咖'},{key:'field1',name:'田園'},{key:'antique1',name:'古典'}],
   transparent:[{key:'ani1',name:'白透'},{key:'ani2',name:'磨砂'},{key:'glass',name:'玻璃'}]
 };
 const styleMap = {
@@ -331,6 +331,8 @@ const styleMap = {
   ani2:{bg:'rgba(255,255,250,0.92)',border:'rgba(200,200,200,0.7)'}, glass:{bg:'rgba(80,200,240,0.30)',border:'rgba(255,255,255,0.90)',glass:1}, new3:{bg:'#FFEEF6',border:'#FFB7C5'}, new7:{bg:'#F5EFE2',border:'#A89078'}, new8:{bg:'#FFEEF2',border:'#F472B6'},
   new12:{bg:'#E0F7FA',border:'#FFFFFF'}, sum1:{bg:'#E6FFFA',border:'#22D3EE'},
   school1:{bg:'#EFF6FF',border:'#60A5FA'},
+  field1:{bg:'#EAF5FD',border:'#8EC1E8',text:'#3F5870',outline:4,outlineColor:'#FFFFFF'},
+  antique1:{bg:'#80695C',border:'#B8B8B8',dark:1,text:'#FFFFFF'},
 };
 
 // ── 字型載入 ─────────────────────────────────────────────────
@@ -420,6 +422,34 @@ function calcPreviewScale() {
   previewCtx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
+// ── 分層對話框輔助函式（田園 / 古典用）──────────────────────
+// 圓角矩形路徑（不呼叫 beginPath，方便組合）
+function rrPath(c, x, y, w, h, r) {
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y,     x + w, y + h, r);
+  c.arcTo(x + w, y + h, x,     y + h, r);
+  c.arcTo(x,     y + h, x,     y,     r);
+  c.arcTo(x,     y,     x + w, y,     r);
+  c.closePath();
+}
+// 由外而內一層一層疊色，回傳最內側的縮排距離
+function drawLayers(o, ow, oh, r, layers) {
+  let inset = 0;
+  layers.forEach(L => {
+    o.fillStyle = L.c;
+    o.beginPath();
+    rrPath(o, inset, inset, ow - inset * 2, oh - inset * 2, Math.max(0, r - inset));
+    o.fill();
+    inset += L.w;
+  });
+  return inset;
+}
+function makeOffscreen(w, h) {
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h));
+  return c;
+}
 function drawCore(ctx, cw, ch) {
   const txt    = dialogueText.value.trim() || ' ';
   const col    = textColor.value;
@@ -563,19 +593,18 @@ function drawCore(ctx, cw, ch) {
       }
     });
   } else if (currentStyle === 'new12') {
-    // 藍波雲：連續波浪邊框，用弧形序列構成封閉雲朵輪廓
-    const rx = bl, ry = bt, rw = boxW, rh = boxH;
-    const bump = Math.max(7*s, Math.min(18*s, rw * 0.032)); // 每個波浪弧半徑
-    const lw = Math.max(2, 3 * s);
-
-    // 沿一條邊畫連續弧形（交替上凸/下凸，形成波浪）
-    // 從 (x0,y0) 到 (x1,y1)，凸出方向由 sign 決定（+1 或 -1）
-    // 固定凸出到法線方向
+    // 藍波雲：連續波浪邊框，由內到外：淺藍細框、白色粗框、深藍細框
+    const tl = Math.max(1.5, 2 * s), tw = Math.max(3, 6 * s), td = Math.max(1.5, 2.5 * s);
+    const E  = tl + tw + td;                                   // 三層外框總厚度
+    const bump = Math.max(7*s, Math.min(18*s, boxW * 0.032));  // 每個波浪弧半徑
+    const m  = Math.ceil(bump + 4);
+    const oc = makeOffscreen(boxW + m * 2, boxH + m * 2), o = oc.getContext('2d');
+    // 雲朵路徑往內縮 E，讓三層外框疊上去後整體大小仍與原對話框接近
+    const rx = m + E, ry = m + E, rw = boxW - E * 2, rh = boxH - E * 2;
     function wavyEdge(x0, y0, x1, y1, outwardSign) {
       const dx = x1-x0, dy = y1-y0;
       const len = Math.sqrt(dx*dx+dy*dy);
       const n = Math.max(2, Math.round(len/(bump*2)));
-      // 法線方向（朝外）
       const nx = -dy/len * outwardSign;
       const ny =  dx/len * outwardSign;
       for (let i=0; i<n; i++) {
@@ -583,39 +612,30 @@ function drawCore(ctx, cw, ch) {
         const ex = x0 + dx*t1, ey = y0 + dy*t1;
         const mx = x0 + dx*(i+0.5)/n + nx*bump;
         const my = y0 + dy*(i+0.5)/n + ny*bump;
-        ctx.quadraticCurveTo(mx, my, ex, ey);
+        o.quadraticCurveTo(mx, my, ex, ey);
       }
     }
-
-    // 圓角半徑（四角用弧銜接，確保圓潤）
     const cr = bump * 1.1;
     function buildWavyCloud() {
-      ctx.beginPath();
-      // 左上角 → 上邊起點
-      ctx.moveTo(rx + cr, ry);
-      // 上邊（向上凸，sign=-1）
+      o.beginPath();
+      o.moveTo(rx + cr, ry);
       wavyEdge(rx+cr, ry, rx+rw-cr, ry, -1);
-      // 右上圓角
-      ctx.arcTo(rx+rw, ry, rx+rw, ry+cr, cr);
-      // 右邊（向右凸，sign=-1）
+      o.arcTo(rx+rw, ry, rx+rw, ry+cr, cr);
       wavyEdge(rx+rw, ry+cr, rx+rw, ry+rh-cr, -1);
-      // 右下圓角
-      ctx.arcTo(rx+rw, ry+rh, rx+rw-cr, ry+rh, cr);
-      // 下邊（向下凸，sign=1，從右到左方向 sign 反轉）
+      o.arcTo(rx+rw, ry+rh, rx+rw-cr, ry+rh, cr);
       wavyEdge(rx+rw-cr, ry+rh, rx+cr, ry+rh, -1);
-      // 左下圓角
-      ctx.arcTo(rx, ry+rh, rx, ry+rh-cr, cr);
-      // 左邊（向左凸，sign=-1，從下到上）
+      o.arcTo(rx, ry+rh, rx, ry+rh-cr, cr);
       wavyEdge(rx, ry+rh-cr, rx, ry+cr, -1);
-      // 左上圓角
-      ctx.arcTo(rx, ry, rx+cr, ry, cr);
-      ctx.closePath();
+      o.arcTo(rx, ry, rx+cr, ry, cr);
+      o.closePath();
     }
-
-    buildWavyCloud(); ctx.fill();
-    ctx.strokeStyle = sty.border;
-    ctx.lineWidth = lw;
-    buildWavyCloud(); ctx.stroke();
+    // 以同一條路徑由粗到細疊描邊（線寬為單側厚度的 2 倍），最後填底色蓋住內側那一半
+    o.lineJoin = 'round';
+    o.strokeStyle = '#2F6DB5'; o.lineWidth = (tl + tw + td) * 2; buildWavyCloud(); o.stroke();  // 最外：深藍細框
+    o.strokeStyle = '#FFFFFF'; o.lineWidth = (tl + tw) * 2;      buildWavyCloud(); o.stroke();  // 中間：白色粗框
+    o.strokeStyle = '#8FD3F2'; o.lineWidth = tl * 2;             buildWavyCloud(); o.stroke();  // 最內：淺藍細框
+    o.fillStyle = sty.bg; buildWavyCloud(); o.fill();
+    ctx.drawImage(oc, bl - m, bt - m);
   } else if (currentStyle === 'sum1') {
     // 夏日清涼：漸層背景 + 水滴/雪花點綴
     const sg = ctx.createLinearGradient(bl, bt, bl + boxW, bt + boxH);
@@ -690,6 +710,54 @@ function drawCore(ctx, cw, ch) {
         drawPixelPeach(px, py);
       }
     });
+  } else if (currentStyle === 'field1') {
+    // 田園：四層淺藍外框 + 格紋背景（條紋交疊處顏色較深）
+    const oc = makeOffscreen(boxW, boxH), o = oc.getContext('2d');
+    const ow = oc.width, oh = oc.height, r = 14 * s;
+    const inset = drawLayers(o, ow, oh, r, [
+      { w: Math.max(3,   7 * s), c: '#A9D4F1' },   // 第 1 層：外圈淺藍
+      { w: Math.max(1.5, 3 * s), c: '#F2FAFF' },   // 第 2 層：亮白藍細線
+      { w: Math.max(2.5, 5 * s), c: '#8EC1E8' },   // 第 3 層：中藍色帶
+      { w: Math.max(1.5, 2 * s), c: '#D6EBFA' }    // 第 4 層：內側淡藍線
+    ]);
+    const ix = inset, iy = inset, iw = ow - inset * 2, ih = oh - inset * 2;
+    o.save();
+    o.beginPath(); rrPath(o, ix, iy, iw, ih, Math.max(0, r - inset)); o.clip();
+    o.fillStyle = '#EAF5FD'; o.fillRect(ix, iy, iw, ih);
+    // 格紋：直條 + 橫條半透明疊加，交疊區自然變深
+    const per = Math.max(10, fSize * 0.62), half = per / 2;
+    o.fillStyle = 'rgba(140,195,235,0.28)';
+    for (let x = ix; x < ix + iw; x += per) o.fillRect(x, iy, half, ih);
+    for (let y = iy; y < iy + ih; y += per) o.fillRect(ix, y, iw, half);
+    o.restore();
+    ctx.drawImage(oc, bl, bt);
+  } else if (currentStyle === 'antique1') {
+    // 古典：深灰 → 白 → 淺灰 三層外框 + 淺咖啡斜網點背景
+    const oc = makeOffscreen(boxW, boxH), o = oc.getContext('2d');
+    const ow = oc.width, oh = oc.height, r = 2 * s;
+    const inset = drawLayers(o, ow, oh, r, [
+      { w: Math.max(4, 6 * s), c: '#3A3A3A' },  // 最外層：深灰
+      { w: Math.max(2, 3 * s), c: '#FFFFFF' },  // 白色細框
+      { w: Math.max(4, 5.5 * s), c: '#B8B8B8' }   // 白色內側：淺灰
+    ]);
+    const ix = inset, iy = inset, iw = ow - inset * 2, ih = oh - inset * 2;
+    o.save();
+    o.beginPath(); rrPath(o, ix, iy, iw, ih, Math.max(0, r - inset)); o.clip();
+    o.fillStyle = '#80695C'; o.fillRect(ix, iy, iw, ih);
+    // 斜網點：2p×2p 圖塊內對角放兩顆小方點，平鋪後形成斜向網點
+    const p = Math.max(4, Math.round(4 * s)), d = Math.max(2, Math.round(p / 2));
+    const tile = makeOffscreen(p * 2, p * 2), t = tile.getContext('2d');
+    t.fillStyle = 'rgba(55,36,28,0.38)';
+    t.fillRect(0, 0, d, d); t.fillRect(p, p, d, d);
+    o.fillStyle = o.createPattern(tile, 'repeat');
+    o.fillRect(ix, iy, iw, ih);
+    o.restore();
+    // 底部中央的紅色小三角（繼續提示）
+    const tw = 11 * s, th = 12 * s, tcx = ow / 2, tby = oh - 2 * s;
+    o.beginPath(); o.moveTo(tcx - tw, tby - th); o.lineTo(tcx + tw, tby - th); o.lineTo(tcx, tby); o.closePath();
+    o.fillStyle = '#C0392B'; o.fill();
+    o.lineJoin = 'round'; o.lineWidth = Math.max(1, 1.5 * s); o.strokeStyle = '#FFFFFF'; o.stroke();
+    ctx.drawImage(oc, bl, bt);
   } else if (currentStyle === 'new7' || currentStyle === 'school1') {
     // 信紙咖 / 信紙藍：底色 + 橫線
     // 以整個對話框為一套統一網格，線條先畫、文字後畫覆蓋在上面，
@@ -791,7 +859,20 @@ function bindFontBtn() {
   });
 }
 
-function autoFontColor() { textColor.value = styleMap[currentStyle].dark ? '#fff' : '#000'; }
+function autoFontColor() {
+  const st = styleMap[currentStyle];
+  textColor.value = st.text || (st.dark ? '#ffffff' : '#000000');
+  // 樣式若有預設文字外框就套用；離開該樣式時還原為無外框
+  if (st.outline) {
+    textOutlineWidth.value = st.outline;
+    textOutlineColor.value = st.outlineColor || '#FFFFFF';
+    autoFontColor.had = true;
+  } else if (autoFontColor.had) {
+    textOutlineWidth.value = 0;
+    autoFontColor.had = false;
+  }
+  updateSliderValues();
+}
 
 function updateSliderValues() {
   boxOpacityValue.textContent  = Math.round(boxOpacity.value * 100) + '%';
@@ -843,6 +924,7 @@ function bindAllEvent() {
       setTimeout(() => URL.revokeObjectURL(url), 500);
     }, 'image/png');
   };
+
   boxOpacity.addEventListener('input',       () => { updateSliderValues(); drawAll(); });
   textSizeSlider.addEventListener('input',   () => { updateSliderValues(); drawAll(); });
   bottomMarginSlider.addEventListener('input', () => { updateSliderValues(); drawAll(); });
