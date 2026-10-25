@@ -91,7 +91,7 @@
       background: #ffffff;
     }
 
-    /* 網格與更小尺寸的卡片設定 */
+    /* 網格與精巧縮小的卡片設定 */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -114,7 +114,7 @@
       align-items: center;
       box-shadow: var(--glass-shadow);
       width: 100%;
-      max-width: 95px; /* 進一步縮小卡片寬度 */
+      max-width: 95px;
       transform: none !important;
       transition: none !important;
     }
@@ -128,7 +128,6 @@
       z-index: 2;
     }
 
-    /* 右上角操作按鈕跟隨縮小 */
     .icon-btn {
       width: 22px;
       height: 22px;
@@ -150,7 +149,7 @@
     }
 
     .card-img-wrapper {
-      width: 48px; /* 圖片尺寸縮小 */
+      width: 48px;
       height: 48px;
       border-radius: 8px;
       margin-bottom: 5px;
@@ -169,7 +168,7 @@
     }
 
     .card-title {
-      font-size: 0.72rem; /* 字體微調縮小 */
+      font-size: 0.72rem;
       font-weight: 600;
       text-align: center;
       width: 100%;
@@ -344,7 +343,8 @@
 
     function loadData() {
       try {
-        var saved = localStorage.getItem('generator_cards_v28');
+        // 使用固定的永久儲存鍵名，確保未來更新也不會遺失資料
+        var saved = localStorage.getItem('karmawei_links_storage');
         if (saved) {
           var parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -383,7 +383,7 @@
       });
 
       try {
-        localStorage.setItem('generator_cards_v28', JSON.stringify(cards));
+        localStorage.setItem('karmawei_links_storage', JSON.stringify(cards));
       } catch (e) {}
     }
 
