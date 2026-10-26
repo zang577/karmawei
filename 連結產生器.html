@@ -343,7 +343,6 @@
 
     function loadData() {
       try {
-        // 使用固定的永久儲存鍵名，確保未來更新也不會遺失資料
         var saved = localStorage.getItem('karmawei_links_storage');
         if (saved) {
           var parsed = JSON.parse(saved);
@@ -384,7 +383,9 @@
 
       try {
         localStorage.setItem('karmawei_links_storage', JSON.stringify(cards));
-      } catch (e) {}
+      } catch (e) {
+        alert('警告：儲存空間不足！上傳的圖片可能過大，請嘗試使用較小的圖片或圖片網址。');
+      }
     }
 
     window.moveCard = function(index, direction) {
@@ -437,12 +438,31 @@
       if (card) openModal(card);
     };
 
+    /* 關鍵修復：加入 Canvas 自動壓縮上傳圖片，防止圖片過大撐爆 localStorage */
     document.getElementById('fileInput').addEventListener('change', function(e) {
       var file = e.target.files[0];
       if (file) {
         var reader = new FileReader();
         reader.onload = function(event) {
-          document.getElementById('inputImg').value = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var maxSize = 128;
+            var width = img.width;
+            var height = img.height;
+            if (width > height) {
+              if (width > maxSize) { height *= maxSize / width; width = maxSize; }
+            } else {
+              if (height > maxSize) { width *= maxSize / height; height = maxSize; }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            document.getElementById('inputImg').value = compressedDataUrl;
+          };
+          img.src = event.target.result;
         };
         reader.readAsDataURL(file);
       }
