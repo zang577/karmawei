@@ -9,94 +9,159 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Taipei+Sans+TC+Beta:wght@400;700;900&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+HK:wght@400;700;900&family=Klee+One:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --white: #FFFFFF;
-    --paper: #FBFAF8;
-    --ink: #4A433D;
-    --ink-soft: #857B72;
-    --line: #E7E1D9;
-    --rose: #C9A79E;
-    --rose-deep: #B08D82;
-    --sage: #A6AF9C;
-    --taupe: #C7BDAE;
-    --slate: #97A2A0;
-    --shadow: 0 8px 24px rgba(74,67,61,0.08);
+    /* ink */
+    --white:#FFFFFF;
+    --ink:#26252A;
+    --ink-soft:#6B6972;
+    --line:rgba(120,128,160,0.16);
+
+    /* the one accent: banner vermilion */
+    --accent:#E0392D;
+    --accent-deep:#B8281E;
+    --accent-ring:rgba(224,57,45,0.55);
+
+    /* legacy names kept so inline styles / JS keep working */
+    --paper:#FBFBFD;
+    --rose:#E8A29B;
+    --rose-deep:var(--accent-deep);
+    --shadow:0 8px 24px rgba(60,70,100,0.10);
+
+    /* liquid-glass tokens */
+    --glass-blur:blur(28px) saturate(175%);
+    --glass-fill:
+      radial-gradient(120% 90% at 0% 0%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 55%),
+      linear-gradient(150deg, rgba(255,255,255,0.74), rgba(255,255,255,0.40));
+    --glass-rim:
+      inset 0 1px 1px rgba(255,255,255,1),
+      inset 2px 2px 6px -2px rgba(255,255,255,0.95),
+      inset -2px -3px 8px -3px rgba(120,130,170,0.20),
+      inset 0 0 0 1px rgba(255,255,255,0.55);
+    --glass-drop:
+      0 22px 50px -18px rgba(60,72,110,0.28),
+      0 4px 10px -4px rgba(60,72,110,0.10),
+      0 0 0 1px rgba(120,130,170,0.10);
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--white);
+    background:linear-gradient(180deg,#FFFFFF 0%,#F7F8FC 100%);
+    background-attachment:fixed;
     color:var(--ink);
     font-family:"Inter","Noto Sans TC",sans-serif;
     min-height:100vh;
+    overflow-x:hidden;
   }
+  button{font-family:inherit;}
+
+  /* ---------- Ambient light behind the glass ---------- */
+  .ambient{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(70px);
+    will-change:transform;
+  }
+  .orb.o1{
+    width:46vmax;height:46vmax;
+    left:-14vmax;top:-16vmax;
+    background:radial-gradient(circle at 40% 40%, rgba(196,201,212,0.60), rgba(196,201,212,0) 68%);
+    animation:drift1 26s ease-in-out infinite alternate;
+  }
+  .orb.o2{
+    width:44vmax;height:44vmax;
+    right:-16vmax;top:6vmax;
+    background:radial-gradient(circle at 50% 50%, rgba(222,226,234,0.70), rgba(222,226,234,0) 68%);
+    animation:drift2 32s ease-in-out infinite alternate;
+  }
+  .orb.o3{
+    width:40vmax;height:40vmax;
+    left:18vw;bottom:-20vmax;
+    background:radial-gradient(circle at 50% 50%, rgba(176,182,196,0.42), rgba(176,182,196,0) 68%);
+    animation:drift3 38s ease-in-out infinite alternate;
+  }
+  @keyframes drift1{to{transform:translate(8vmax,6vmax) scale(1.08);}}
+  @keyframes drift2{to{transform:translate(-7vmax,9vmax) scale(0.94);}}
+  @keyframes drift3{to{transform:translate(9vmax,-6vmax) scale(1.1);}}
+  @media (prefers-reduced-motion: reduce){
+    .orb{animation:none;}
+    *{transition-duration:0.01ms !important;}
+  }
+
   .wrap{
+    position:relative;
+    z-index:1;
     max-width:1000px;
     margin:0 auto;
     padding:28px 20px 60px;
   }
-  header{
-    margin-bottom:20px;
-  }
-  h1{
-    font-family:"LXGW WenKai TC","Noto Sans TC",serif;
-    font-weight:700;
-    font-size:26px;
-    margin:0;
-    letter-spacing:0.02em;
-    color:var(--ink);
-  }
+  header{margin-bottom:0;}
 
   /* ---------- Stage (preview) ---------- */
   .stage-area{
-    background:var(--white);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:16px;
-    box-shadow:0 10px 28px rgba(74,67,61,0.14);
-    margin-bottom:22px;
     position:sticky;
-    top:12px;
+    top:0;
     z-index:20;
+    padding-top:12px;
+    padding-bottom:12px;
+    margin:0 -20px 10px;
+    padding-left:20px;
+    padding-right:20px;
+  }
+  .stage-inner{
+    background:var(--glass-fill);
+    -webkit-backdrop-filter:var(--glass-blur);
+    backdrop-filter:var(--glass-blur);
+    border-radius:30px;
+    padding:14px;
+    box-shadow:var(--glass-rim), var(--glass-drop);
   }
   .stage-frame{
     position:relative;
     width:100%;
-    border-radius:10px;
+    border-radius:20px;
     overflow:hidden;
     background:
-      linear-gradient(45deg, #EFEAE2 25%, transparent 25%),
-      linear-gradient(-45deg, #EFEAE2 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #EFEAE2 75%),
-      linear-gradient(-45deg, transparent 75%, #EFEAE2 75%);
-    background-size: 24px 24px;
-    background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+      linear-gradient(45deg, #ECEEF3 25%, transparent 25%),
+      linear-gradient(-45deg, #ECEEF3 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ECEEF3 75%),
+      linear-gradient(-45deg, transparent 75%, #ECEEF3 75%);
+    background-size:24px 24px;
+    background-position:0 0, 0 12px, 12px -12px, -12px 0;
     background-color:#fff;
     display:flex;
     align-items:center;
     justify-content:center;
+    box-shadow:
+      inset 0 2px 8px rgba(60,72,110,0.12),
+      inset 0 0 0 1px rgba(120,130,170,0.14);
   }
-  #stage{
-    display:block;
-    width:100%;
-    height:auto;
-  }
+  #stage{display:block;width:100%;height:auto;}
 
   /* ---------- Controls ---------- */
   .panel{
-    background:var(--paper);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:20px;
-    box-shadow:var(--shadow);
+    background:var(--glass-fill);
+    -webkit-backdrop-filter:var(--glass-blur);
+    backdrop-filter:var(--glass-blur);
+    border-radius:30px;
+    padding:22px;
+    box-shadow:var(--glass-rim), var(--glass-drop);
   }
   .grid-fields{
     display:grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:1fr 1fr;
     gap:14px;
     margin-bottom:18px;
   }
-  @media (max-width: 620px){
+  @media (max-width:620px){
     .grid-fields{grid-template-columns:1fr;}
+    .panel{padding:18px;border-radius:26px;}
+    .stage-inner{border-radius:26px;}
   }
   .field label{
     font-size:12px;
@@ -104,80 +169,108 @@
     color:var(--ink-soft);
     letter-spacing:0.04em;
     display:block;
-    margin-bottom:6px;
+    margin-bottom:8px;
   }
   input[type="text"]{
     width:100%;
-    padding:10px 12px;
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:var(--white);
+    padding:11px 14px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.80));
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px);
     font-family:"Noto Sans TC",sans-serif;
     font-size:14px;
     color:var(--ink);
     outline:none;
-    transition:border-color .15s ease;
+    transition:box-shadow .2s ease, background .2s ease;
+    box-shadow:
+      inset 0 2px 5px rgba(60,72,110,0.10),
+      inset 0 0 0 1px rgba(120,130,170,0.16),
+      0 1px 0 rgba(255,255,255,0.9);
   }
   input[type="text"]:focus{
-    border-color:var(--rose-deep);
+    background:rgba(255,255,255,0.95);
+    box-shadow:
+      inset 0 1px 3px rgba(60,72,110,0.08),
+      inset 0 0 0 1.5px var(--accent-ring),
+      0 0 0 4px rgba(224,57,45,0.12);
   }
-  .row{
-    display:flex;
-    gap:14px;
-    align-items:flex-end;
-    flex-wrap:wrap;
-  }
-  .font-field{
-    flex:0 0 auto;
-  }
-  .radio-row{
-    display:flex;
-    gap:8px;
-  }
+  .row{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;}
+  .font-field{flex:0 0 auto;}
+  .radio-row{display:flex;gap:8px;}
+
+  /* glass chip (segmented choice) */
   .radio-chip{
     text-align:center;
-    padding:9px 16px;
-    border-radius:10px;
-    border:1px solid var(--line);
-    background:var(--white);
+    padding:9px 18px;
+    border-radius:999px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.42));
+    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);
     font-size:13px;
     cursor:pointer;
     color:var(--ink);
-    transition:all .15s ease;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
     user-select:none;
+    box-shadow:
+      inset 0 1px 1px #fff,
+      inset 0 -2px 4px -1px rgba(120,130,170,0.16),
+      0 0 0 1px rgba(120,130,170,0.14),
+      0 4px 10px -4px rgba(60,72,110,0.14);
   }
-  .radio-chip.sans{font-family:"Noto Sans TC",sans-serif; font-weight:700;}
+  .radio-chip:hover{transform:translateY(-1px);}
   .radio-chip.active{
-    background:var(--rose-deep);
-    border-color:var(--rose-deep);
-    color:#fff;
+    background:linear-gradient(180deg,#fff,rgba(255,255,255,0.88));
+    color:var(--accent-deep);
+    font-weight:700;
+    box-shadow:
+      inset 0 1px 1px #fff,
+      0 0 0 1.5px var(--accent-ring),
+      0 8px 18px -6px rgba(224,57,45,0.35);
   }
+
+  /* primary action: white liquid glass */
   .btn{
     display:flex;
     align-items:center;
     justify-content:center;
     gap:8px;
-    padding:11px 22px;
-    border-radius:10px;
-    border:1px solid var(--line);
-    background:var(--rose-deep);
-    color:#fff;
-    font-size:14px;
-    font-weight:600;
+    padding:14px 22px;
+    border-radius:999px;
+    border:none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 48%, rgba(255,255,255,0.25) 50%),
+      linear-gradient(180deg, rgba(255,255,255,0.90), rgba(236,239,246,0.85));
+    -webkit-backdrop-filter:blur(16px);
+    backdrop-filter:blur(16px);
+    color:var(--ink);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:0.06em;
     cursor:pointer;
-    transition:all .15s ease;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
     font-family:"Inter","Noto Sans TC",sans-serif;
     flex:1;
     min-width:160px;
+    box-shadow:
+      inset 0 1.5px 1px #fff,
+      inset 0 -3px 6px rgba(120,130,170,0.18),
+      0 0 0 1px rgba(120,130,170,0.18),
+      0 14px 26px -12px rgba(60,72,110,0.38);
   }
-  .btn:hover{background:#9E766B;}
-  .icon{width:15px; height:15px; flex:0 0 auto;}
+  .btn:hover{
+    transform:translateY(-1px);
+    box-shadow:
+      inset 0 1.5px 1px #fff,
+      inset 0 -3px 6px rgba(120,130,170,0.18),
+      0 0 0 1px rgba(120,130,170,0.24),
+      0 18px 30px -12px rgba(60,72,110,0.46);
+  }
+  .btn:active{transform:translateY(1px) scale(0.99);}
 
-  .style-swatches{
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-  }
+  /* ---------- Colour swatches (glass beads) ---------- */
+  .style-swatches{display:flex;gap:12px;flex-wrap:wrap;}
   .swatch-btn{
     display:flex;
     flex-direction:column;
@@ -194,14 +287,22 @@
     width:42px;
     height:42px;
     border-radius:50%;
-    border:3px solid transparent;
-    box-shadow:0 2px 6px rgba(74,67,61,0.15);
-    transition:all .15s ease;
+    box-shadow:
+      inset 0 2px 2px rgba(255,255,255,0.75),
+      inset 0 -4px 6px rgba(0,0,0,0.14),
+      0 0 0 3px rgba(255,255,255,0.85),
+      0 6px 14px -4px rgba(60,72,110,0.35);
+    transition:transform .18s ease, box-shadow .18s ease;
     position:relative;
   }
+  .swatch-btn:hover .swatch-circle{transform:translateY(-1px);}
   .swatch-btn.active .swatch-circle{
-    border-color:var(--rose-deep);
-    box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--rose-deep);
+    box-shadow:
+      inset 0 2px 2px rgba(255,255,255,0.75),
+      inset 0 -4px 6px rgba(0,0,0,0.14),
+      0 0 0 3px #fff,
+      0 0 0 5px rgba(38,37,42,0.55),
+      0 8px 16px -4px rgba(60,72,110,0.40);
   }
   .swatch-btn.active .swatch-circle::after{
     content:'✓';
@@ -215,50 +316,37 @@
     font-weight:700;
     text-shadow:0 1px 2px rgba(0,0,0,0.4);
   }
-  .swatch-label{
-    font-size:12px;
-    color:var(--ink-soft);
-  }
-  .swatch-btn.active .swatch-label{
-    color:var(--ink);
-    font-weight:700;
-  }
+  .swatch-label{font-size:12px;color:var(--ink-soft);}
+  .swatch-btn.active .swatch-label{color:var(--ink);font-weight:700;}
 
-  .custom-swatch-outer{
-    position:relative;
-    width:42px;
-    height:42px;
-    display:block;
-  }
+  .custom-swatch-outer{position:relative;width:42px;height:42px;display:block;}
   .custom-color-input{
     -webkit-appearance:none;
     appearance:none;
     width:42px;
     height:42px;
     border-radius:50%;
-    border:3px solid transparent;
-    box-shadow:0 2px 6px rgba(74,67,61,0.15);
+    border:none;
+    box-shadow:
+      inset 0 2px 2px rgba(255,255,255,0.75),
+      inset 0 -4px 6px rgba(0,0,0,0.14),
+      0 0 0 3px rgba(255,255,255,0.85),
+      0 6px 14px -4px rgba(60,72,110,0.35);
     padding:0;
     cursor:pointer;
     background:none;
-    transition:all .15s ease;
+    transition:transform .18s ease, box-shadow .18s ease;
   }
-  .custom-color-input::-webkit-color-swatch-wrapper{
-    padding:0;
-    border-radius:50%;
-    overflow:hidden;
-  }
-  .custom-color-input::-webkit-color-swatch{
-    border:none;
-    border-radius:50%;
-  }
-  .custom-color-input::-moz-color-swatch{
-    border:none;
-    border-radius:50%;
-  }
+  .custom-color-input::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;overflow:hidden;}
+  .custom-color-input::-webkit-color-swatch{border:none;border-radius:50%;}
+  .custom-color-input::-moz-color-swatch{border:none;border-radius:50%;}
   .swatch-btn.active .custom-color-input{
-    border-color:var(--rose-deep);
-    box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--rose-deep);
+    box-shadow:
+      inset 0 2px 2px rgba(255,255,255,0.75),
+      inset 0 -4px 6px rgba(0,0,0,0.14),
+      0 0 0 3px #fff,
+      0 0 0 5px rgba(38,37,42,0.55),
+      0 8px 16px -4px rgba(60,72,110,0.40);
   }
   .custom-check{
     position:absolute;
@@ -273,85 +361,102 @@
     opacity:0;
     pointer-events:none;
   }
-  .swatch-btn.active .custom-check{
-    opacity:1;
-  }
+  .swatch-btn.active .custom-check{opacity:1;}
 
-  .footer-note{
-    margin-top:22px;
-    font-size:11.5px;
-    color:var(--ink-soft);
-    text-align:center;
-    line-height:1.7;
-  }
-
-  .template-buttons{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-  }
+  /* ---------- Option tiles ---------- */
+  .template-buttons{display:flex;gap:10px;flex-wrap:wrap;}
   .tpl-btn{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:6px;
+    gap:7px;
     padding:10px 12px 9px;
-    border-radius:12px;
-    border:1.5px solid var(--line);
-    background:var(--white);
+    border-radius:20px;
+    border:none;
+    background:linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.40));
+    -webkit-backdrop-filter:blur(14px);
+    backdrop-filter:blur(14px);
     cursor:pointer;
-    transition:all .15s ease;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
     min-width:84px;
+    box-shadow:
+      inset 0 1px 1px #fff,
+      inset 0 -3px 6px -2px rgba(120,130,170,0.16),
+      0 0 0 1px rgba(120,130,170,0.14),
+      0 6px 14px -8px rgba(60,72,110,0.22);
   }
-  .tpl-btn:hover{border-color:var(--rose);}
+  .tpl-btn:hover{
+    transform:translateY(-2px);
+    background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.62));
+  }
   .tpl-btn.active{
-    border-color:var(--rose-deep);
-    background:#FBF3F0;
+    background:linear-gradient(180deg,#fff,rgba(255,255,255,0.90));
+    box-shadow:
+      inset 0 1px 1px #fff,
+      0 0 0 1.5px var(--accent-ring),
+      0 10px 22px -8px rgba(224,57,45,0.38);
   }
   .tpl-icon{
     width:64px;
     height:34px;
-    border-radius:4px;
-    background:#c81810;
+    border-radius:11px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.06) 46%, rgba(255,255,255,0) 50%),
+      linear-gradient(180deg,#e0261a,#b81209);
     position:relative;
     overflow:hidden;
     flex:0 0 auto;
-  }
-  .tpl-icon .bar{
-    position:absolute;
-    background:rgba(255,255,255,0.92);
-    border-radius:1px;
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.55),
+      inset 0 -2px 4px rgba(90,0,0,0.25),
+      0 0 0 1px rgba(160,20,10,0.25);
   }
   .tpl-icon.font-icon{
-    background:var(--white);
+    background:linear-gradient(180deg,#fff,rgba(244,246,252,0.85));
     display:flex;
     align-items:center;
     justify-content:center;
-    color:var(--rose-deep);
-    font-size:22px;
-    line-height:1;
-    border:1px solid var(--line);
-  }
-  .tpl-label{
-    font-size:12px;
-    color:var(--ink-soft);
-  }
-  .tpl-btn.active .tpl-label{
     color:var(--ink);
     font-weight:700;
+    box-shadow:
+      inset 0 1px 1px #fff,
+      inset 0 -2px 4px rgba(120,130,170,0.16),
+      0 0 0 1px rgba(120,130,170,0.16);
+  }
+  .tpl-icon .bar{position:absolute;background:rgba(255,255,255,0.92);border-radius:1px;}
+  .tpl-label{font-size:12px;color:var(--ink-soft);}
+  .tpl-btn.active .tpl-label{color:var(--ink);font-weight:700;}
+
+  /* ---------- Keyboard focus ---------- */
+  .tpl-btn:focus-visible,
+  .swatch-btn:focus-visible,
+  .btn:focus-visible,
+  .custom-color-input:focus-visible{
+    outline:2px solid var(--ink);
+    outline-offset:3px;
+  }
+
+  /* ---------- Fallback when backdrop-filter is missing ---------- */
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .stage-inner,.panel{background:rgba(255,255,255,0.94);}
   }
 </style>
 </head>
 <body>
+<div class="ambient" aria-hidden="true"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span></div>
 <div class="wrap">
 
-  <header>
-  </header>
+  <header></header>
 
   <!-- PREVIEW -->
   <div class="stage-area">
-    <div class="stage-frame">
-      <canvas id="stage"></canvas>
+    <div class="stage-inner">
+      <div class="stage-frame">
+        <canvas id="stage"></canvas>
+      </div>
+      <button class="btn" id="downloadBtn" style="width:100%; margin-top:14px;">
+        下載圖片
+      </button>
     </div>
   </div>
 
@@ -387,14 +492,12 @@
       <div class="style-swatches" id="styleSwatches"></div>
     </div>
 
-    <div class="field" style="margin-bottom:18px;">
-      <label>字型</label>
-      <div class="template-buttons" id="fontButtons"></div>
+    <div class="row">
+      <div class="font-field" style="flex:1 1 100%;">
+        <label style="font-size:12px;font-weight:600;color:var(--ink-soft);display:block;margin-bottom:6px;">字型</label>
+        <div class="template-buttons" id="fontButtons"></div>
+      </div>
     </div>
-
-    <button class="btn" id="downloadBtn" style="width:100%;">
-      下載圖片
-    </button>
   </div>
 </div>
 
@@ -413,28 +516,19 @@
   }
   const rand = mulberry32(20240613);
 
-  // ---------- fonts (all free for commercial use — SIL Open Font License) ----------
+  // ---------- banner color presets (sampled closer to real photographed vinyl banners) ----------
+  const STYLES = [
+    { id:'vivid',   name:'鮮紅', colors:['#ff3b28','#f01c10','#d81409','#b30f06'], light:'rgba(255,226,200,0.28)', vignette:0.13 },
+    { id:'bright',  name:'亮紅', colors:['#f2503e','#e5261a','#cc1810','#a8110a'], light:'rgba(255,232,210,0.26)', vignette:0.14 }
+  ];
+
+  // ---------- fonts (all commercially-usable via SIL Open Font License on Google Fonts) ----------
   const FONTS = [
     { id:'Noto Sans TC', name:'思源黑體', weight:900, sample:'紅' },
     { id:'Taipei Sans TC Beta', name:'台北黑體', weight:900, sample:'囍' },
     { id:'Noto Sans HK', name:'思源黑體HK', weight:900, sample:'賀' },
     { id:'LXGW WenKai TC', name:'霞鶩文楷', weight:700, sample:'慶' },
     { id:'Klee One', name:'圓潤手寫', weight:600, sample:'樂' }
-  ];
-
-  // ---------- banner intrinsic canvas ----------
-  const CORE_W = 1400, CORE_H = 320;   // banner rectangle
-  const PAD = 170;                     // room for ropes
-  const BC_W = CORE_W + PAD*2, BC_H = CORE_H + PAD*2;
-
-  const stage = document.getElementById('stage');
-  const ctx = stage.getContext('2d');
-  let dpr = Math.max(1, window.devicePixelRatio || 1);
-
-  // ---------- banner color presets (sampled closer to real photographed vinyl banners) ----------
-  const STYLES = [
-    { id:'vivid',    name:'鮮紅', colors:['#ff3b28','#f01c10','#d81409','#b30f06'], light:'rgba(255,226,200,0.28)', vignette:0.13 },
-    { id:'bright',   name:'亮紅', colors:['#f2503e','#e5261a','#cc1810','#a8110a'], light:'rgba(255,232,210,0.26)', vignette:0.14 }
   ];
 
   // ---------- banner layout templates ----------
@@ -454,11 +548,11 @@
     },
     {
       id:'threeLine', name:'三行標題',
-      icon:[{x:16,y:6,w:32,h:4},{x:8,y:14,w:48,h:8},{x:16,y:26,w:32,h:4}],
+      icon:[{x:18,y:5,w:28,h:4},{x:8,y:13,w:48,h:9},{x:16,y:26,w:32,h:4}],
       fields:[
-        {key:'top', label:'頂部小字', maxlength:20, default:'年度盛典'},
+        {key:'top', label:'頂部小標', maxlength:24, default:'年度盛典'},
         {key:'main', label:'主標題', maxlength:20, default:'感謝各界蒞臨指導'},
-        {key:'bottom', label:'底部小字', maxlength:20, default:'敬祝順利成功'}
+        {key:'bottom', label:'底部小標', maxlength:24, default:'敬祝順利成功'}
       ]
     },
     {
@@ -545,14 +639,14 @@
     }
   ];
 
-  // ---------- banner texture / wrinkle presets ----------
+  // ---------- fabric wrinkle textures ----------
   const TEXTURES = [
     {
-      id:'smooth', name:'平整光滑', seed:1001,
-      undulation:{count:2, ampMin:0.018, ampMax:0.03, blur:30, angleDeg:0},
-      major:{count:2, thickMin:0.007, thickMax:0.011, angleDeg:0, angleJitterDeg:8, blur:14, lengthMult:1.3},
-      fine:{count:22, thickMin:0.003, thickMax:0.005, lenMin:0.05, lenMax:0.10, angleDeg:0, angleJitterDeg:16, blur:4},
-      svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><line x1="8" y1="17" x2="56" y2="17" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.4"/>'
+      id:'smooth', name:'平滑款', seed:1,
+      undulation:{count:2, ampMin:0.03, ampMax:0.05, blur:30, angleDeg:0},
+      major:{count:2, thickMin:0.008, thickMax:0.014, angleDeg:0, angleJitterDeg:8, blur:18, lengthMult:1},
+      fine:{count:15, thickMin:0.004, thickMax:0.008, lenMin:0.06, lenMax:0.14, angleDeg:0, angleJitterDeg:20, blur:4},
+      svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><path d="M6 16 L58 16" stroke="#fff" stroke-opacity="0.15" stroke-width="1"/>'
     },
     {
       id:'natural', name:'自然皺褶', seed:20240613,
@@ -562,18 +656,18 @@
       svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><path d="M6 12 Q20 9 34 12 T60 11" stroke="#ffffff" stroke-opacity="0.30" stroke-width="1.3" fill="none"/><path d="M6 22 Q22 25 38 21 T58 23" stroke="#000000" stroke-opacity="0.28" stroke-width="1.3" fill="none"/>'
     },
     {
-      id:'heavy', name:'強烈皺褶', seed:555,
-      undulation:{count:10, ampMin:0.08, ampMax:0.16, blur:20, angleDeg:0},
-      major:{count:14, thickMin:0.028, thickMax:0.05, angleDeg:0, angleJitterDeg:30, blur:7, lengthMult:1.5},
-      fine:{count:160, thickMin:0.008, thickMax:0.02, lenMin:0.06, lenMax:0.28, angleDeg:0, angleJitterDeg:80, blur:2.5},
-      svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><path d="M5 8 Q18 5 30 9 T58 7" stroke="#fff" stroke-opacity="0.32" stroke-width="1.2" fill="none"/><path d="M4 15 Q20 20 34 14 T60 17" stroke="#000" stroke-opacity="0.32" stroke-width="1.2" fill="none"/><path d="M6 24 Q22 21 36 26 T58 23" stroke="#fff" stroke-opacity="0.26" stroke-width="1.2" fill="none"/>'
+      id:'heavy', name:'揉皺款', seed:777,
+      undulation:{count:10, ampMin:0.04, ampMax:0.09, blur:18, angleDeg:0},
+      major:{count:16, thickMin:0.015, thickMax:0.03, angleDeg:0, angleJitterDeg:35, blur:6, lengthMult:1.2},
+      fine:{count:170, thickMin:0.006, thickMax:0.015, lenMin:0.05, lenMax:0.2, angleDeg:0, angleJitterDeg:45, blur:2.5},
+      svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><path d="M4 9 Q16 5 26 10 T48 8 T62 11" stroke="#fff" stroke-opacity="0.3" stroke-width="1.1" fill="none"/><path d="M4 17 Q18 22 30 16 T56 19" stroke="#000" stroke-opacity="0.28" stroke-width="1.1" fill="none"/><path d="M6 25 Q20 21 36 26 T60 24" stroke="#fff" stroke-opacity="0.22" stroke-width="1" fill="none"/>'
     },
     {
-      id:'vertical', name:'直向摺痕', seed:777,
-      undulation:{count:5, ampMin:0.04, ampMax:0.09, blur:24, angleDeg:90},
-      major:{count:8, thickMin:0.02, thickMax:0.04, angleDeg:90, angleJitterDeg:10, blur:8, lengthMult:1.5},
-      fine:{count:80, thickMin:0.006, thickMax:0.014, lenMin:0.06, lenMax:0.20, angleDeg:90, angleJitterDeg:40, blur:3},
-      svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><line x1="16" y1="4" x2="16" y2="30" stroke="#fff" stroke-opacity="0.28" stroke-width="1.3"/><line x1="32" y1="4" x2="32" y2="30" stroke="#000" stroke-opacity="0.26" stroke-width="1.3"/><line x1="48" y1="4" x2="48" y2="30" stroke="#fff" stroke-opacity="0.28" stroke-width="1.3"/>'
+      id:'vertical', name:'直向摺痕', seed:42,
+      undulation:{count:4, ampMin:0.04, ampMax:0.07, blur:24, angleDeg:90},
+      major:{count:10, thickMin:0.014, thickMax:0.022, angleDeg:90, angleJitterDeg:6, blur:7, lengthMult:1.3},
+      fine:{count:60, thickMin:0.005, thickMax:0.01, lenMin:0.06, lenMax:0.16, angleDeg:90, angleJitterDeg:14, blur:3},
+      svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><line x1="14" y1="3" x2="14" y2="31" stroke="#fff" stroke-opacity="0.3" stroke-width="1.2"/><line x1="30" y1="3" x2="30" y2="31" stroke="#000" stroke-opacity="0.25" stroke-width="1.2"/><line x1="46" y1="3" x2="46" y2="31" stroke="#fff" stroke-opacity="0.25" stroke-width="1.2"/>'
     },
     {
       id:'wavy', name:'風吹波浪紋', seed:999,
@@ -604,6 +698,15 @@
       svg:'<rect x="2" y="2" width="60" height="30" fill="#c81810"/><line x1="14" y1="3" x2="14" y2="31" stroke="#fff" stroke-opacity="0.35" stroke-width="1"/><line x1="14.6" y1="3" x2="14.6" y2="31" stroke="#000" stroke-opacity="0.3" stroke-width="1"/><line x1="32" y1="3" x2="32" y2="31" stroke="#fff" stroke-opacity="0.35" stroke-width="1"/><line x1="32.6" y1="3" x2="32.6" y2="31" stroke="#000" stroke-opacity="0.3" stroke-width="1"/><line x1="50" y1="3" x2="50" y2="31" stroke="#fff" stroke-opacity="0.35" stroke-width="1"/><line x1="50.6" y1="3" x2="50.6" y2="31" stroke="#000" stroke-opacity="0.3" stroke-width="1"/>'
     }
   ];
+
+  // ---------- banner intrinsic canvas ----------
+  const CORE_W = 1400, CORE_H = 320;   // banner rectangle
+  const PAD = 170;                     // room for ropes
+  const BC_W = CORE_W + PAD*2, BC_H = CORE_H + PAD*2;
+
+  const stage = document.getElementById('stage');
+  const ctx = stage.getContext('2d');
+  let dpr = Math.max(1, window.devicePixelRatio || 1);
 
   const state = {
     font: 'Noto Sans TC',
@@ -694,9 +797,6 @@
   function currentConstruction(){
     return CONSTRUCTIONS.find(c=>c.id===state.constructionId) || CONSTRUCTIONS[0];
   }
-  function currentTexture(){
-    return TEXTURES.find(t=>t.id===state.textureId) || TEXTURES[0];
-  }
 
   let bannerCanvas = null;
   let wrinkleLayerCache = {}; // cached per texture id, independent of text
@@ -739,8 +839,6 @@
     g.fillRect(0,0,w,h);
     const diag = Math.sqrt(w*w+h*h)*1.3;
 
-    // position a band's center by moving along the perpendicular axis of its own angle,
-    // so 'vertical' textures space their creases left-to-right, 'horizontal' ones top-to-bottom
     function bandCenter(angleDeg, posT){
       const perp = (angleDeg*Math.PI/180) + Math.PI/2;
       return {
@@ -749,7 +847,6 @@
       };
     }
 
-    // broad, soft undulations (large-scale sag/billow)
     const u = tex.undulation;
     g.filter = `blur(${u.blur}px)`;
     for(let i=0;i<u.count;i++){
@@ -769,7 +866,6 @@
       g.restore();
     }
 
-    // medium creases: soft ridge pairs (highlight+shadow) at slight angles, like folded/rolled cloth
     const m = tex.major;
     g.filter = `blur(${m.blur}px)`;
     for(let i=0;i<m.count;i++){
@@ -794,7 +890,6 @@
       g.restore();
     }
 
-    // fine wrinkles: many short, low-opacity, random angle streaks
     const f = tex.fine;
     g.filter = `blur(${f.blur}px)`;
     for(let i=0;i<f.count;i++){
@@ -821,7 +916,7 @@
   }
 
   // ---------- letter-spacing helpers (character spacing, not line spacing) ----------
-  const LETTER_SPACING_FRAC = 0.14; // extra gap between characters, as a fraction of font size
+  const LETTER_SPACING_PX = 1; // fixed 1px gap between characters (in the banner's own canvas pixel space, so the exported PNG has exactly a 1px character gap)
 
   function measureSpacedWidth(g, text, spacing){
     const chars = Array.from(text || '');
@@ -854,21 +949,11 @@
   function fitFontSize(g, text, maxWidth, startSize, minSize, weight, family){
     let size = startSize;
     g.font = `${weight} ${size}px "${family}"`;
-    while(measureSpacedWidth(g, text, size*LETTER_SPACING_FRAC) > maxWidth && size > minSize){
+    while(measureSpacedWidth(g, text, LETTER_SPACING_PX) > maxWidth && size > minSize){
       size -= 3;
       g.font = `${weight} ${size}px "${family}"`;
     }
     return size;
-  }
-
-  // trace a rectangle-ish cloth path with a very gentle sag on top/bottom edges
-  function tracePath(g,left,top,right,bottom,sag){
-    const midX = (left+right)/2;
-    g.moveTo(left, top);
-    g.quadraticCurveTo(midX, top+sag, right, top);
-    g.lineTo(right, bottom);
-    g.quadraticCurveTo(midX, bottom-sag*0.55, left, bottom);
-    g.closePath();
   }
 
   function drawGrommet(g, x, y, r){
@@ -891,7 +976,7 @@
     g.restore();
   }
 
-  // draws the corner/edge hardware (grommets + hanging ropes, or a rod-pocket hem with straight ropes)
+  // draws the corner/edge hardware (grommets + hanging ropes, ties, weights, or a rod-pocket hem)
   function drawEdgeDetails(g, left, top, right, bottom, w, h, construction){
     if(construction.grommets === 'four' || construction.grommets === 'top'){
       const gr = h*0.045;
@@ -911,7 +996,6 @@
       g.strokeStyle = 'rgba(55,48,40,0.6)';
       g.lineWidth = gr*0.22;
       g.lineCap = 'round';
-      // top ropes, angled up and outward — long and taut like a real hung banner
       g.beginPath();
       g.moveTo(gx1, gy);
       g.quadraticCurveTo(gx1 - PAD*0.55, gy - PAD*0.35, gx1 - PAD*1.15, gy - PAD*0.92);
@@ -920,7 +1004,6 @@
       g.moveTo(gx2, gy);
       g.quadraticCurveTo(gx2 + PAD*0.55, gy - PAD*0.35, gx2 + PAD*1.15, gy - PAD*0.92);
       g.stroke();
-      // bottom ropes (when present), angled down and outward
       if(hasBottom){
         g.beginPath();
         g.moveTo(gx1, gy2);
@@ -933,7 +1016,6 @@
       }
       g.restore();
     } else if(construction.grommets === 'none'){
-      // rod-pocket hem: folded fabric tube at each end, with a thick rope threaded straight through
       const seamW = w*0.024;
       g.save();
       let sg = g.createLinearGradient(left, 0, left+seamW*2.2, 0);
@@ -976,7 +1058,6 @@
       g.stroke();
       g.restore();
     } else if(construction.grommets === 'tie'){
-      // small fabric ribbon ties at the top corners instead of rope
       const tieW = w*0.05, tieH = h*0.14;
       const tx1 = left + w*0.045, tx2 = right - w*0.045;
       const ty = top + tieH*0.35;
@@ -1005,7 +1086,6 @@
       drawTie(tx1);
       drawTie(tx2);
     } else if(construction.grommets === 'thinCord'){
-      // long, thin taut cord from small top-corner eyelets — banner mounted high and pulled tight
       const gr = h*0.028;
       const gy = top + gr*2.2;
       const gx1 = left + w*0.03;
@@ -1026,8 +1106,6 @@
       g.stroke();
       g.restore();
     } else if(construction.grommets === 'weighted'){
-      // rope runs down the outer edge from a top-corner grommet to a hanging weight (e.g. a bottle of water),
-      // a common trick to keep a banner taut against a wall or shutter
       const gr = h*0.05;
       const gy = top + gr*1.7;
       const gx1 = left + w*0.045;
@@ -1048,7 +1126,6 @@
         g.stroke();
         g.restore();
 
-        // hanging weight (simple water-bottle silhouette)
         const bw = w*0.024, bh = bw*2.1;
         g.save();
         g.translate(endX, endY + bh*0.5);
@@ -1062,7 +1139,6 @@
         g.strokeStyle = 'rgba(140,175,180,0.7)';
         g.lineWidth = Math.max(1, bw*0.06);
         g.stroke();
-        // bottle cap
         g.fillStyle = 'rgba(150,180,185,0.8)';
         g.fillRect(-bw*0.18, -bh*0.58, bw*0.36, bh*0.12);
         g.restore();
@@ -1070,30 +1146,8 @@
       drawWeightedRope(gx1, -1);
       drawWeightedRope(gx2, 1);
     } else if(construction.grommets === 'clean'){
-      // no visible hardware — a plain-cut banner with just the printed edge (already drawn by the caller)
+      // no visible hardware — a plain-cut banner with just the printed edge
     }
-  }
-
-  function drawTextLine(g, text, cx, baselineY, weight, size, family){
-    g.font = `${weight} ${size}px "${family}"`;
-    g.textAlign = 'center';
-    g.textBaseline = 'alphabetic';
-    const spacing = size * LETTER_SPACING_FRAC;
-    g.fillStyle = 'rgba(0,0,0,0.30)';
-    fillSpacedText(g, text, cx+2, baselineY + size*0.05, 'center', spacing);
-    g.fillStyle = '#f7f2ec';
-    fillSpacedText(g, text, cx, baselineY, 'center', spacing);
-  }
-
-  // measure a line's visual ascent/descent so we can center it precisely
-  function measureLine(g, text, weight, size, family){
-    g.font = `${weight} ${size}px "${family}"`;
-    g.textAlign = 'center';
-    g.textBaseline = 'alphabetic';
-    const m = g.measureText(text || '\u3000');
-    const ascent = (m.actualBoundingBoxAscent && m.actualBoundingBoxAscent > 0) ? m.actualBoundingBoxAscent : size*0.74;
-    const descent = (m.actualBoundingBoxDescent && m.actualBoundingBoxDescent > 0) ? m.actualBoundingBoxDescent : size*0.18;
-    return { ascent, descent };
   }
 
   function roundRectPath(g,x,y,w,h,r){
@@ -1144,154 +1198,6 @@
     }
   }
 
-  function drawTemplateContent(g, box, family){
-    const tpl = currentTemplate();
-    const vals = state.values[tpl.id];
-    if(tpl.id === 'single') drawSingleTemplate(g, box, vals, family);
-    else if(tpl.id === 'twoLine') drawTwoLineTemplate(g, box, vals, family);
-    else if(tpl.id === 'threeLine') drawThreeLineTemplate(g, box, vals, family);
-    else if(tpl.id === 'tagLine') drawTagLineTemplate(g, box, vals, family);
-    else if(tpl.id === 'cornerBadge') drawCornerBadgeTemplate(g, box, vals, family);
-    else if(tpl.id === 'leftRightInfo') drawLeftRightInfoTemplate(g, box, vals, family);
-    else if(tpl.id === 'iconTag') drawIconTagTemplate(g, box, vals, family);
-    else if(tpl.id === 'starburstSingle') drawStarburstSingleTemplate(g, box, vals, family);
-    else if(tpl.id === 'starburst') drawStarburstTemplate(g, box, vals, family);
-  }
-
-  // draw a simple magnifying-glass icon centered at (cx,cy) with given radius, stroke colour
-  function drawMagnifierIcon(g, cx, cy, r, color){
-    g.save();
-    g.strokeStyle = color;
-    g.lineWidth = Math.max(1.5, r*0.16);
-    g.lineCap = 'round';
-    g.beginPath();
-    g.arc(cx - r*0.12, cy - r*0.12, r*0.62, 0, Math.PI*2);
-    g.stroke();
-    g.beginPath();
-    g.moveTo(cx + r*0.32, cy + r*0.32);
-    g.lineTo(cx + r*0.78, cy + r*0.78);
-    g.stroke();
-    g.restore();
-  }
-
-  // draw a spiky starburst / explosion badge path centered at (cx,cy)
-  function starburstPath(g, cx, cy, rOuter, rInner, spikes){
-    g.beginPath();
-    for(let i=0;i<spikes*2;i++){
-      const ang = (Math.PI*i)/spikes - Math.PI/2;
-      const r = i%2===0 ? rOuter : rInner;
-      const x = cx + Math.cos(ang)*r;
-      const y = cy + Math.sin(ang)*r;
-      if(i===0) g.moveTo(x,y); else g.lineTo(x,y);
-    }
-    g.closePath();
-  }
-
-  // draws the white starburst badge and its character, precisely centered both
-  // horizontally and vertically within the starburst shape
-  function drawStarburstBadge(g, cx, cy, rOuter, rInner, badgeText, family, textColor){
-    starburstPath(g, cx, cy, rOuter, rInner, 9);
-    g.fillStyle = '#ffffff';
-    g.fill();
-    const size = rOuter*0.86;
-    const m = measureLine(g, badgeText, 900, size, family);
-    g.font = `900 ${size}px "${family}"`;
-    g.fillStyle = textColor;
-    g.textAlign = 'center'; g.textBaseline = 'alphabetic';
-    g.fillText(badgeText, cx, cy + (m.ascent - m.descent)/2);
-  }
-
-  function drawIconTagTemplate(g, box, vals, family){
-    const {left,top,right,bottom} = box;
-    const w = right-left, h = bottom-top;
-    const cx = (left+right)/2;
-
-    // main headline, upper portion, centered
-    const mainMaxW = w*0.88;
-    const mainY = top + h*0.36;
-    const s1 = fitFontSize(g, vals.main, mainMaxW, h*0.30, h*0.13, 900, family);
-    const m1 = measureLine(g, vals.main, 900, s1, family);
-    const baseline1 = mainY + (m1.ascent - m1.descent)/2;
-    drawTextLine(g, vals.main, cx, baseline1, 900, s1, family);
-
-    // second row: magnifying-glass icon + boxed text, centered as a group
-    const rowY = top + h*0.72;
-    const boxSize = h*0.22;
-    const boxFontSize = boxSize*0.6;
-    g.font = `800 ${boxFontSize}px "${family}"`;
-    const boxSpacing = boxFontSize * LETTER_SPACING_FRAC;
-    const boxTextW = measureSpacedWidth(g, vals.boxText, boxSpacing);
-    const boxPadX = boxSize*0.38;
-    const boxW = Math.min(w*0.7, boxTextW + boxPadX*2);
-    const iconR = boxSize*0.34;
-    const gap = boxSize*0.28;
-    const totalW = iconR*2 + gap + boxW;
-    let x = cx - totalW/2;
-
-    drawMagnifierIcon(g, x+iconR, rowY, iconR, '#ffffff');
-    x += iconR*2 + gap;
-
-    g.strokeStyle = '#ffffff';
-    g.lineWidth = Math.max(1.5, boxSize*0.07);
-    roundRectPath(g, x, rowY-boxSize/2, boxW, boxSize, boxSize*0.14);
-    g.stroke();
-    g.fillStyle = '#ffffff';
-    g.textBaseline = 'middle';
-    g.font = `800 ${boxFontSize}px "${family}"`;
-    fillSpacedText(g, vals.boxText, x+boxW/2, rowY + boxSize*0.03, 'center', boxSpacing);
-  }
-
-  function drawStarburstTemplate(g, box, vals, family){
-    const {left,top,right,bottom} = box;
-    const w = right-left, h = bottom-top;
-    const style = currentStyle();
-
-    // starburst badge on the left (sized to clear corner hardware like grommets/ropes)
-    const cx = left + w*0.145, cy = (top+bottom)/2;
-    const rOuter = h*0.32, rInner = h*0.19;
-    drawStarburstBadge(g, cx, cy, rOuter, rInner, vals.badge, family, style.colors[2]);
-
-    // two lines of text to the right of the badge
-    const textLeft = left + w*0.27;
-    const textRight = right - w*0.08;
-    const textW = textRight - textLeft;
-    const textCx = textLeft + textW/2;
-
-    const s1 = fitFontSize(g, vals.line1, textW*0.96, h*0.34, h*0.14, 900, family);
-    const s2 = fitFontSize(g, vals.line2, textW*0.96, h*0.18, h*0.08, 700, family);
-    const m1 = measureLine(g, vals.line1, 900, s1, family);
-    const m2 = measureLine(g, vals.line2, 700, s2, family);
-    const gapY = h*0.06;
-    const blockH = m1.ascent+m1.descent+gapY+m2.ascent+m2.descent;
-    const blockTop = (top+bottom)/2 - blockH/2;
-    const baseline1 = blockTop + m1.ascent;
-    const baseline2 = baseline1 + m1.descent + gapY + m2.ascent;
-    drawTextLine(g, vals.line1, textCx, baseline1, 900, s1, family);
-    drawTextLine(g, vals.line2, textCx, baseline2, 700, s2, family);
-  }
-
-  function drawStarburstSingleTemplate(g, box, vals, family){
-    const {left,top,right,bottom} = box;
-    const w = right-left, h = bottom-top;
-    const style = currentStyle();
-
-    // starburst badge on the left (sized to clear corner hardware like grommets/ropes)
-    const cx = left + w*0.145, cy = (top+bottom)/2;
-    const rOuter = h*0.32, rInner = h*0.19;
-    drawStarburstBadge(g, cx, cy, rOuter, rInner, vals.badge, family, style.colors[2]);
-
-    // single centered line of text to the right of the badge
-    const textLeft = left + w*0.27;
-    const textRight = right - w*0.08;
-    const textW = textRight - textLeft;
-    const textCx = textLeft + textW/2;
-
-    const s1 = fitFontSize(g, vals.line1, textW*0.96, h*0.40, h*0.16, 900, family);
-    const m1 = measureLine(g, vals.line1, 900, s1, family);
-    const baseline1 = cy + (m1.ascent - m1.descent)/2;
-    drawTextLine(g, vals.line1, textCx, baseline1, 900, s1, family);
-  }
-
   function drawThreeLineTemplate(g, box, vals, family){
     const {left,top,right,bottom} = box;
     const w = right-left, h = bottom-top;
@@ -1320,7 +1226,7 @@
     const style = currentStyle();
 
     function measureAt(size){
-      const spacing = size*LETTER_SPACING_FRAC;
+      const spacing = LETTER_SPACING_PX;
       g.font = `800 ${size}px "${family}"`;
       const tagTextW = measureSpacedWidth(g, vals.tag, spacing);
       const tagPad = size*0.35;
@@ -1339,7 +1245,6 @@
     const tagH = size*1.3;
     const tagY = centerY - tagH/2;
 
-    // tag badge
     g.fillStyle = '#ffffff';
     roundRectPath(g, startX, tagY, met.tagW, tagH, size*0.14);
     g.fill();
@@ -1348,7 +1253,6 @@
     g.textBaseline = 'middle';
     fillSpacedText(g, vals.tag, startX + met.tagW/2, centerY + size*0.03, 'center', met.spacing);
 
-    // main text
     g.font = `900 ${size}px "${family}"`;
     g.textBaseline = 'alphabetic';
     const mMain = measureLine(g, vals.text, 900, size, family);
@@ -1365,11 +1269,10 @@
     const w = right-left, h = bottom-top;
     const style = currentStyle();
 
-    // small badge tucked in the top-left, clear of any construction hardware in that corner
     const badgeSize = h*0.15;
     const badgeFontSize = badgeSize*0.62;
     g.font = `800 ${badgeFontSize}px "${family}"`;
-    const badgeSpacing = badgeFontSize * LETTER_SPACING_FRAC;
+    const badgeSpacing = LETTER_SPACING_PX;
     const badgeTextW = measureSpacedWidth(g, vals.badge, badgeSpacing);
     const bw = Math.max(badgeSize, badgeTextW + badgeSize*0.5);
     const bx = left + w*0.065, by = top + h*0.12;
@@ -1380,8 +1283,6 @@
     g.textBaseline = 'middle';
     fillSpacedText(g, vals.badge, bx+bw/2, by+badgeSize/2 + badgeSize*0.02, 'center', badgeSpacing);
 
-    // main title, kept at the true vertical centre of the banner (the badge above is
-    // small and high enough to stay clear of it)
     const maxTextWidth = w*0.86;
     const cx = (left+right)/2, titleCenterY = (top+bottom)/2;
     const s1 = fitFontSize(g, vals.main, maxTextWidth, h*0.36, h*0.14, 900, family);
@@ -1396,9 +1297,8 @@
     const padX = w*0.08;
     const centerY = (top+bottom)/2;
 
-    // top small, left aligned
     const topSize = fitFontSize(g, vals.top, w*0.84, h*0.135, h*0.055, 700, family);
-    const topSpacing = topSize * LETTER_SPACING_FRAC;
+    const topSpacing = LETTER_SPACING_PX;
     const topBaseline = top + h*0.22;
     g.textBaseline = 'alphabetic';
     g.font = `700 ${topSize}px "${family}"`;
@@ -1407,9 +1307,8 @@
     g.fillStyle = '#f7f2ec';
     fillSpacedText(g, vals.top, left+padX, topBaseline, 'left', topSpacing);
 
-    // main headline, centered, bold and large
     const mainSize = fitFontSize(g, vals.main, w*0.84, h*0.40, h*0.15, 900, family);
-    const mainSpacing = mainSize * LETTER_SPACING_FRAC;
+    const mainSpacing = LETTER_SPACING_PX;
     const mMain = measureLine(g, vals.main, 900, mainSize, family);
     const mainBaseline = centerY + (mMain.ascent - mMain.descent)/2 + h*0.02;
     g.font = `900 ${mainSize}px "${family}"`;
@@ -1418,9 +1317,8 @@
     g.fillStyle = '#ffffff';
     fillSpacedText(g, vals.main, (left+right)/2, mainBaseline, 'center', mainSpacing);
 
-    // bottom small, right aligned
     const botSize = fitFontSize(g, vals.bottom, w*0.6, h*0.12, h*0.05, 700, family);
-    const botSpacing = botSize * LETTER_SPACING_FRAC;
+    const botSpacing = LETTER_SPACING_PX;
     const mBot = measureLine(g, vals.bottom, 700, botSize, family);
     const botBaseline = bottom - h*0.10 - mBot.descent;
     g.font = `700 ${botSize}px "${family}"`;
@@ -1428,6 +1326,180 @@
     fillSpacedText(g, vals.bottom, right-padX+2, botBaseline + botSize*0.05, 'right', botSpacing);
     g.fillStyle = '#f7f2ec';
     fillSpacedText(g, vals.bottom, right-padX, botBaseline, 'right', botSpacing);
+  }
+
+  // draw a simple magnifying-glass icon centered at (cx,cy) with given radius, stroke colour
+  function drawMagnifierIcon(g, cx, cy, r, color){
+    g.save();
+    g.strokeStyle = color;
+    g.lineWidth = Math.max(1.5, r*0.16);
+    g.lineCap = 'round';
+    g.beginPath();
+    g.arc(cx - r*0.12, cy - r*0.12, r*0.62, 0, Math.PI*2);
+    g.stroke();
+    g.beginPath();
+    g.moveTo(cx + r*0.32, cy + r*0.32);
+    g.lineTo(cx + r*0.78, cy + r*0.78);
+    g.stroke();
+    g.restore();
+  }
+
+  function drawIconTagTemplate(g, box, vals, family){
+    const {left,top,right,bottom} = box;
+    const w = right-left, h = bottom-top;
+    const cx = (left+right)/2;
+
+    const mainMaxW = w*0.88;
+    const mainY = top + h*0.36;
+    const s1 = fitFontSize(g, vals.main, mainMaxW, h*0.30, h*0.13, 900, family);
+    const m1 = measureLine(g, vals.main, 900, s1, family);
+    const baseline1 = mainY + (m1.ascent - m1.descent)/2;
+    drawTextLine(g, vals.main, cx, baseline1, 900, s1, family);
+
+    const rowY = top + h*0.72;
+    const boxSize = h*0.22;
+    const boxFontSize = boxSize*0.6;
+    g.font = `800 ${boxFontSize}px "${family}"`;
+    const boxSpacing = LETTER_SPACING_PX;
+    const boxTextW = measureSpacedWidth(g, vals.boxText, boxSpacing);
+    const boxPadX = boxSize*0.38;
+    const boxW = Math.min(w*0.7, boxTextW + boxPadX*2);
+    const iconR = boxSize*0.34;
+    const gap = boxSize*0.28;
+    const totalW = iconR*2 + gap + boxW;
+    let x = cx - totalW/2;
+
+    drawMagnifierIcon(g, x+iconR, rowY, iconR, '#ffffff');
+    x += iconR*2 + gap;
+
+    g.strokeStyle = '#ffffff';
+    g.lineWidth = Math.max(1.5, boxSize*0.07);
+    roundRectPath(g, x, rowY-boxSize/2, boxW, boxSize, boxSize*0.14);
+    g.stroke();
+    g.fillStyle = '#ffffff';
+    g.textBaseline = 'middle';
+    g.font = `800 ${boxFontSize}px "${family}"`;
+    fillSpacedText(g, vals.boxText, x+boxW/2, rowY + boxSize*0.03, 'center', boxSpacing);
+  }
+
+  // ---------- starburst / explosion badge (shared by both "賀報" templates) ----------
+  function starburstPath(g, cx, cy, rOuter, rInner, spikes){
+    g.beginPath();
+    for(let i=0;i<spikes*2;i++){
+      const ang = (Math.PI*i)/spikes - Math.PI/2;
+      const r = i%2===0 ? rOuter : rInner;
+      const x = cx + Math.cos(ang)*r;
+      const y = cy + Math.sin(ang)*r;
+      if(i===0) g.moveTo(x,y); else g.lineTo(x,y);
+    }
+    g.closePath();
+  }
+
+  // draws the white starburst badge and its character, precisely centered both
+  // horizontally and vertically within the starburst shape
+  function drawStarburstBadge(g, cx, cy, rOuter, rInner, badgeText, family, textColor){
+    starburstPath(g, cx, cy, rOuter, rInner, 9);
+    g.fillStyle = '#ffffff';
+    g.fill();
+    const size = rOuter*0.86;
+    const m = measureLine(g, badgeText, 900, size, family);
+    g.font = `900 ${size}px "${family}"`;
+    g.fillStyle = textColor;
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.fillText(badgeText, cx, cy + (m.ascent - m.descent)/2);
+  }
+
+  function drawStarburstTemplate(g, box, vals, family){
+    const {left,top,right,bottom} = box;
+    const w = right-left, h = bottom-top;
+    const style = currentStyle();
+
+    const cx = left + w*0.145, cy = (top+bottom)/2;
+    const rOuter = h*0.32, rInner = h*0.19;
+    drawStarburstBadge(g, cx, cy, rOuter, rInner, vals.badge, family, style.colors[2]);
+
+    const textLeft = left + w*0.27;
+    const textRight = right - w*0.08;
+    const textW = textRight - textLeft;
+    const textCx = textLeft + textW/2;
+
+    const s1 = fitFontSize(g, vals.line1, textW*0.96, h*0.34, h*0.14, 900, family);
+    const s2 = fitFontSize(g, vals.line2, textW*0.96, h*0.18, h*0.08, 700, family);
+    const m1 = measureLine(g, vals.line1, 900, s1, family);
+    const m2 = measureLine(g, vals.line2, 700, s2, family);
+    const gapY = h*0.06;
+    const blockH = m1.ascent+m1.descent+gapY+m2.ascent+m2.descent;
+    const blockTop = (top+bottom)/2 - blockH/2;
+    const baseline1 = blockTop + m1.ascent;
+    const baseline2 = baseline1 + m1.descent + gapY + m2.ascent;
+    drawTextLine(g, vals.line1, textCx, baseline1, 900, s1, family);
+    drawTextLine(g, vals.line2, textCx, baseline2, 700, s2, family);
+  }
+
+  function drawStarburstSingleTemplate(g, box, vals, family){
+    const {left,top,right,bottom} = box;
+    const w = right-left, h = bottom-top;
+    const style = currentStyle();
+
+    const cx = left + w*0.145, cy = (top+bottom)/2;
+    const rOuter = h*0.32, rInner = h*0.19;
+    drawStarburstBadge(g, cx, cy, rOuter, rInner, vals.badge, family, style.colors[2]);
+
+    const textLeft = left + w*0.27;
+    const textRight = right - w*0.08;
+    const textW = textRight - textLeft;
+    const textCx = textLeft + textW/2;
+
+    const s1 = fitFontSize(g, vals.line1, textW*0.96, h*0.40, h*0.16, 900, family);
+    const m1 = measureLine(g, vals.line1, 900, s1, family);
+    const baseline1 = cy + (m1.ascent - m1.descent)/2;
+    drawTextLine(g, vals.line1, textCx, baseline1, 900, s1, family);
+  }
+
+  function drawTemplateContent(g, box, family){
+    const tpl = currentTemplate();
+    const vals = state.values[tpl.id];
+    if(tpl.id === 'single') drawSingleTemplate(g, box, vals, family);
+    else if(tpl.id === 'twoLine') drawTwoLineTemplate(g, box, vals, family);
+    else if(tpl.id === 'threeLine') drawThreeLineTemplate(g, box, vals, family);
+    else if(tpl.id === 'tagLine') drawTagLineTemplate(g, box, vals, family);
+    else if(tpl.id === 'cornerBadge') drawCornerBadgeTemplate(g, box, vals, family);
+    else if(tpl.id === 'leftRightInfo') drawLeftRightInfoTemplate(g, box, vals, family);
+    else if(tpl.id === 'iconTag') drawIconTagTemplate(g, box, vals, family);
+    else if(tpl.id === 'starburstSingle') drawStarburstSingleTemplate(g, box, vals, family);
+    else if(tpl.id === 'starburst') drawStarburstTemplate(g, box, vals, family);
+  }
+
+  function drawTextLine(g, text, cx, baselineY, weight, size, family){
+    g.font = `${weight} ${size}px "${family}"`;
+    g.textAlign = 'center';
+    g.textBaseline = 'alphabetic';
+    const spacing = LETTER_SPACING_PX;
+    g.fillStyle = 'rgba(0,0,0,0.30)';
+    fillSpacedText(g, text, cx+2, baselineY + size*0.05, 'center', spacing);
+    g.fillStyle = '#f7f2ec';
+    fillSpacedText(g, text, cx, baselineY, 'center', spacing);
+  }
+
+  // measure a line's visual ascent/descent so we can center it precisely
+  function measureLine(g, text, weight, size, family){
+    g.font = `${weight} ${size}px "${family}"`;
+    g.textAlign = 'center';
+    g.textBaseline = 'alphabetic';
+    const m = g.measureText(text || '\u3000');
+    const ascent = (m.actualBoundingBoxAscent && m.actualBoundingBoxAscent > 0) ? m.actualBoundingBoxAscent : size*0.74;
+    const descent = (m.actualBoundingBoxDescent && m.actualBoundingBoxDescent > 0) ? m.actualBoundingBoxDescent : size*0.18;
+    return { ascent, descent };
+  }
+
+  // trace a rectangle-ish cloth path with a very gentle sag on top/bottom edges
+  function tracePath(g,left,top,right,bottom,sag){
+    const midX = (left+right)/2;
+    g.moveTo(left, top);
+    g.quadraticCurveTo(midX, top+sag, right, top);
+    g.lineTo(right, bottom);
+    g.quadraticCurveTo(midX, bottom-sag*0.55, left, bottom);
+    g.closePath();
   }
 
   function renderBanner(){
@@ -1605,7 +1677,6 @@
     textureButtonsWrap.appendChild(btn);
   });
 
-  const templateButtonsWrap = document.getElementById('templateButtons');
   function buildTemplateIcon(tpl){
     const bars = tpl.icon.map(b=>{
       let extra = '';
@@ -1616,6 +1687,7 @@
     }).join('');
     return `<span class="tpl-icon">${bars}</span>`;
   }
+  const templateButtonsWrap = document.getElementById('templateButtons');
   TEMPLATES.forEach(tpl=>{
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -1631,21 +1703,6 @@
     templateButtonsWrap.appendChild(btn);
   });
   renderDynamicFields();
-
-  const fontButtonsWrap = document.getElementById('fontButtons');
-  FONTS.forEach(f=>{
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'tpl-btn' + (f.id === state.font ? ' active' : '');
-    btn.innerHTML = `<span class="tpl-icon font-icon" style="font-family:'${f.id}';font-weight:${f.weight};">${f.sample}</span><span class="tpl-label">${f.name}</span>`;
-    btn.addEventListener('click', ()=>{
-      state.font = f.id;
-      fontButtonsWrap.querySelectorAll('.tpl-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      renderBanner(); draw();
-    });
-    fontButtonsWrap.appendChild(btn);
-  });
 
   document.querySelectorAll('#colorModeToggle .radio-chip').forEach(chip=>{
     chip.addEventListener('click', ()=>{
@@ -1704,8 +1761,6 @@
   customWrap.appendChild(customLabelSpan);
 
   function applyCustomSwatchColor(){
-    // same 135deg two-tone gradient treatment as the preset swatches, so the custom
-    // button looks visually identical to the others rather than a distinct "picker" icon
     const light = shadeHex(state.customColor, 0.12);
     const dark = shadeHex(state.customColor, -0.22);
     customInput.style.background = `linear-gradient(135deg, ${light}, ${dark})`;
@@ -1721,6 +1776,22 @@
     renderBanner(); draw();
   });
   swatchWrap.appendChild(customWrap);
+
+  // font buttons — each shows a live sample rendered in its own font
+  const fontButtonsWrap = document.getElementById('fontButtons');
+  FONTS.forEach(f=>{
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tpl-btn' + (f.id === state.font ? ' active' : '');
+    btn.innerHTML = `<span class="tpl-icon font-icon" style="font-family:'${f.id}';font-weight:${f.weight};">${f.sample}</span><span class="tpl-label">${f.name}</span>`;
+    btn.addEventListener('click', ()=>{
+      state.font = f.id;
+      fontButtonsWrap.querySelectorAll('.tpl-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderBanner(); draw();
+    });
+    fontButtonsWrap.appendChild(btn);
+  });
 
   document.getElementById('downloadBtn').addEventListener('click', ()=>{
     if(!bannerCanvas) renderBanner();
@@ -1778,6 +1849,7 @@
     renderBanner();
     sizeStageCanvas();
   }
+  // fallback draw in case fonts.ready is slow
   setTimeout(()=>{ renderBanner(); draw(); }, 400);
 
 })();
