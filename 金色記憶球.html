@@ -52,7 +52,14 @@ button:active,.btn:active{transform:scale(.97)}
 .up{position:relative;overflow:hidden}
 .up input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
 .seg button{padding:10px 4px;font-size:14px}
-#refl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#refl{display:block}
+#refl details{margin-bottom:8px;border-radius:16px;background:rgba(255,255,255,.28);border:1px solid var(--glass-b);padding:2px 10px}
+#refl summary{cursor:pointer;padding:11px 2px;font-size:14px;list-style:none;display:flex;justify-content:space-between}
+#refl summary::-webkit-details-marker{display:none}
+#refl summary::after{content:'＋';color:var(--sub)}
+#refl details[open] summary::after{content:'－'}
+.rg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:2px 0 10px}
+.small{font-size:12px;color:var(--sub);margin:-6px 0 14px}
 #refl button{min-width:0;padding:10px 2px;font-size:14px}
 .toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 24px);transform:translate(-50%,20px);opacity:0;pointer-events:none;
   padding:10px 18px;border-radius:16px;font-size:14px;transition:.3s;z-index:50}
@@ -70,9 +77,12 @@ button:active,.btn:active{transform:scale(.97)}
       <label class="btn up">上傳圖片<input type="file" id="file" accept="image/*"></label>
       <button id="save">下載圖片</button>
     </div>
+    <div class="row" style="margin:14px 0 0"><label>輸出尺寸</label><div class="seg" id="sz"><button data-v="1080" class="on">1080</button><button data-v="2048">2048</button><button data-v="3000">3000</button></div></div>
+    <div class="row" style="margin:12px 0 0"><label>輸出範圍</label><div class="seg" id="om"><button data-v="full" class="on">完整畫面</button><button data-v="orb">僅球體（透明）</button></div></div>
   </section>
 
   <section class="glass panel">
+    <button class="full" id="face" style="margin-bottom:14px">自動置中人臉</button>
     <div class="row"><label>縮放 <span id="vz">1.00</span></label><input type="range" id="zoom" min="0.5" max="4" step="0.01" value="1"></div>
     <div class="row"><label>水平位置 <span id="vx">0</span></label><input type="range" id="ox" min="-100" max="100" step="1" value="0"></div>
     <div class="row"><label>垂直位置 <span id="vy">0</span></label><input type="range" id="oy" min="-100" max="100" step="1" value="0"></div>
@@ -84,9 +94,11 @@ button:active,.btn:active{transform:scale(.97)}
     <div class="row"><label>邊緣漸層 <span id="ve">70</span></label><input type="range" id="edge" min="0" max="100" step="1" value="70"></div>
     <div class="row"><label>反光強度 <span id="vs">80</span></label><input type="range" id="rs" min="0" max="100" step="1" value="80"></div>
     <div class="row"><label>反光樣式</label>
-      <div class="seg" id="refl"><button data-r="tlbloom" class="on">左上暈光</button><button data-r="dual">雙光源</button><button data-r="soft">柔光</button><button data-r="dot">點高光</button><button data-r="bounce">反彈光</button><button data-r="shade">立體明暗</button><button data-r="fresnel">緣光環繞</button><button data-r="back">透光球心</button><button data-r="twoarc">雙條弧光</button><button data-r="arc">雙弧</button><button data-r="spot">光斑</button><button data-r="top">頂光</button><button data-r="left">左弧</button><button data-r="band">光帶</button><button data-r="tophaze">頂部霧光</button><button data-r="trrim">右上緣光</button><button data-r="floor">地面暖光</button><button data-r="rimhaze">全緣霧光</button><button data-r="sides">雙側緣光</button><button data-r="bokeh">散景光點</button><button data-r="tlarc">左上弧暈</button><button data-r="core">內核暖光</button><button data-r="vfade">上下漸霧</button><button data-r="ledge">左緣細光</button><button data-r="tedge">上緣亮帶</button><button data-r="lilac">粉紫暈</button><button data-r="bl">左下暖輝</button><button data-r="toporange">頂部橘暈</button><button data-r="rain">雨絲光</button><button data-r="diag">對角柔光</button><button data-r="none">無</button></div></div>
+      <div id="refl"><details open><summary>球體光影</summary><div class="rg"><button data-r="tlbloom" class="on">左上暈光</button><button data-r="dual">雙光源</button><button data-r="soft">柔光</button><button data-r="dot">點高光</button><button data-r="bounce">反彈光</button><button data-r="shade">立體明暗</button><button data-r="back">透光球心</button><button data-r="fresnel">緣光環繞</button></div></details><details><summary>暈光與霧光</summary><div class="rg"><button data-r="tophaze">頂部霧光</button><button data-r="floor">地面暖光</button><button data-r="rimhaze">全緣霧光</button><button data-r="core">內核暖光</button><button data-r="vfade">上下漸霧</button><button data-r="diag">對角柔光</button><button data-r="bl">左下暖輝</button><button data-r="toporange">頂部橘暈</button><button data-r="lilac">粉紫暈</button><button data-r="bokeh">散景光點</button></div></details><details><summary>弧光與緣光</summary><div class="rg"><button data-r="arc">雙弧</button><button data-r="twoarc">雙條弧光</button><button data-r="top">頂光</button><button data-r="left">左弧</button><button data-r="sides">雙側緣光</button><button data-r="trrim">右上緣光</button><button data-r="tlarc">左上弧暈</button><button data-r="ledge">左緣細光</button><button data-r="tedge">上緣亮帶</button><button data-r="band">光帶</button></div></details><details><summary>其他</summary><div class="rg"><button data-r="spot">光斑</button><button data-r="rain">雨絲光</button><button data-r="none">無</button></div></details></div></div>
     <div class="row"><label>背景</label>
       <div class="seg"><button id="bgd" class="on">深色</button><button id="bgc">透明</button></div></div>
+    <div class="row"><label>球體透明度 <span id="vtp">0</span></label><input type="range" id="tp" min="0" max="100" step="1" value="0"></div>
+    <p class="small">球體透明度僅在「透明」背景或「僅球體」輸出時有效</p>
     <button class="full" id="reset">恢復預設</button>
   </section>
 
@@ -96,14 +108,16 @@ button:active,.btn:active{transform:scale(.97)}
 <script>
 const $=id=>document.getElementById(id);
 const cv=$('c'),ctx=cv.getContext('2d');
-const W=1080,CX=540,CY=540,R=330,D=360;
+const W=1080,CX=540,CY=540,R=330;let D=360;
+let vs=1,vx=0,vy=0,orbOnly=false;const SB=()=>vs;
+function setD(v){if(D===v)return;D=v;off.width=off.height=v;offB.width=offB.height=v}
 const off=document.createElement('canvas');off.width=off.height=D;
 const offS=document.createElement('canvas');offS.width=offS.height=64;const sctx=offS.getContext('2d');
 const offB=document.createElement('canvas');offB.width=offB.height=D;const bctx=offB.getContext('2d');
 const octx=off.getContext('2d',{willReadFrequently:true});
 let img=null,dark=true;
-const ids=['zoom','ox','oy','rot','tint','glow','edge','rs','pr','dist'];
-const def={zoom:1,ox:0,oy:0,rot:0,tint:90,glow:80,edge:70,rs:80,pr:100,dist:30};
+const ids=['zoom','ox','oy','rot','tint','glow','edge','rs','pr','dist','tp'];
+const def={zoom:1,ox:0,oy:0,rot:0,tint:90,glow:80,edge:70,rs:80,pr:100,dist:30,tp:0};
 
 const lerp=(a,b,t)=>a+(b-a)*t;
 const C0=[168,88,32],C1=[238,160,64],C2=[255,234,165];
@@ -155,14 +169,14 @@ function radial(x,y,r0,r1,stops,r0x=x,r0y=y){
 
 let refl='tlbloom';
 function softArc(r,a0,a1,w,al){
-  ctx.save();ctx.lineCap='round';ctx.shadowColor='rgba(255,248,210,.9)';ctx.shadowBlur=26;
+  ctx.save();ctx.lineCap='round';ctx.shadowColor='rgba(255,248,210,.9)';ctx.shadowBlur=SB()*(26);
   for(let i=0;i<6;i++){ctx.strokeStyle=`rgba(255,250,222,${al})`;ctx.lineWidth=w*(1-i*.12);
     ctx.beginPath();ctx.arc(CX,CY,r,a0+i*.045,a1-i*.045);ctx.stroke()}
   ctx.restore();
 }
 function crescent(a0,a1,al){
   const m=(a0+a1)/2,ox=-Math.cos(m)*R*.07,oy=-Math.sin(m)*R*.07;
-  ctx.save();ctx.shadowColor='rgba(255,248,210,.95)';ctx.shadowBlur=34;ctx.fillStyle=`rgba(255,250,225,${al})`;
+  ctx.save();ctx.shadowColor='rgba(255,248,210,.95)';ctx.shadowBlur=SB()*(34);ctx.fillStyle=`rgba(255,250,225,${al})`;
   ctx.beginPath();ctx.arc(CX,CY,R*.93,a0,a1);ctx.arc(CX+ox,CY+oy,R*.89,a1-.05,a0+.05,true);ctx.closePath();ctx.fill();ctx.restore();
 }
 function sparkle(x,y,r,al){
@@ -180,7 +194,7 @@ function blob(x,y,r,col,sx=1,sy=1,rot=0){
 function drawRefl(){ctx.save();ctx.globalAlpha=+$('rs').value/100;drawReflRaw();ctx.restore()}
 function curvedHL(a0,a1,r0,r1,al,blur=26){
   // 多層疊加：外層寬而淡、內層窄而亮，兩端逐漸收尖，邊緣完全羽化
-  ctx.save();ctx.shadowColor='rgba(255,250,225,.8)';ctx.shadowBlur=blur*1.8;
+  ctx.save();ctx.shadowColor='rgba(255,250,225,.8)';ctx.shadowBlur=SB()*(blur*1.8);
   const N=6;
   for(let k=0;k<N;k++){
     const e=(N-1-k)*.03,t=k*.07,q0=r0-e,q1=Math.min(1,r1+e);
@@ -223,7 +237,7 @@ const RF={
   bl(){blob(CX-R*.6,CY+R*.65,R*.75,'rgba(255,244,175,.9)');blob(CX-R*.55,CY+R*.7,R*.3,'rgba(255,255,230,.8)')},
   toporange(){blob(CX,CY-R*.85,R*1.0,'rgba(215,105,28,.55)',1.25,.62)},
   rain(){
-    ctx.save();ctx.shadowColor='rgba(255,250,220,.8)';ctx.shadowBlur=6;ctx.lineCap='round';ctx.lineWidth=2.5;
+    ctx.save();ctx.shadowColor='rgba(255,250,220,.8)';ctx.shadowBlur=SB()*(6);ctx.lineCap='round';ctx.lineWidth=2.5;
     for(let i=0;i<42;i++){const x=CX+R*(((i*53)%100)/50-1)*.92,y=CY+R*(((i*37)%100)/50-1)*.8,l=R*(.08+((i*17)%10)/100);
       ctx.strokeStyle=`rgba(255,252,230,${.2+((i*7)%5)/20})`;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-l*.15,y+l);ctx.stroke()}
     ctx.restore();
@@ -245,18 +259,26 @@ function drawReflRaw(){
 }
 $('refl').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;refl=b.dataset.r;
-  [...$('refl').children].forEach(x=>x.classList.toggle('on',x===b));render();
+  $('refl').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  try{localStorage.setItem('jgm_refl',refl)}catch(_){}
+  render();
 });
+try{const sv=localStorage.getItem('jgm_refl');if(sv&&(RF[sv]||sv==='none'))refl=sv}catch(_){}
+{const act=$('refl').querySelector(`button[data-r="${refl}"]`);
+ $('refl').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===act));
+ if(act)act.closest('details').open=true}
 function render(){
-  ctx.clearRect(0,0,W,W);
-  if(dark){ctx.fillStyle=radial(CX,CY,0,W*.75,[[0,'#0b1220'],[1,'#02040a']]);ctx.fillRect(0,0,W,W)}
+  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);ctx.setTransform(vs,0,0,vs,vx,vy);
+  if(dark&&!orbOnly){ctx.fillStyle=radial(CX,CY,0,W*.75,[[0,'#0b1220'],[1,'#02040a']]);ctx.fillRect(0,0,W,W)}
   const gl=+$('glow').value/100;
+  if(!orbOnly){
   // 外圍光暈：金橘 → 粉 → 淡紫
-  ctx.fillStyle=radial(CX,CY,R*.9,R*1.7,[[0,`rgba(255,226,110,${.98*gl})`],[.125,`rgba(255,214,90,${.95*gl})`],[.25,`rgba(255,190,75,${.72*gl})`],[.44,`rgba(255,160,115,${.44*gl})`],[.69,`rgba(190,140,255,${.3*gl})`],[1,'rgba(160,130,255,0)']]);
+  ctx.fillStyle=radial(CX,CY,R*.9,R*1.36,[[0,`rgba(255,226,110,${.98*gl})`],[.125,`rgba(255,214,90,${.95*gl})`],[.25,`rgba(255,224,125,${.72*gl})`],[.44,`rgba(255,240,175,${.46*gl})`],[.69,`rgba(255,252,232,${.28*gl})`],[1,'rgba(255,255,255,0)']]);
   ctx.fillRect(0,0,W,W);
-  blob(CX+R*1.1,CY-R*.35,R*.95,`rgba(205,160,255,${.4*gl})`);
-  blob(CX+R*.9,CY+R*.6,R*.7,`rgba(255,170,190,${.3*gl})`);
-  blob(CX-R*1.05,CY+R*.15,R*.85,`rgba(255,175,60,${.36*gl})`);
+  blob(CX+R*.95,CY-R*.3,R*.5,`rgba(255,248,215,${.4*gl})`);
+  blob(CX+R*.8,CY+R*.5,R*.4,`rgba(255,238,160,${.3*gl})`);
+  blob(CX-R*.95,CY+R*.1,R*.45,`rgba(255,215,90,${.36*gl})`);
+  }
 
   ctx.save();
   ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.clip();
@@ -269,28 +291,36 @@ function render(){
   ctx.fillRect(CX-R,CY-R,R*2,R*2);
   // 周圍環境色透進玻璃：左側暖橘、右側淡紫粉
   blob(CX-R*.98,CY+R*.1,R*.55,'rgba(255,165,60,.4)',.5,1.3);
-  blob(CX+R*.98,CY-R*.1,R*.55,'rgba(220,170,245,.42)',.5,1.3);
+  blob(CX+R*.98,CY-R*.1,R*.55,'rgba(255,248,215,.42)',.5,1.3);
   // 邊緣漸層：內側桃橘 → 金黃 → 淡黃白 → 白（柔和過渡）
   const e=+$('edge').value/100,k=Math.min(1,e*1.3);
   ctx.fillStyle=radial(CX,CY,R*(.9-.3*e),R,[[0,'rgba(240,150,60,0)'],[.45,`rgba(240,150,60,${.3*k})`],[.8,`rgba(255,215,120,${.45*k})`],[.94,`rgba(255,240,185,${.7*k})`],[1,`rgba(255,252,235,${.92*k})`]]);
   ctx.fillRect(CX-R,CY-R,R*2,R*2);
   drawRefl();
+  // 球體透明度：中心較透、邊緣保留玻璃厚度（僅透明背景 / 僅球體輸出）
+  const tp=+$('tp').value/100;
+  if(tp>0&&(!dark||orbOnly)){ctx.save();ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle=radial(CX,CY,0,R,[[0,`rgba(0,0,0,${.6*tp})`],[.6,`rgba(0,0,0,${.35*tp})`],[.9,'rgba(0,0,0,0)'],[1,'rgba(0,0,0,0)']]);
+    ctx.fillRect(CX-R,CY-R,R*2,R*2);ctx.restore()}
   ctx.restore();
 
   // 外緣柔光：讓球邊緣與外圍光暈自然融合，不留硬邊
-  ctx.fillStyle=radial(CX,CY,R*.94,R*1.16,[[0,'rgba(255,236,170,0)'],[.4,`rgba(255,238,175,${.6*k})`],[1,'rgba(255,215,100,0)']]);
-  ctx.fillRect(0,0,W,W);
+  if(!orbOnly){ctx.fillStyle=radial(CX,CY,R*.94,R*1.16,[[0,'rgba(255,236,170,0)'],[.4,`rgba(255,238,175,${.6*k})`],[1,'rgba(255,215,100,0)']]);
+  ctx.fillRect(0,0,W,W)}
 
 
   if(!img){ctx.fillStyle='rgba(90,50,5,.55)';ctx.font='500 38px "Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.fillText('請上傳照片',CX,CY+12)}
 }
 
-function sync(){
+function labels(){
   $('vz').textContent=(+$('zoom').value).toFixed(2);$('vx').textContent=$('ox').value;$('vy').textContent=$('oy').value;
   $('vr').textContent=$('rot').value+'°';$('vt').textContent=$('tint').value;$('vg').textContent=$('glow').value;$('ve').textContent=$('edge').value;$('vs').textContent=$('rs').value;$('vp').textContent=$('pr').value;$('vd').textContent=$('dist').value;
-  render();
+  $('vtp').textContent=$('tp').value;
 }
-ids.forEach(i=>$(i).addEventListener('input',sync));
+function sync(){labels();setD(360);render()}
+let fq;
+function quick(){labels();setD(200);render();clearTimeout(fq);fq=setTimeout(()=>{setD(360);render()},200)}
+ids.forEach(i=>$(i).addEventListener('input',quick));
 let isDefault=true;
 $('reset').onclick=()=>{ids.forEach(i=>$(i).value=def[i]);if(isDefault)$('oy').value=30;sync()};
 
@@ -301,7 +331,7 @@ $('file').addEventListener('change',e=>{
   fr.onload=()=>{
     const im=new Image();
     im.onload=()=>{
-      try{img=im;isDefault=false;ids.forEach(i=>$(i).value=def[i]);sync();toast('圖片已載入')}
+      try{img=im;isDefault=false;ids.forEach(i=>$(i).value=def[i]);sync();centerFace(true).then(o=>toast(o?'已自動置中人臉':'圖片已載入'))}
       catch(err){toast('處理失敗：'+err.message)}
     };
     im.onerror=()=>toast('不支援此圖片格式');
@@ -315,22 +345,68 @@ $('file').addEventListener('change',e=>{
 function setBg(d){dark=d;$('bgd').classList.toggle('on',d);$('bgc').classList.toggle('on',!d);$('stage').classList.toggle('clear',!d);render()}
 $('bgd').onclick=()=>setBg(true);$('bgc').onclick=()=>setBg(false);
 
-// 拖曳 / 滾輪
-let drag=null;
-cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'});
+// 手勢：單指拖曳、雙指縮放＋旋轉＋平移、滾輪縮放
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ptrs=new Map();let pinch=null;
+function pinfo(){const [a,b]=[...ptrs.values()];return{d:Math.hypot(b.x-a.x,b.y-a.y)||1,ang:Math.atan2(b.y-a.y,b.x-a.x),mx:(a.x+b.x)/2,my:(a.y+b.y)/2}}
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptrs.size===2)pinch=pinfo();cv.style.cursor='grabbing'});
 cv.addEventListener('pointermove',e=>{
-  if(!drag||!img)return;
+  const p=ptrs.get(e.pointerId);if(!p||!img)return;
   const k=W/cv.getBoundingClientRect().width;
-  const f=v=>Math.max(-100,Math.min(100,v));
-  $('ox').value=f(+$('ox').value+(e.clientX-drag.x)*k/R*100);
-  $('oy').value=f(+$('oy').value+(e.clientY-drag.y)*k/R*100);
-  drag={x:e.clientX,y:e.clientY};sync();
+  if(ptrs.size===1){
+    $('ox').value=clamp(+$('ox').value+(e.clientX-p.x)*k/R*100,-100,100);
+    $('oy').value=clamp(+$('oy').value+(e.clientY-p.y)*k/R*100,-100,100);
+    p.x=e.clientX;p.y=e.clientY;
+  }else if(ptrs.size===2){
+    p.x=e.clientX;p.y=e.clientY;
+    const n=pinfo(),o=pinch||n;
+    $('zoom').value=clamp(+$('zoom').value*n.d/o.d,.5,4);
+    let r=+$('rot').value+(n.ang-o.ang)*180/Math.PI;$('rot').value=((r+540)%360)-180;
+    $('ox').value=clamp(+$('ox').value+(n.mx-o.mx)*k/R*100,-100,100);
+    $('oy').value=clamp(+$('oy').value+(n.my-o.my)*k/R*100,-100,100);
+    pinch=n;
+  }else return;
+  quick();
 });
-['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,()=>{drag=null;cv.style.cursor='grab'}));
-cv.addEventListener('wheel',e=>{e.preventDefault();$('zoom').value=Math.max(.5,Math.min(4,+$('zoom').value-e.deltaY*.002));sync()},{passive:false});
+['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,e=>{ptrs.delete(e.pointerId);pinch=ptrs.size===2?pinfo():null;if(!ptrs.size)cv.style.cursor='grab'}));
+cv.addEventListener('wheel',e=>{e.preventDefault();$('zoom').value=clamp(+$('zoom').value-e.deltaY*.002,.5,4);quick()},{passive:false});
+
+// 自動置中人臉：優先使用瀏覽器 FaceDetector，否則以膚色區域估計
+async function centerFace(auto){
+  if(!img||(isDefault&&auto))return false;
+  const iw=img.width,ih=img.height,mn=Math.min(iw,ih);
+  let fx=null,fy=null,fw=null;
+  try{if('FaceDetector' in window){const f=await new FaceDetector({fastMode:true,maxDetectedFaces:1}).detect(img);if(f.length){const b=f[0].boundingBox;fx=b.x+b.width/2;fy=b.y+b.height/2;fw=b.width}}}catch(_){}
+  if(fx===null){
+    const sc=Math.min(1,96/Math.max(iw,ih)),w=Math.max(1,Math.round(iw*sc)),h=Math.max(1,Math.round(ih*sc));
+    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,w,h);
+    const d=x.getImageData(0,0,w,h).data;let n=0,sx=0,sy=0;
+    for(let i=0;i<h;i++)for(let j=0;j<w;j++){const o=(i*w+j)*4,r=d[o],g=d[o+1],b=d[o+2];
+      const cb=128-.168736*r-.331264*g+.5*b,cr=128+.5*r-.418688*g-.081312*b;
+      if(cb>=77&&cb<=127&&cr>=133&&cr<=173&&r>g&&r>b){n++;sx+=j;sy+=i}}
+    const ratio=n/(w*h);if(ratio<.02||ratio>.6)return false;
+    fx=sx/n/sc;fy=sy/n/sc;
+  }
+  const z=fw?clamp(.5*mn/fw,.8,3):(+$('zoom').value||1);
+  $('zoom').value=z;$('rot').value=0;
+  $('ox').value=clamp(-(fx-iw/2)*2/mn*z*100,-100,100);
+  $('oy').value=clamp(-(fy-ih/2)*2/mn*z*100,-100,100);
+  sync();return true;
+}
+$('face').onclick=()=>{if(!img){toast('請先上傳圖片');return}centerFace(false).then(o=>toast(o?'已自動置中':'未偵測到人臉'))};
 
 // 儲存 / 下載
-function getBlob(){return new Promise(r=>cv.toBlob(r,'image/png'))}
+const exp={size:1080,orb:false};
+function segPick(id,fn){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));fn(b.dataset.v)})}
+segPick('sz',v=>exp.size=+v);segPick('om',v=>exp.orb=v==='orb');
+async function getBlob(){
+  const size=exp.size;
+  cv.width=cv.height=size;orbOnly=exp.orb;
+  if(orbOnly){vs=size/(2*R);vx=-(CX-R)*vs;vy=-(CY-R)*vs}else{vs=size/W;vx=vy=0}
+  setD(size>=2048?720:size>1080?540:360);
+  try{render();return await new Promise(r=>cv.toBlob(r,'image/png'))}
+  finally{cv.width=cv.height=1080;orbOnly=false;vs=1;vx=vy=0;setD(360);render()}
+}
 async function save(){
   if(!img){toast('請先上傳圖片');return}
   const b=await getBlob(),file=new File([b],'金色記憶球.png',{type:'image/png'});
