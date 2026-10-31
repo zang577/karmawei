@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#b9e3fd" />
   <title>KARMAWEI_</title>
+
+  <!-- 引入輕量專業裁切庫 Cropper.js 樣式與腳本 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
   <style>
     :root {
       --glass-bg: rgba(255, 255, 255, 0.75);
@@ -256,52 +261,27 @@
       background: #ffffff;
     }
 
-    /* 圖片裁剪互動區樣式 */
-    .crop-container {
+    /* 專業 Cropper 裁切容器樣式 */
+    .crop-wrapper {
       margin-top: 10px;
-      padding: 12px;
-      background: rgba(241, 245, 249, 0.8);
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
       display: none;
+      background: #f1f5f9;
+      border-radius: 14px;
+      padding: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
     }
-    .crop-container.active {
+    .crop-wrapper.active {
       display: block;
     }
-    .crop-view {
-      width: 130px;
-      height: 130px;
-      margin: 0 auto 10px auto;
-      position: relative;
+    .crop-container {
+      width: 100%;
+      max-height: 200px;
       overflow: hidden;
-      border-radius: 12px;
-      border: 2px solid #3b82f6;
-      background: #ffffff;
-      cursor: grab;
-      touch-action: none;
+      border-radius: 10px;
     }
-    .crop-view:active {
-      cursor: grabbing;
-    }
-    #cropImg {
-      position: absolute;
-      transform-origin: 0 0; /* 關鍵修復：強制對齊左上角原點，使縮放與座標計算完全一致 */
-      user-select: none;
-      pointer-events: none;
-    }
-    .zoom-control {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .zoom-control span {
-      font-size: 0.75rem;
-      color: var(--text-sub);
-      font-weight: 600;
-    }
-    .zoom-control input[type="range"] {
-      flex: 1;
-      accent-color: #3b82f6;
+    .crop-container img {
+      max-width: 100%;
+      display: block;
     }
 
     .modal-actions {
@@ -366,19 +346,18 @@
           <label>連結網址圖片 URL:</label>
           <div class="input-row">
             <input type="url" id="inputImg" placeholder="https://example.com/image.jpg" required />
-            <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">📷 上傳圖片</button>
+            <!-- 已刪除按鈕上的 Emoji -->
+            <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">上傳圖片</button>
             <input type="file" id="fileInput" accept="image/*" style="display: none;" />
           </div>
           
-          <!-- 互動式圖片放大縮小與選取範圍工具 -->
-          <div class="crop-container" id="cropContainer">
-            <label style="margin-bottom:6px; text-align:center;">調整顯示範圍（拖曳移動、拉桿縮放）</label>
-            <div class="crop-view" id="cropView">
-              <img id="cropImg" alt="Crop Preview" />
+          <!-- Cropper.js 專業裁切區域 -->
+          <div class="crop-wrapper" id="cropWrapper">
+            <div style="font-size:0.75rem; color:var(--text-sub); text-align:center; margin-bottom:8px; font-weight:600;">
+              拖曳與手勢縮放選擇顯示範圍
             </div>
-            <div class="zoom-control">
-              <span>縮放</span>
-              <input type="range" id="zoomRange" min="0.3" max="3" step="0.05" value="1" />
+            <div class="crop-container">
+              <img id="cropImg" alt="Crop Area" />
             </div>
           </div>
         </div>
@@ -401,8 +380,7 @@
     ];
 
     var cards = [];
-    var cropImageObj = null;
-    var cropState = { scale: 1, x: 0, y: 0, isDragging: false, startX: 0, startY: 0 };
+    var cropperInstance = null;
 
     function loadData() {
       try {
@@ -465,6 +443,14 @@
       render();
     };
 
+    function destroyCropper() {
+      if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+      }
+      document.getElementById('cropWrapper').classList.remove('active');
+    }
+
     window.openModal = function(card) {
       var overlay = document.getElementById('modalOverlay');
       var title = document.getElementById('modalTitle');
@@ -473,12 +459,11 @@
       var urlInput = document.getElementById('inputUrl');
       var imgInput = document.getElementById('inputImg');
       var form = document.getElementById('cardForm');
-      var cropContainer = document.getElementById('cropContainer');
 
       if (!overlay || !form) return;
 
+      destroyCropper();
       overlay.classList.add('active');
-      cropContainer.classList.remove('active');
 
       if (card) {
         title.textContent = '編輯連結';
@@ -496,7 +481,7 @@
     window.closeModal = function() {
       var overlay = document.getElementById('modalOverlay');
       if (overlay) overlay.classList.remove('active');
-      document.getElementById('cropContainer').classList.remove('active');
+      destroyCropper();
     };
 
     window.editCard = function(id) {
@@ -504,90 +489,34 @@
       if (card) openModal(card);
     };
 
-    /* 圖片上傳與互動式裁切初始化 */
+    /* 整合 Cropper.js 圖片上傳與初始化 */
     document.getElementById('fileInput').addEventListener('change', function(e) {
       var file = e.target.files[0];
       if (file) {
         var reader = new FileReader();
         reader.onload = function(event) {
-          var img = new Image();
-          img.onload = function() {
-            cropImageObj = img;
-            var cropContainer = document.getElementById('cropContainer');
-            var cropImgEl = document.getElementById('cropImg');
-            cropImgEl.src = img.src;
-            cropContainer.classList.add('active');
+          destroyCropper();
+          var cropImg = document.getElementById('cropImg');
+          cropImg.src = event.target.result;
+          document.getElementById('cropWrapper').classList.add('active');
 
-            // 初始化縮放與置中
-            var viewSize = 130;
-            var initialScale = Math.max(viewSize / img.width, viewSize / img.height);
-            cropState.scale = initialScale;
-            document.getElementById('zoomRange').value = initialScale;
-            cropState.x = (viewSize - img.width * initialScale) / 2;
-            cropState.y = (viewSize - img.height * initialScale) / 2;
-            updateCropTransform();
-          };
-          img.src = event.target.result;
+          // 初始化 Cropper 實例 (鎖定 1:1 正方形比率)
+          cropperInstance = new Cropper(cropImg, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.9,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false
+          });
         };
         reader.readAsDataURL(file);
       }
-    });
-
-    function updateCropTransform() {
-      var cropImgEl = document.getElementById('cropImg');
-      if (!cropImageObj) return;
-      cropImgEl.style.width = cropImageObj.width + 'px';
-      cropImgEl.style.height = cropImageObj.height + 'px';
-      cropImgEl.style.transform = 'translate(' + cropState.x + 'px, ' + cropState.y + 'px) scale(' + cropState.scale + ')';
-    }
-
-    // 拖曳與觸控平移邏輯
-    var cropView = document.getElementById('cropView');
-    
-    function startDrag(clientX, clientY) {
-      cropState.isDragging = true;
-      cropState.startX = clientX - cropState.x;
-      cropState.startY = clientY - cropState.y;
-    }
-    function onDrag(clientX, clientY) {
-      if (!cropState.isDragging) return;
-      cropState.x = clientX - cropState.startX;
-      cropState.y = clientY - cropState.startY;
-      updateCropTransform();
-    }
-    function endDrag() {
-      cropState.isDragging = false;
-    }
-
-    cropView.addEventListener('mousedown', function(e) { startDrag(e.clientX, e.clientY); });
-    window.addEventListener('mousemove', function(e) { onDrag(e.clientX, e.clientY); });
-    window.addEventListener('mouseup', endDrag);
-
-    cropView.addEventListener('touchstart', function(e) {
-      if (e.touches.length === 1) {
-        startDrag(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    });
-    window.addEventListener('touchmove', function(e) {
-      if (e.touches.length === 1) {
-        onDrag(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    });
-    window.addEventListener('touchend', endDrag);
-
-    // 縮放滑桿連動（以預覽框中心點進行縮放）
-    document.getElementById('zoomRange').addEventListener('input', function(e) {
-      var newScale = parseFloat(e.target.value);
-      var viewSize = 130;
-      var centerX = viewSize / 2;
-      var centerY = viewSize / 2;
-      var imgX = (centerX - cropState.x) / cropState.scale;
-      var imgY = (centerY - cropState.y) / cropState.scale;
-      
-      cropState.scale = newScale;
-      cropState.x = centerX - imgX * cropState.scale;
-      cropState.y = centerY - imgY * cropState.scale;
-      updateCropTransform();
     });
 
     document.getElementById('addBtn').onclick = function() { openModal(); };
@@ -600,26 +529,17 @@
       var url = document.getElementById('inputUrl').value;
       var imgUrl = document.getElementById('inputImg').value;
 
-      var cropContainer = document.getElementById('cropContainer');
-      if (cropContainer.classList.contains('active') && cropImageObj) {
-        var canvas = document.createElement('canvas');
-        canvas.width = 128;
-        canvas.height = 128;
-        var ctx = canvas.getContext('2d');
-        var viewSize = 130;
-        var ratio = 128 / viewSize;
-
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, 128, 128);
-
-        ctx.save();
-        ctx.scale(ratio, ratio);
-        ctx.translate(cropState.x, cropState.y);
-        ctx.scale(cropState.scale, cropState.scale);
-        ctx.drawImage(cropImageObj, 0, 0);
-        ctx.restore();
-
-        imgUrl = canvas.toDataURL('image/jpeg', 0.85);
+      // 若有開啟 Cropper，則匯出精準裁切後的 Base64 縮圖
+      if (cropperInstance) {
+        var canvas = cropperInstance.getCroppedCanvas({
+          width: 128,
+          height: 128,
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high'
+        });
+        if (canvas) {
+          imgUrl = canvas.toDataURL('image/jpeg', 0.85);
+        }
       }
 
       if (id) {
