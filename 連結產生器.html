@@ -285,7 +285,7 @@
     }
     #cropImg {
       position: absolute;
-      transform-origin: 0 0;
+      transform-origin: 0 0; /* 關鍵修復：強制對齊左上角原點，使縮放與座標計算完全一致 */
       user-select: none;
       pointer-events: none;
     }
@@ -378,7 +378,7 @@
             </div>
             <div class="zoom-control">
               <span>縮放</span>
-              <input type="range" id="zoomRange" min="0.5" max="3" step="0.05" value="1" />
+              <input type="range" id="zoomRange" min="0.3" max="3" step="0.05" value="1" />
             </div>
           </div>
         </div>
@@ -575,11 +575,10 @@
     });
     window.addEventListener('touchend', endDrag);
 
-    // 縮放滑桿連動
+    // 縮放滑桿連動（以預覽框中心點進行縮放）
     document.getElementById('zoomRange').addEventListener('input', function(e) {
       var newScale = parseFloat(e.target.value);
       var viewSize = 130;
-      // 以中心點進行縮放
       var centerX = viewSize / 2;
       var centerY = viewSize / 2;
       var imgX = (centerX - cropState.x) / cropState.scale;
@@ -601,7 +600,6 @@
       var url = document.getElementById('inputUrl').value;
       var imgUrl = document.getElementById('inputImg').value;
 
-      // 如果有進行裁剪互動，透過 Canvas 產生最終 1:1 裁切圖片
       var cropContainer = document.getElementById('cropContainer');
       if (cropContainer.classList.contains('active') && cropImageObj) {
         var canvas = document.createElement('canvas');
