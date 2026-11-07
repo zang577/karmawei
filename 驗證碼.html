@@ -318,12 +318,12 @@
     </div>
 
     <div class="card">
-      <h2>字型</h2>
-      <div class="font-grid" id="fontGrid"></div>
+      <div class="style-grid" id="styleRow"></div>
     </div>
 
     <div class="card">
-      <div class="style-grid" id="styleRow"></div>
+      <h2>字型</h2>
+      <div class="font-grid" id="fontGrid"></div>
     </div>
   </div>
 </div>
@@ -497,21 +497,48 @@
       ctx.fill();
     }
   }
+
+  // 海洋：只保留幅度小的幾何波浪線，數量少、偏透明，畫在文字上方
+  function oceanOverlay(ctx,w,h,rng){
+    ctx.save();
+    ctx.lineCap='round';
+    ctx.lineJoin='round';
+    const deep='rgba(8,58,92,', light='rgba(255,255,255,';
+    const n = 3+Math.floor(rng()*2);
+    for(let i=0;i<n;i++){
+      const y0 = h*(0.10+rng()*0.80);
+      const amp = h*(0.010+rng()*0.016);
+      const wl = w/(3.5+rng()*3.5);
+      const ph = rng()*Math.PI*2;
+      const xs = rng()*w*0.5, xe = Math.min(w, xs + w*(0.35+rng()*0.45));
+      ctx.beginPath();
+      for(let x=xs;x<=xe;x+=2){
+        const yy = y0+Math.sin((x/wl)*Math.PI*2+ph)*amp;
+        if(x===xs) ctx.moveTo(x,yy); else ctx.lineTo(x,yy);
+      }
+      ctx.strokeStyle = (rng()<0.5?deep:light)+(0.16+rng()*0.12).toFixed(2)+')';
+      ctx.lineWidth = 1+rng()*0.9;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   function bgForest(ctx,w,h,rng){
     const g=ctx.createLinearGradient(0,0,0,h);
     g.addColorStop(0,'#bfe89a'); g.addColorStop(1,'#7fc157');
     ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
     const leafGreens=['#8fd15f','#a8e072','#c3ee94','#6fb349','#d8f0a8'];
-    for(let i=0;i<34;i++){
-      const x=rng()*w, y=rng()*h, s=6+rng()*12;
-      ctx.save();
-      ctx.translate(x,y); ctx.rotate(rng()*Math.PI*2);
-      ctx.fillStyle=leafGreens[Math.floor(rng()*leafGreens.length)];
+    // 短短小小的線條（取代原本的碎小橢圓色塊）
+    ctx.lineCap='round';
+    for(let i=0;i<46;i++){
+      const x=rng()*w, y=rng()*h, len=4+rng()*9, ang=rng()*Math.PI*2;
+      ctx.strokeStyle=leafGreens[Math.floor(rng()*leafGreens.length)];
       ctx.globalAlpha=0.6+rng()*0.35;
+      ctx.lineWidth=0.9+rng()*1.3;
       ctx.beginPath();
-      ctx.ellipse(0,0,s*0.5,s*0.22,0,0,Math.PI*2);
-      ctx.fill();
-      ctx.restore();
+      ctx.moveTo(x,y);
+      ctx.lineTo(x+Math.cos(ang)*len, y+Math.sin(ang)*len);
+      ctx.stroke();
     }
     ctx.globalAlpha=1;
     for(let i=0;i<7;i++){
@@ -740,7 +767,7 @@
       ctx.closePath();
       ctx.fillStyle=creamShades[i%creamShades.length];
       ctx.fill();
-      for(let k=0;k<10;k++){
+      for(let k=0;k<3;k++){
         const px=rng()*w, py=yBase+rng()*bandH;
         ctx.save();
         ctx.translate(px,py);
@@ -751,7 +778,7 @@
         ctx.fill();
         ctx.restore();
       }
-      const sesameCount = i%2===0 ? 22 : 8;
+      const sesameCount = i%2===0 ? 7 : 3;
       for(let k=0;k<sesameCount;k++){
         const px=rng()*w, py=yBase+rng()*bandH;
         ctx.save();
@@ -794,7 +821,7 @@
   }
   const bgPlaidTartan = makePlaidBg({ bg:'#7a1f1f', line1:'#1a1a1a', line2:'#0f3d24', accent:'#e8c34a' }, 0.34);
   const bgPlaidGingham = makePlaidBg({ bg:'#eef2e4', line1:'#8fae55', line2:'#c7dba0', accent:'#5f7f39' }, 0.11);
-  const bgPlaidPastel = makePlaidBg({ bg:'#f7eef0', line1:'#c98fa0', line2:'#ecd2d8', accent:'#a65d72' }, 0.22);
+  const bgPlaidPastel = makePlaidBg({ bg:'#f9ece9', line1:'#d6444e', line2:'#eeaaa6', accent:'#a81f2a' }, 0.22);
   const bgPlaidAutumn = makePlaidBg({ bg:'#eef2ea', line1:'#8fa888', line2:'#d3ddc9', accent:'#6b8262' }, 0.28);
   const bgPlaidMono = makePlaidBg({ bg:'#f7ecd9', line1:'#d9b98a', line2:'#ecd9b8', accent:'#b8935c' }, 0.10);
 
@@ -1403,48 +1430,489 @@
   const bgGradBerry = makeGradientBg(['#f4a6c9','#8a4a9e']);
   const bgGradRainbow = makeGradientBg(['#ff4d4d','#ff9f4d','#ffe14d','#4dff88','#4dc9ff','#9f4dff']);
 
+
+  /* ---------- 黑夜樣式：鳥剪影 + 迷幻夜空 ---------- */
+  // 單隻鳥的剪影：k 控制翅膀拍動幅度，flip 控制左右翻轉
+  function drawBirdSilhouette(ctx,x,y,s,rot,k,flip,color){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(rot);
+    ctx.scale(flip?-1:1,1);
+    const tipY = s*(0.18-0.22*k);
+    ctx.beginPath();
+    ctx.moveTo(0,s*0.10);
+    ctx.bezierCurveTo(-s*0.22,-s*0.30*k, -s*0.68,-s*0.38*k, -s,tipY);
+    ctx.bezierCurveTo(-s*0.68,-s*0.10*k, -s*0.32,s*0.02, -s*0.04,s*0.26);
+    ctx.lineTo(s*0.05,s*0.30);
+    ctx.bezierCurveTo(s*0.32,s*0.02, s*0.68,-s*0.10*k, s,tipY);
+    ctx.bezierCurveTo(s*0.68,-s*0.38*k, s*0.22,-s*0.30*k, 0,s*0.10);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    // 小小的頭與尾
+    ctx.beginPath();
+    ctx.ellipse(s*0.02,s*0.06,s*0.07,s*0.10,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+  function scatterBirds(ctx,w,h,rng,count,minR,maxR,baseAlpha){
+    for(let i=0;i<count;i++){
+      const x = rng()*w, y = rng()*h;
+      const s = h*(minR + Math.pow(rng(),1.8)*(maxR-minR));
+      const rot = (rng()-0.5)*0.9;
+      const k = 0.35 + rng()*1.0;
+      const a = baseAlpha + rng()*(1-baseAlpha);
+      drawBirdSilhouette(ctx,x,y,s,rot,k,rng()<0.5,`rgba(3,4,8,${a.toFixed(2)})`);
+    }
+  }
+  function bgNight(ctx,w,h,rng){
+    // 剛入夜的天空：頂部近黑 → 深藍 → 灰藍 → 地平線偏灰 → 底部壓黑
+    const g = ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#04050b');
+    g.addColorStop(0.30,'#0c1838');
+    g.addColorStop(0.58,'#2b3a5e');
+    g.addColorStop(0.78,'#5a6272');
+    g.addColorStop(1,'#101116');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+
+    // 迷幻光暈：模糊的紫、青、洋紅色塊
+    ctx.save();
+    ctx.filter = 'blur(22px)';
+    const glowCols = ['#1f5f8a','#1f7a99','#2a4fb0','#3a6a8a'];
+    for(let i=0;i<5;i++){
+      const cx = rng()*w, cy = rng()*h, r = h*(0.45+rng()*0.5);
+      const col = glowCols[Math.floor(rng()*glowCols.length)];
+      const rg = ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+      rg.addColorStop(0,hexToRgba(col,0.42));
+      rg.addColorStop(1,hexToRgba(col,0));
+      ctx.fillStyle=rg; ctx.fillRect(0,0,w,h);
+    }
+    ctx.restore();
+
+    // 短而長短不一的細線
+    const waveCols = ['rgba(110,150,255,','rgba(90,220,230,','rgba(120,190,240,','rgba(200,205,215,'];
+    const streakN = Math.floor(w*h/1500);
+    ctx.lineCap='round';
+    for(let i=0;i<streakN;i++){
+      const x = rng()*w, y = rng()*h;
+      const len = h*(0.02+Math.pow(rng(),2)*0.16);
+      const ang = (rng()-0.5)*1.6;
+      ctx.beginPath();
+      ctx.moveTo(x,y);
+      ctx.lineTo(x+Math.cos(ang)*len, y+Math.sin(ang)*len);
+      ctx.strokeStyle = waveCols[Math.floor(rng()*waveCols.length)] + (0.10+rng()*0.18).toFixed(2) + ')';
+      ctx.lineWidth = 0.6+rng()*1.2;
+      ctx.stroke();
+    }
+
+    // 星點
+    const starN = Math.floor(w*h/9000);
+    for(let i=0;i<starN;i++){
+      const sx = rng()*w, sy = rng()*h*0.75, sr = 0.4+rng()*1.1;
+      ctx.beginPath();
+      ctx.arc(sx,sy,sr,0,Math.PI*2);
+      const tint = rng();
+      ctx.fillStyle = tint<0.6 ? `rgba(255,255,255,${0.25+rng()*0.5})`
+                    : (tint<0.8 ? `rgba(170,200,255,${0.3+rng()*0.4})` : `rgba(150,225,235,${0.3+rng()*0.4})`);
+      ctx.fill();
+    }
+
+    // 隨機分佈的大量鳥剪影（遠近大小不一）
+    const birdCount = Math.max(8, Math.floor(w*h/2300));
+    scatterBirds(ctx,w,h,rng,birdCount,0.045,0.19,0.62);
+  }
+  function nightOverlay(ctx,w,h,rng){
+    // 少量小鳥飛在文字前方，增加干擾與層次
+    scatterBirds(ctx,w,h,rng,3+Math.floor(rng()*3),0.035,0.07,0.9);
+  }
+
+
+  /* ---------- 吐司樣式：參考實物吐司切片（金黃烤面 + 橘褐吐司邊 + 氣孔） ---------- */
+  // 吐司切片外形：接近方形、上方兩側微微外凸、頂部中央微凹、四角圓潤
+  function toastShapePath(ctx,w,h){
+    const m = h*0.03, L=m, R=w-m, T=m, B=h-m;
+    const ov = h*0.045;                 // 兩側上方外凸量
+    const xl = L+ov, xr = R-ov;
+    const rb = h*0.13;                  // 底部圓角
+    const rt = h*0.20;                  // 頂部圓角
+    ctx.moveTo(xl+rb,B);
+    ctx.lineTo(xr-rb,B);
+    ctx.quadraticCurveTo(xr,B,xr,B-rb);
+    ctx.lineTo(xr,h*0.46);
+    ctx.bezierCurveTo(xr,h*0.38, R,h*0.36, R,h*0.24);
+    ctx.bezierCurveTo(R,h*0.10, R-rt*0.30,T, R-rt,T);
+    ctx.bezierCurveTo(w*0.66,T, w*0.58,T+h*0.05, w*0.5,T+h*0.05);
+    ctx.bezierCurveTo(w*0.42,T+h*0.05, w*0.34,T, L+rt,T);
+    ctx.bezierCurveTo(L+rt*0.30,T, L,h*0.10, L,h*0.24);
+    ctx.bezierCurveTo(L,h*0.36, xl,h*0.38, xl,h*0.46);
+    ctx.lineTo(xl,B-rb);
+    ctx.quadraticCurveTo(xl,B,xl+rb,B);
+    ctx.closePath();
+  }
+  // 以畫面中心為基準等距內縮的輪廓；dy 可上下偏移，讓上下的邊厚度不同
+  function toastInsetPath(ctx,w,h,inset,dy){
+    ctx.save();
+    ctx.translate(w/2,h/2+(dy||0));
+    ctx.scale((w-2*inset)/w,(h-2*inset)/h);
+    ctx.translate(-w/2,-h/2);
+    toastShapePath(ctx,w,h);
+    ctx.restore();
+  }
+  // 柔邊色塊：以放射漸層從中心淡出到透明，疊在一起時不會出現明顯邊界
+  function toastSoftBlob(ctx,cx,cy,rx,ry,rot,rgb,alpha){
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(rot);
+    ctx.scale(rx,ry);
+    const g = ctx.createRadialGradient(0,0,0,0,0,1);
+    g.addColorStop(0,`rgba(${rgb},${alpha.toFixed(3)})`);
+    g.addColorStop(0.35,`rgba(${rgb},${(alpha*0.72).toFixed(3)})`);
+    g.addColorStop(0.7,`rgba(${rgb},${(alpha*0.28).toFixed(3)})`);
+    g.addColorStop(1,`rgba(${rgb},0)`);
+    ctx.fillStyle = g;
+    ctx.fillRect(-1,-1,2,2);
+    ctx.restore();
+  }
+  function bgToast(ctx,w,h,rng){
+    const t = Math.max(4, h*0.045);        // 吐司邊厚度（底部會比上方再厚一些）
+    const dy = -t*0.35;
+
+    // 1) 背景與吐司投影
+    const plate = ctx.createRadialGradient(w/2,h/2,h*0.2,w/2,h/2,w*0.7);
+    plate.addColorStop(0,'#eceae4');
+    plate.addColorStop(1,'#d3d1c8');
+    ctx.fillStyle = plate; ctx.fillRect(0,0,w,h);
+    ctx.save();
+    ctx.shadowColor = 'rgba(60,40,20,0.35)';
+    ctx.shadowBlur = h*0.05;
+    ctx.shadowOffsetY = h*0.02;
+    ctx.beginPath(); toastShapePath(ctx,w,h);
+    ctx.fillStyle = '#d98f3a';
+    ctx.fill();
+    ctx.restore();
+
+    // 2) 吐司內部：靠邊較淺的奶油色，中央烤成金橘色
+    ctx.save();
+    ctx.beginPath(); toastShapePath(ctx,w,h); ctx.clip();
+    ctx.fillStyle = '#f5e6c4';
+    ctx.fillRect(0,0,w,h);
+
+    const gx = w*(0.5+(rng()-0.5)*0.2), gy = h*(0.45+(rng()-0.5)*0.1);
+    ctx.save();
+    ctx.translate(gx,gy);
+    ctx.scale(w/h*0.82,1);
+    const toasted = ctx.createRadialGradient(0,0,0,0,0,h*0.58);
+    toasted.addColorStop(0,'rgba(226,150,56,0.92)');
+    toasted.addColorStop(0.55,'rgba(232,168,76,0.75)');
+    toasted.addColorStop(1,'rgba(240,206,140,0)');
+    ctx.fillStyle = toasted;
+    ctx.fillRect(-w,-h,w*2,h*2);
+    ctx.restore();
+
+    // 烤色不均的斑塊：每塊都是由數個柔邊漸層疊成，邊緣完全漸變（較濃的金橘 / 較淡的奶油）
+    const blotchCols = ['205,118,34','226,150,56','236,176,88','246,230,196'];
+    const blockN = Math.max(4, Math.floor(w*h/7000));
+    for(let i=0;i<blockN;i++){
+      const cx = rng()*w, cy = rng()*h;
+      const bw = h*(0.14+rng()*0.30), bh = h*(0.10+rng()*0.22);
+      const rot = (rng()-0.5)*1.2;
+      const rgb = blotchCols[Math.floor(rng()*blotchCols.length)];
+      const lobes = 3+Math.floor(rng()*2);
+      for(let k=0;k<lobes;k++){
+        toastSoftBlob(ctx,
+          cx+(rng()-0.5)*bw*0.9, cy+(rng()-0.5)*bh*0.9,
+          bw*(0.55+rng()*0.5), bh*(0.55+rng()*0.5),
+          rot+(rng()-0.5)*0.8, rgb, 0.16+rng()*0.16);
+      }
+    }
+
+    // 3) 氣孔：柔邊、低對比、形狀不規則（由 1~2 個重疊橢圓組成）
+    const poreN = Math.floor(w*h/480);
+    ctx.save();
+    ctx.filter = 'blur(1.1px)';
+    for(let i=0;i<poreN;i++){
+      const cx = rng()*w, cy = rng()*h;
+      const rx = Math.max(0.9, h*(0.007+Math.pow(rng(),3)*0.05));
+      const ry = rx*(0.45+rng()*0.5);
+      const rot = rng()*Math.PI;
+      const alpha = 0.14+rng()*0.16;
+      const parts = rng()<0.45 ? 2 : 1;
+      for(let k=0;k<parts;k++){
+        const ox = k ? (rng()-0.5)*rx*1.2 : 0, oy = k ? (rng()-0.5)*ry*1.2 : 0;
+        const rr = k ? 0.6+rng()*0.4 : 1;
+        ctx.beginPath();
+        ctx.ellipse(cx+ox,cy+oy,rx*rr,ry*rr,rot+k*0.7,0,Math.PI*2);
+        ctx.fillStyle = `rgba(172,118,58,${alpha.toFixed(2)})`;
+        ctx.fill();
+      }
+      if(rx>1.8){
+        // 很淡的上緣陰影與下緣微亮，只表現輕微凹陷
+        ctx.beginPath();
+        ctx.ellipse(cx,cy,rx,ry,rot,Math.PI*1.0,Math.PI*1.9);
+        ctx.strokeStyle = 'rgba(120,74,30,0.16)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(cx,cy,rx,ry,rot,Math.PI*0.05,Math.PI*0.85);
+        ctx.strokeStyle = 'rgba(255,244,214,0.22)';
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+    // 細小麵包屑顆粒
+    const crumbN = Math.floor(w*h/200);
+    for(let i=0;i<crumbN;i++){
+      ctx.fillStyle = rng()<0.6 ? `rgba(170,112,50,${(0.12+rng()*0.16).toFixed(2)})`
+                                : `rgba(255,246,222,${(0.25+rng()*0.25).toFixed(2)})`;
+      ctx.fillRect(rng()*w, rng()*h, 0.6+rng()*1.2, 0.6+rng()*1.2);
+    }
+    ctx.restore();
+
+    // 4) 吐司邊：橘褐色、粗糙有顆粒，焦黃與黃橘交錯但過渡柔和
+    const per = 2*(w+h)*1.1;
+    ctx.save();
+    ctx.beginPath();
+    toastShapePath(ctx,w,h);
+    toastInsetPath(ctx,w,h,t,dy);
+    ctx.clip('evenodd');
+    const cg = ctx.createLinearGradient(0,0,0,h);
+    cg.addColorStop(0,'#d8883a'); cg.addColorStop(0.5,'#cf7a2c'); cg.addColorStop(1,'#bf6a22');
+    ctx.fillStyle = cg;
+    ctx.fillRect(0,0,w,h);
+    // 焦褐 / 黃橘的柔邊色塊沿著吐司邊分布，彼此重疊處自然混色
+    const crustCols = [['168,88,24',0.55],['236,168,76',0.60],['200,120,40',0.45],['244,190,100',0.40]];
+    const sideInset = h*0.075 + t*0.5;      // 左右邊的中線位置
+    const topY = h*0.03 + t*0.5 + dy*0.5, botY = h - h*0.03 - t*0.5 + dy*0.5;
+    const blobN = Math.floor(per/(t*1.6));
+    for(let i=0;i<blobN;i++){
+      const r = rng()*2*(w+h);
+      let x,y,horiz;
+      if(r<w){ x=r; y=topY; horiz=true; }
+      else if(r<w+h){ x=w-sideInset; y=r-w; horiz=false; }
+      else if(r<2*w+h){ x=r-w-h; y=botY; horiz=true; }
+      else { x=sideInset; y=r-2*w-h; horiz=false; }
+      const along = t*(3+rng()*8), across = t*(1.4+rng()*1.8);
+      const c = crustCols[Math.floor(rng()*crustCols.length)];
+      toastSoftBlob(ctx, x+(rng()-0.5)*t*0.6, y+(rng()-0.5)*t*0.6,
+        horiz?along:across, horiz?across:along, (rng()-0.5)*0.3, c[0], c[1]);
+    }
+    ctx.lineJoin = 'round';
+    ctx.filter = 'blur(4px)';
+    // 外緣偏深的焦邊
+    ctx.beginPath(); toastInsetPath(ctx,w,h,t*0.1,dy*0.1);
+    ctx.setLineDash([]);
+    ctx.lineWidth = t*0.5;
+    ctx.strokeStyle = 'rgba(140,72,18,0.35)';
+    ctx.stroke();
+    ctx.filter = 'none';
+    // 粗糙顆粒
+    const grainN = Math.floor(w*h/900);
+    for(let i=0;i<grainN;i++){
+      const r = rng();
+      ctx.fillStyle = r<0.45 ? 'rgba(96,48,10,0.08)' : (r<0.8 ? 'rgba(244,184,92,0.10)' : 'rgba(255,226,160,0.10)');
+      ctx.fillRect(rng()*w, rng()*h, 0.6+rng()*0.8, 0.6+rng()*0.8);
+    }
+    ctx.restore();
+
+    // 外緣輪廓
+    ctx.beginPath(); toastShapePath(ctx,w,h);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(130,68,18,0.45)';
+    ctx.stroke();
+
+    // 吐司邊與內部的交界：金橘色過渡，往內暈開
+    ctx.save();
+    ctx.beginPath(); toastInsetPath(ctx,w,h,t,dy); ctx.clip();
+    ctx.beginPath(); toastInsetPath(ctx,w,h,t,dy);
+    ctx.shadowColor = 'rgba(190,110,36,0.7)';
+    ctx.shadowBlur = Math.max(4,t*0.9);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(226,150,60,0.9)';
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  /* ---------- 夢境樣式：藍、粉、珊瑚橘交融的柔光夢幻天空 ---------- */
+  // 霧狀柔邊色團：高斯式的緩慢衰減，邊緣完全消散
+  function dreamFog(ctx,cx,cy,rx,ry,rot,rgb,alpha){
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(rot);
+    ctx.scale(rx,ry);
+    const g = ctx.createRadialGradient(0,0,0,0,0,1);
+    g.addColorStop(0,`rgba(${rgb},${alpha.toFixed(3)})`);
+    g.addColorStop(0.2,`rgba(${rgb},${(alpha*0.82).toFixed(3)})`);
+    g.addColorStop(0.4,`rgba(${rgb},${(alpha*0.5).toFixed(3)})`);
+    g.addColorStop(0.6,`rgba(${rgb},${(alpha*0.24).toFixed(3)})`);
+    g.addColorStop(0.8,`rgba(${rgb},${(alpha*0.07).toFixed(3)})`);
+    g.addColorStop(1,`rgba(${rgb},0)`);
+    ctx.fillStyle = g;
+    ctx.fillRect(-1,-1,2,2);
+    ctx.restore();
+  }
+  // 柔光點：整顆都是霧狀暈光，沒有清楚的亮核
+  function dreamGlowDot(ctx,x,y,r,rgb,a){
+    dreamFog(ctx,x,y,r*3.2,r*3.2,0,rgb,a*0.45);
+    dreamFog(ctx,x,y,r*1.5,r*1.5,0,'255,255,255',a*0.6);
+  }
+  // 柔和的光絲（模糊的曲線）
+  function dreamSoftLines(ctx,w,h,rng,count,alphaScale){
+    // 用一串霧狀小色團沿曲線排開，頭尾淡出；完全不靠 filter，各瀏覽器都一樣柔
+    const cols = ['255,255,255','255,190,230','170,215,255','255,205,180','210,190,255'];
+    for(let i=0;i<count;i++){
+      const x = rng()*w, y = rng()*h;
+      const len = h*(0.25+Math.pow(rng(),1.6)*1.1);
+      const ang = (rng()-0.5)*1.5;
+      const x2 = x+Math.cos(ang)*len, y2 = y+Math.sin(ang)*len;
+      const cx = (x+x2)/2+(rng()-0.5)*len*0.5, cy = (y+y2)/2+(rng()-0.5)*len*0.5;
+      const c = cols[Math.floor(rng()*cols.length)];
+      const rad = h*(0.025+rng()*0.04);
+      const base = (0.10+rng()*0.12)*alphaScale;
+      const n = Math.max(6, Math.ceil(len/(rad*0.6)));
+      for(let k=0;k<=n;k++){
+        const t = k/n, u = 1-t;
+        const px = u*u*x+2*u*t*cx+t*t*x2, py = u*u*y+2*u*t*cy+t*t*y2;
+        dreamFog(ctx,px,py,rad*1.6,rad,ang,c,base*Math.sin(Math.PI*t));
+      }
+    }
+  }
+  // 只畫出模糊陰影（本體移到畫布外）；不使用 ctx.filter，各瀏覽器都能柔化
+  function dreamBlurText(ctx,ch,color,blur,strokeW){
+    const m = ctx.getTransform();
+    const D = 6000, det = m.a*m.d-m.b*m.c || 1;
+    ctx.save();
+    ctx.translate(-D*m.d/det, D*m.b/det);
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur;
+    ctx.shadowOffsetX = D;
+    ctx.shadowOffsetY = 0;
+    ctx.fillStyle = '#000';
+    ctx.fillText(ch,0,0);
+    if(strokeW){
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = strokeW;
+      ctx.strokeStyle = '#000';
+      ctx.strokeText(ch,0,0);
+    }
+    ctx.restore();
+  }
+  function bgDream(ctx,w,h,rng){
+    // 底色：淡紫 → 粉 → 天藍
+    const g = ctx.createLinearGradient(0,0,w,h);
+    g.addColorStop(0,'#b7a8f6');
+    g.addColorStop(0.5,'#f6b3d8');
+    g.addColorStop(1,'#8fb8fb');
+    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+    // 大片色團：藍、粉、珊瑚、薰衣草、蜜桃、淺青，彼此柔和交疊
+    const cols = ['82,150,255','255,118,198','255,108,92','170,140,255','255,186,152','110,205,255'];
+    const blobN = Math.max(9, Math.floor(w*h/4200));
+    for(let i=0;i<blobN;i++){
+      const rgb = cols[Math.floor(rng()*cols.length)];
+      const r = h*(0.45+rng()*0.7);
+      dreamFog(ctx, rng()*w, rng()*h, r*(1.3+rng()*0.9), r, (rng()-0.5)*1.2, rgb, 0.55+rng()*0.35);
+    }
+
+    // 斜向流動的雲帶：由一串霧狀色團組成，邊緣自然消散，不會出現塊狀輪廓
+    const bandCols = ['255,170,215','255,200,170','140,190,255','255,255,255','200,170,255'];
+    for(let i=0;i<5;i++){
+      const x = rng()*w*0.6, y = rng()*h;
+      const len = w*(0.35+rng()*0.5), ang = -0.3+(rng()-0.5)*0.5;
+      const bw = h*(0.12+rng()*0.22);
+      const rgb = bandCols[Math.floor(rng()*bandCols.length)];
+      const base = 0.10+rng()*0.08;
+      const n = Math.ceil(len/(bw*0.5));
+      for(let k=0;k<=n;k++){
+        const t = k/n;
+        dreamFog(ctx, x+Math.cos(ang)*len*t, y+Math.sin(ang)*len*t,
+                 bw*1.8, bw*1.0, ang, rgb, base*(0.3+0.7*Math.sin(Math.PI*t)));
+      }
+    }
+
+    // 提亮的柔光團（screen 疊色，像玻璃折射的亮處）
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const glowCols = ['255,200,230','190,220,255','255,215,190','255,255,255'];
+    for(let i=0;i<5;i++){
+      const r = h*(0.25+rng()*0.4);
+      dreamFog(ctx, rng()*w, rng()*h, r*1.5, r, (rng()-0.5), glowCols[Math.floor(rng()*glowCols.length)], 0.30+rng()*0.25);
+    }
+    ctx.restore();
+
+    // 撒上柔和的光點、散景與十字微光
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const dotCols = ['255,255,255','255,200,230','190,225,255','255,220,190'];
+    const dotN = Math.max(4, Math.floor(w*h/4200));
+    for(let i=0;i<dotN;i++){
+      const r = Math.max(1.5, h*(0.014+Math.pow(rng(),2.2)*0.04));
+      dreamGlowDot(ctx, rng()*w, rng()*h, r, dotCols[Math.floor(rng()*dotCols.length)], 0.30+rng()*0.35);
+    }
+    const bokehN = Math.max(2, Math.floor(w*h/14000));
+    for(let i=0;i<bokehN;i++){
+      const r = h*(0.07+rng()*0.10);
+      dreamFog(ctx, rng()*w, rng()*h, r, r, 0, dotCols[Math.floor(rng()*dotCols.length)], 0.14+rng()*0.14);
+    }
+    ctx.restore();
+
+    // 柔和的干擾光絲
+    dreamSoftLines(ctx,w,h,rng,Math.max(4,Math.floor(w*h/6500)),1);
+  }
+  function dreamOverlay(ctx,w,h,rng){
+    // 前景再飄一些很淡的光絲與光點，維持柔和的干擾
+    dreamSoftLines(ctx,w,h,rng,Math.max(2,Math.floor(w*h/18000)),0.6);
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const n = Math.max(2, Math.floor(w*h/12000));
+    for(let i=0;i<n;i++){
+      const r = Math.max(1.2, h*(0.012+Math.pow(rng(),2)*0.035));
+      dreamGlowDot(ctx, rng()*w, rng()*h, r, rng()<0.5?'255,255,255':'255,205,235', 0.25+rng()*0.25);
+    }
+    ctx.restore();
+  }
+
   /* ---------- 風格清單 ---------- */
   const STYLES = [
     { id:'grid', name:'筆記', bg:bgGridPaper, noWarp:true, noSpeckle:true,
       font:"'Caveat', cursive", weight:700, sizeRatio:.48, spacing:.04,
       color:'single', palette:PAL.earth, rot:14, jitter:.22 },
-    { id:'wave', name:'水波', bg:bgBubbleWave,
+    { id:'wave', name:'水波', bg:bgBubbleWave, fillGradient:.65,
       font:"'Baloo 2', sans-serif", weight:800, sizeRatio:.38, spacing:.06,
       color:'outline', palette:['#ffffff'], strokeColor:'#2b6e94', rot:20, jitter:.38 },
     { id:'hatch', name:'網', bg:bgCrosshatch,
       font:"'Architects Daughter', cursive", weight:400, sizeRatio:.36, spacing:.08,
-      color:'single', palette:PAL.navy, rot:14, jitter:.20 },
-    { id:'ocean', name:'海洋', bg:bgOcean, dark:true,
+      color:'single', palette:PAL.navy, gradientColors:['#22304a','#1c2c40','#2f4a72','#3b5c8a','#17243a'], rot:14, jitter:.20 },
+    { id:'ocean', name:'海洋', bg:bgOcean, overlay:oceanOverlay, noSpeckle:true, dark:true,
       font:"'Fredoka', sans-serif", weight:700, sizeRatio:.40, spacing:.06,
       color:'outline', palette:['#eaf7ff','#cdeeff'], strokeColor:'#083a5c', rot:20, jitter:.36 },
-    { id:'forest', name:'森林', bg:bgForest,
-      font:"'Kalam', cursive", weight:700, sizeRatio:.42, spacing:.06,
-      color:'single', palette:['#2f5c1f','#3f2a14'], rot:18, jitter:.30 },
+    { id:'rain', name:'雨滴', bg:bgRain, overlay:rainOverlay,
+      font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.38, spacing:.07,
+      color:'outline', palette:['#ffffff','#eaf7fb'], strokeColor:'#1c6a86', rot:14, jitter:.24 },
     { id:'grass', name:'草皮', bg:bgGrass, overlay:grassOverlay,
       font:"'Poppins', sans-serif", weight:800, sizeRatio:.36, spacing:.05,
       color:'outline', palette:['#eafce0'], strokeColor:'#2f5f22', rot:14, jitter:.26 },
     { id:'sky', name:'白雲天空', bg:bgSky,
       font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.36, spacing:.07,
       color:'outline', palette:['#ffffff'], strokeColor:'#4a90c4', rot:13, jitter:.22 },
-    { id:'rain', name:'雨滴', bg:bgRain, overlay:rainOverlay,
-      font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.38, spacing:.07,
-      color:'outline', palette:['#ffffff','#eaf7fb'], strokeColor:'#1c6a86', rot:14, jitter:.24 },
+    { id:'forest', name:'森林', bg:bgForest,
+      font:"'Kalam', cursive", weight:700, sizeRatio:.42, spacing:.06,
+      color:'single', palette:['#2f5c1f','#3f2a14'], rot:18, jitter:.30 },
     { id:'cake', name:'蛋糕', bg:bgCake,
       font:"'Fredoka', sans-serif", weight:700, sizeRatio:.38, spacing:.06,
       color:'outline', palette:['#fffaf0','#fff2d6'], strokeColor:'#6b3f1d', rot:14, jitter:.24 },
-    { id:'cream', name:'奶油芝麻', bg:bgCream,
+    { id:'cream', name:'奶油芝麻', bg:bgCream, speckleDiv:1500,
       font:"'Poppins', sans-serif", weight:800, sizeRatio:.36, spacing:.06,
       color:'single', palette:['#3c2b1a','#241c14'], rot:10, jitter:.18 },
-    { id:'plaidGingham', name:'綠格紋', bg:bgPlaidGingham, noWarp:true,
+    { id:'plaidGingham', name:'綠格紋', bg:bgPlaidGingham, noWarp:true, noSpeckle:true,
       font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.36, spacing:.07,
       color:'outline', palette:['#3d5c28'], strokeColor:'#ffffff', outlineWidthRatio:.12, rot:9, jitter:.14 },
-    { id:'plaidPastel', name:'紅格紋', bg:bgPlaidPastel, noWarp:true,
+    { id:'plaidPastel', name:'紅格紋', bg:bgPlaidPastel, noWarp:true, noSpeckle:true,
       font:"'Baloo 2', sans-serif", weight:700, sizeRatio:.38, spacing:.06,
-      color:'outline', palette:['#5a1834'], strokeColor:'#ffffff', outlineWidthRatio:.12, rot:10, jitter:.14 },
-    { id:'plaidMono', name:'黃格紋', bg:bgPlaidMono, noWarp:true,
+      color:'outline', palette:['#5a1018'], strokeColor:'#ffffff', outlineWidthRatio:.12, rot:10, jitter:.14 },
+    { id:'plaidMono', name:'黃格紋', bg:bgPlaidMono, noWarp:true, noSpeckle:true,
       font:"'Anton', sans-serif", weight:400, sizeRatio:.42, spacing:.05,
       color:'outline', palette:['#8a5a2c'], strokeColor:'#ffffff', outlineWidthRatio:.13, rot:8, jitter:.12 },
-    { id:'sunset', name:'日落', bg:bgSunset, overlay:sunsetOverlay, noSpeckle:true,
+    { id:'sunset', name:'日出', bg:bgSunset, overlay:sunsetOverlay, noSpeckle:true,
       font:"'Righteous', sans-serif", weight:400, sizeRatio:.38, spacing:.06,
       color:'outline', palette:['#ffffff','#fff4c2'], strokeColor:'#8a6a00', rot:14, jitter:.24 },
     { id:'picasso', name:'畢卡索', bg:bgPicasso,
@@ -1453,7 +1921,7 @@
       paletteFill:true, outlineWidthRatio:.15, innerOutlineWidthRatio:.08, rot:18, jitter:.28 },
     { id:'wood', name:'木質', bg:bgWood,
       font:"'Amatic SC', sans-serif", weight:700, sizeRatio:.48, spacing:.05,
-      color:'single', palette:['#4a3520','#5c4530'], rot:10, jitter:.18 },
+      color:'woodEmboss', palette:['#4a3520','#5c4530'], rot:10, jitter:.18 },
     { id:'colorPlaid', name:'彩格紋', bg:bgColorPlaid, noWarp:true,
       font:"'Baloo 2', sans-serif", weight:800, sizeRatio:.38, spacing:.06,
       color:'doubleOutline', palette:['#ff6b6b','#ffd93d','#6bcf7f','#4dabf7','#cc5de8','#ff922b'],
@@ -1461,42 +1929,23 @@
     { id:'stars', name:'星星', bg:bgStars, overlay:starsOverlay,
       font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.36, spacing:.07,
       color:'outline', palette:['#ffffff'], strokeColor:'#5c6260', rot:11, jitter:.18 },
-    { id:'diffusePastel', name:'彌散光・粉彩', bg:bgDiffusePastel, overlay:diffusePastelOverlay, noSpeckle:true,
-      font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.38, spacing:.07,
-      color:'trippy', palette:['#6b4a8a','#8a4a6b'], trippyColors:['rgba(255,120,200,0.5)','rgba(100,210,255,0.5)'],
-      rot:16, jitter:.26 },
-    { id:'diffuseSunsetHue', name:'彌散光・日落霓虹', bg:bgDiffuseSunset, overlay:diffuseSunsetOverlay, noSpeckle:true,
-      font:"'Baloo 2', sans-serif", weight:800, sizeRatio:.38, spacing:.06,
-      color:'trippy', palette:['#8a4a2c','#7a3a6b'], trippyColors:['rgba(255,150,90,0.5)','rgba(180,100,255,0.5)'],
-      rot:16, jitter:.26 },
-    { id:'diffuseLilac', name:'彌散光・薄荷紫', bg:bgDiffuseLilac, overlay:diffuseLilacOverlay, noSpeckle:true,
-      font:"'Fredoka', sans-serif", weight:700, sizeRatio:.38, spacing:.06,
-      color:'trippy', palette:['#4a3a7a','#2c6b5a'], trippyColors:['rgba(180,120,255,0.5)','rgba(90,220,180,0.5)'],
-      rot:16, jitter:.26 },
-    { id:'diffusePeach', name:'彌散光・蜜桃橘', bg:bgDiffusePeach, overlay:diffusePeachOverlay, noSpeckle:true,
-      font:"'Poppins', sans-serif", weight:800, sizeRatio:.36, spacing:.06,
-      color:'trippy', palette:['#8a4a2c','#7a2c3a'], trippyColors:['rgba(255,160,120,0.5)','rgba(255,90,150,0.5)'],
-      rot:16, jitter:.26 },
     { id:'tvStatic', name:'雜訊', bg:bgTVStatic, dark:true, noiseOutline:true,
       font:"'Righteous', sans-serif", weight:400, sizeRatio:.38, spacing:.07,
       color:'outline', palette:['#ffffff'], strokeColor:'#000000', outlineWidthRatio:.14, rot:14, jitter:.22 },
-    { id:'waterRipple', name:'水紋', bg:bgWaterRipple,
-      font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.38, spacing:.07,
-      color:'outline', palette:['#0b5ea8','#1c7fc4','#2f9fd8','#0a4a82','#4ab4e0'],
-      strokeColor:'#ffffff', outlineWidthRatio:.10, rot:12, jitter:.20 },
     { id:'memory', name:'回憶', bg:bgMemory,
       font:"'Baloo 2', sans-serif", weight:800, sizeRatio:.38, spacing:.06,
       color:'outline', palette:['#3d2a6b','#e8577a'], strokeColor:'#ffffff', outlineWidthRatio:.11, rot:10, jitter:.16 },
-    { id:'glass', name:'玻璃', bg:bgGlass, overlay:glassOverlay,
-      font:"'Comfortaa', sans-serif", weight:700, sizeRatio:.36, spacing:.07,
-      color:'outline', palette:['#ffffff'], strokeColor:'#1c5a85', rot:11, jitter:.18 },
-    { id:'tape', name:'膠帶', bg:bgTape, overlay:tapeOverlay,
-      font:"'Patrick Hand', cursive", weight:400, sizeRatio:.40, spacing:.06,
-      color:'single', palette:['#4a3c30','#3a3a3a'], rot:10, jitter:.16 },
-    { id:'psychedelic', name:'迷幻', bg:bgPsychedelic, dark:true, noiseOutline:true,
-      font:"'Luckiest Guy', cursive", weight:400, sizeRatio:.40, spacing:.07,
-      color:'particleGlow', palette:['#f2d53c','#7ee87a'], glowColor:'rgba(70,230,190,0.9)',
-      rot:10, jitter:.16 },
+    { id:'night', name:'黑夜', bg:bgNight, overlay:nightOverlay, dark:true,
+      font:"'Poppins', sans-serif", weight:800, sizeRatio:.40, spacing:.06,
+      speckleDiv:6000, color:'nightHalo', palette:['#030305','#07070b','#0b0b10'], rot:14, jitter:.24 },
+    { id:'toast', name:'吐司', bg:bgToast,
+      font:"'Fredoka', sans-serif", weight:700, sizeRatio:.40, spacing:.05,
+      speckleDiv:1200, color:'toast',
+      palette:['#8a4a14','#a85a1a','#6e3a10','#b86a22','#5a2e0c','#9a5218'], rot:12, jitter:.22 },
+    { id:'dream', name:'夢境', bg:bgDream, overlay:dreamOverlay, noSpeckle:true,
+      font:"'Fredoka', sans-serif", weight:700, sizeRatio:.40, spacing:.05,
+      color:'dream',
+      palette:['#3f5fd8','#d1349a','#e4503f','#7a4ae0','#2a8fd6','#c43a8a'], rot:12, jitter:.22 },
   ];
 
   /* ---------- 字型清單（可覆寫樣式預設字型） ---------- */
@@ -1542,7 +1991,61 @@
     return ctx.createPattern(off, 'repeat');
   }
 
+  // 讓偏移量以「畫布像素」為準（不受文字旋轉／縮放／傾斜影響），讓光源方向保持一致
+  function localOffset(ctx,dx,dy){
+    const m = ctx.getTransform();
+    const det = m.a*m.d-m.b*m.c || 1;
+    return [(m.d*dx-m.c*dy)/det, (-m.b*dx+m.a*dy)/det];
+  }
+  function mixHex(hex,target,t){
+    const p = v=>[parseInt(v.slice(1,3),16),parseInt(v.slice(3,5),16),parseInt(v.slice(5,7),16)];
+    const a=p(hex), b=p(target);
+    return 'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')+')';
+  }
+  // 吐司文字上的少量光點：只落在「朝向光源（左上）」的字形邊緣，方向一致
+  function toastGlints(ctx,ch,fontSize,rng){
+    const r0 = rng();
+    const count = r0<0.35 ? 0 : (r0<0.85 ? 1 : 2);
+    if(!count) return;
+    const size = Math.ceil(fontSize*2.4);
+    const oc = document.createElement('canvas');
+    oc.width = oc.height = size;
+    const octx = oc.getContext('2d');
+    octx.font = ctx.font;
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.fillText(ch,size/2,size/2);
+    let data;
+    try{ data = octx.getImageData(0,0,size,size).data; }catch(e){ return; }
+    const alphaAt = (x,y)=>{
+      x=Math.round(x); y=Math.round(y);
+      if(x<0||y<0||x>=size||y>=size) return 0;
+      return data[(y*size+x)*4+3];
+    };
+    let [nx,ny] = localOffset(ctx,-1,-1);
+    const nl = Math.hypot(nx,ny)||1; nx/=nl; ny/=nl;
+    const e = Math.max(2,fontSize*0.045);
+    let placed = 0;
+    for(let tries=0; tries<700 && placed<count; tries++){
+      const px = rng()*size, py = rng()*size;
+      if(alphaAt(px,py)>140 && alphaAt(px+nx*e,py+ny*e)<60){
+        const gx = px-size/2 - nx*1.2, gy = py-size/2 - ny*1.2;
+        const gr = fontSize*(0.04+rng()*0.04);
+        const g = ctx.createRadialGradient(gx,gy,0,gx,gy,gr);
+        g.addColorStop(0,'rgba(255,252,236,0.95)');
+        g.addColorStop(0.35,'rgba(255,240,200,0.55)');
+        g.addColorStop(1,'rgba(255,230,180,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(gx,gy,gr,0,Math.PI*2);
+        ctx.fill();
+        placed++;
+      }
+    }
+  }
+
   function drawStyledText(ctx,w,h,text,style,rng,fontOverride){
+    const dprS = ctx.getTransform().a || 1;
     const noisePattern = style.noiseOutline ? makeNoisePattern(ctx, rng) : null;
     const isCJK = CJK_RE.test(text);
     const chosenFamily = fontOverride ? fontOverride.family : style.font;
@@ -1659,6 +2162,96 @@
           ctx.fillStyle = style.fillColor || '#ffffff';
           ctx.fillText(p.ch,0,0);
         }
+      } else if(style.color==='woodEmboss'){
+        // 木質：隨機浮雕。每個字隨機決定凸起或凹刻、深淺不一，光源固定來自左上方；
+        // 浮雕的明暗色都比文字本身的顏色淺
+        const raised = rng()<0.6;
+        const d = fontSize*(0.02+rng()*0.04)*dprS;
+        const [ox,oy] = localOffset(ctx,d*0.8,d*0.8);
+        const shade = mixHex(col,'#ffffff',0.38);   // 比文字淺的「陰影」色
+        const light = mixHex(col,'#ffffff',0.74);   // 更淺的「亮面」色
+        ctx.lineJoin='round';
+        if(raised){
+          ctx.save(); ctx.translate(ox,oy);
+          ctx.shadowColor=shade; ctx.shadowBlur=d*0.8;
+          ctx.fillStyle=shade; ctx.fillText(p.ch,0,0); ctx.restore();
+          ctx.save(); ctx.translate(-ox*0.6,-oy*0.6);
+          ctx.fillStyle=light; ctx.fillText(p.ch,0,0); ctx.restore();
+        } else {
+          ctx.save(); ctx.translate(-ox,-oy);
+          ctx.fillStyle=shade; ctx.fillText(p.ch,0,0); ctx.restore();
+          ctx.save(); ctx.translate(ox*0.8,oy*0.8);
+          ctx.fillStyle=light; ctx.fillText(p.ch,0,0); ctx.restore();
+        }
+        const lighter = mixHex(col,'#ffffff',0.12), darker = mixHex(col,'#000000',0.18);
+        const [gx,gy] = localOffset(ctx,fontSize*0.45*dprS,fontSize*0.5*dprS);
+        const g = ctx.createLinearGradient(-gx,-gy,gx,gy);
+        g.addColorStop(0, raised?lighter:darker);
+        g.addColorStop(1, raised?darker:lighter);
+        ctx.fillStyle = g;
+        ctx.fillText(p.ch,0,0);
+      } else if(style.color==='toast'){
+        // 吐司色系：每個字元是非常柔和、模糊的多色漸變（焦褐 → 焦糖 → 金黃），
+        // 邊緣再疊一層模糊的同色暈光，讓顏色之間與字緣都柔和過渡
+        const tones = ['#5a2e0c','#7a3e10','#a85a1a','#c4782a','#d99a48'];
+        const ang = rng()*Math.PI*2, r = fontSize*(0.40+rng()*0.25);
+        const g = ctx.createLinearGradient(-Math.cos(ang)*r,-Math.sin(ang)*r,Math.cos(ang)*r,Math.sin(ang)*r);
+        const c1 = tones[Math.floor(rng()*3)];
+        const c2 = tones[1+Math.floor(rng()*4)];
+        const c3 = tones[Math.floor(rng()*tones.length)];
+        g.addColorStop(0,c1);
+        g.addColorStop(0.5,c2);
+        g.addColorStop(1,c3);
+        dreamBlurText(ctx,p.ch,'rgba(150,80,22,0.55)',fontSize*0.14,fontSize*0.03);
+        ctx.save();
+        ctx.shadowColor = 'rgba(70,36,10,0.30)';
+        ctx.shadowBlur = fontSize*0.10;
+        ctx.shadowOffsetY = fontSize*0.03;
+        ctx.globalAlpha = 0.92;
+        ctx.fillStyle = g;
+        ctx.fillText(p.ch,0,0);
+        ctx.restore();
+        toastGlints(ctx,p.ch,fontSize,rng);
+      } else if(style.color==='dream'){
+        // 夢境：文字邊緣像霧一樣暈開消散（皆以柔化陰影構成，不靠 filter）
+        dreamBlurText(ctx,p.ch,'rgba(255,255,255,0.9)',fontSize*0.45,fontSize*0.10);
+        dreamBlurText(ctx,p.ch,'rgba(255,255,255,0.7)',fontSize*0.22,fontSize*0.04);
+        dreamBlurText(ctx,p.ch,col,fontSize*0.20,0);
+        ctx.save();
+        ctx.shadowColor = col;
+        ctx.shadowBlur = fontSize*0.08;
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = col;
+        ctx.fillText(p.ch,0,0);
+        ctx.restore();
+      } else if(style.color==='nightHalo'){
+        // 黑色文字 + 灰白交錯、粗細不均的外框：每一層外框都有各自的位移與寬度，
+        // 讓外框不規則地包覆文字，最外層再帶一點迷幻的紫藍光暈
+        ctx.lineJoin='round';
+        ctx.lineCap='round';
+        const halo = [
+          { w:.15, c:'rgba(255,255,255,0.30)', glow:'rgba(150,130,255,0.7)', blur:.10 },
+          { w:.115, c:'#f4f5f8' },
+          { w:.085, c:'#868a94' },
+          { w:.055, c:'#e3e5ea' },
+          { w:.03, c:'#5d616b' }
+        ];
+        halo.forEach(L=>{
+          const dx=(rng()-0.5)*fontSize*0.05;
+          const dy=(rng()-0.5)*fontSize*0.05;
+          ctx.save();
+          ctx.translate(dx,dy);
+          if(L.glow){ ctx.shadowColor=L.glow; ctx.shadowBlur=fontSize*L.blur; }
+          ctx.strokeStyle = L.c;
+          ctx.lineWidth = fontSize*L.w*(0.82+rng()*0.36);
+          ctx.strokeText(p.ch,0,0);
+          ctx.restore();
+        });
+        ctx.fillStyle = col;
+        ctx.fillText(p.ch,0,0);
+        ctx.lineWidth = fontSize*0.012;
+        ctx.strokeStyle = col;
+        ctx.strokeText(p.ch,0,0);
       } else if(style.color==='trippy'){
         const tc = style.trippyColors || ['rgba(255,80,180,0.55)','rgba(80,200,255,0.55)'];
         ctx.save(); ctx.translate(fontSize*0.06, 0); ctx.fillStyle=tc[0]; ctx.fillText(p.ch,0,0); ctx.restore();
@@ -1677,7 +2270,19 @@
           ctx.strokeText(p.ch,0,0);
           ctx.restore();
         }
-        ctx.fillStyle = col;
+        let outlineFill = col;
+        if(style.fillGradient && rng()<style.fillGradient){
+          // 部分字元：白色混入淺藍的隨機漸層（角度、顏色、漸變位置各不相同）
+          const ang = rng()*Math.PI*2, r = fontSize*(0.30+rng()*0.30);
+          const blues = ['#9fd0f5','#b5dcfa','#8cc6f0','#c4e4fb','#a6d4f7'];
+          const b1 = blues[Math.floor(rng()*blues.length)], b2 = blues[Math.floor(rng()*blues.length)];
+          const g = ctx.createLinearGradient(-Math.cos(ang)*r,-Math.sin(ang)*r,Math.cos(ang)*r,Math.sin(ang)*r);
+          g.addColorStop(0, rng()<0.5 ? '#ffffff' : b1);
+          g.addColorStop(0.25+rng()*0.5, rng()<0.5 ? '#ffffff' : b1);
+          g.addColorStop(1, b2);
+          outlineFill = g;
+        }
+        ctx.fillStyle = outlineFill;
         ctx.fillText(p.ch,0,0);
       } else if(style.color==='neon'){
         if(style.glow){ ctx.shadowColor=col; ctx.shadowBlur=fontSize*0.22; }
@@ -1746,7 +2351,19 @@
         ctx.fillText(p.ch,0,0);
         ctx.shadowBlur = 0;
       } else {
-        ctx.fillStyle = col;
+        let plainFill = col;
+        if(style.gradientColors){
+          // 每個字元隨機角度、隨機取 2~3 個相近色組成漸層
+          const gc = style.gradientColors;
+          const ang = rng()*Math.PI*2, r = fontSize*(0.30+rng()*0.30);
+          const g = ctx.createLinearGradient(-Math.cos(ang)*r,-Math.sin(ang)*r,Math.cos(ang)*r,Math.sin(ang)*r);
+          const n = 2+Math.floor(rng()*2);
+          for(let k=0;k<n;k++){
+            g.addColorStop(n===1?0:k/(n-1), gc[Math.floor(rng()*gc.length)]);
+          }
+          plainFill = g;
+        }
+        ctx.fillStyle = plainFill;
         ctx.fillText(p.ch,0,0);
       }
       ctx.restore();
@@ -1846,7 +2463,7 @@
     if(!style.noSpeckle){
       const lightSpeck = 'rgba(255,255,255,0.6)';
       const darkSpeck = 'rgba(12,14,16,0.45)';
-      addSaltPepperNoise(ctx, logicalW, logicalH, rng, lightSpeck, darkSpeck, Math.floor((logicalW*logicalH)/340));
+      addSaltPepperNoise(ctx, logicalW, logicalH, rng, lightSpeck, darkSpeck, Math.floor((logicalW*logicalH)/(style.speckleDiv||340)));
     }
     ctx.restore();
 
