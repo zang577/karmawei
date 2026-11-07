@@ -2203,11 +2203,17 @@
         g.addColorStop(0.5,c2);
         g.addColorStop(1,c3);
         dreamBlurText(ctx,p.ch,'rgba(150,80,22,0.55)',fontSize*0.14,fontSize*0.03);
+        // 最外層：奶油白外框（和焦褐字色形成明顯對比，又比黑色柔和）
+        ctx.save();
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = fontSize*0.08;
+        ctx.strokeStyle = '#fff3d6';
+        ctx.strokeText(p.ch,0,0);
+        ctx.restore();
         ctx.save();
         ctx.shadowColor = 'rgba(70,36,10,0.30)';
         ctx.shadowBlur = fontSize*0.10;
         ctx.shadowOffsetY = fontSize*0.03;
-        ctx.globalAlpha = 0.92;
         ctx.fillStyle = g;
         ctx.fillText(p.ch,0,0);
         ctx.restore();
