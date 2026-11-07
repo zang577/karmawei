@@ -706,6 +706,7 @@
   }
 
   function bgCake(ctx,w,h,rng){
+    ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,w,h);
     const seq = ['sponge','cream','caramel','cream','sponge','cream'];
     const bandH = h/seq.length;
     seq.forEach((type,i)=>{
@@ -747,6 +748,7 @@
   }
 
   function bgCream(ctx,w,h,rng){
+    ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,w,h);
     const bands = 5;
     const bandH = h/bands;
     const creamShades = ['#f7f3ea','#efe8d8','#f9f6ef','#e9e1cd'];
@@ -2096,6 +2098,9 @@
     // 第一輪：先算出每個字「理想中」的位置（水平仍依照文字順序推進，
     // 垂直方向依模式做聚集或大幅散開）
     const positions = [];
+    // 隨機散落：每個字元有一定機率不依照集中的排版，而是掉到整個畫面的任意位置
+    // （水平仍落在自己那一段範圍內、垂直在整個高度內隨機，之後仍會維持文字先後順序）
+    const scatterChance = rng() < 0.35 ? 1 : 0.55;
     chars.forEach((ch,i)=>{
       const cw = widths[i];
       const followsBias = fillMode || rng() < 0.5;
@@ -2107,8 +2112,14 @@
             ? cyCenter + Math.sin(i*1.9+seedPhase)*fontSize*style.jitter*0.85 + (rng()-0.5)*fontSize*style.jitter*0.7
             : h*(0.14+rng()*0.72));
       const clampMargin = fontSize*0.5;
-      const cy = Math.max(clampMargin, Math.min(h-clampMargin, rawCy));
-      positions.push({ ch, cx, cy });
+      let cy = Math.max(clampMargin, Math.min(h-clampMargin, rawCy));
+      let cxFinal = cx;
+      if(rng() < scatterChance){
+        const slotW = (w-2*clampMargin)/chars.length;
+        cxFinal = clampMargin + slotW*(i+0.5) + (rng()-0.5)*slotW*1.15;
+        cy = Math.max(clampMargin, Math.min(h-clampMargin, h*(0.12+rng()*0.76)));
+      }
+      positions.push({ ch, cx: cxFinal, cy });
       x += (cw*(0.72+rng()*0.30) + spacing*(0.35+rng()*0.55)) * spreadFactor;
     });
 
@@ -2454,6 +2465,9 @@
 
     ctx.save();
     roundedClip(ctx, logicalW, logicalH, radius);
+    // 白色底：避免背景有縫隙時變成透明（疊在別的圖上會透出底圖）
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0,0,logicalW,logicalH);
     style.bg(ctx, logicalW, logicalH, rng);
     drawStyledText(ctx, logicalW, logicalH, text || ' ', style, rng, fontOverride);
 
