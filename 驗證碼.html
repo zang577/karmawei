@@ -314,7 +314,7 @@
   <div class="content">
     <div class="card">
       <h2>輸入文字</h2>
-      <input class="text-input" id="textInput" maxlength="14" placeholder="輸入想產生的文字" value="歲月靜好">
+      <input class="text-input" id="textInput" maxlength="40" placeholder="輸入想產生的文字" value="歲月靜好">
     </div>
 
     <div class="card">
@@ -2164,14 +2164,24 @@
     // 以使用者選擇的字型為主；只有在該字型缺少某個字的字圖時，
     // 才用思源黑體（Noto Sans TC）作為備援字型補上該字
     const family = isCJK ? `${chosenFamily}, 'Noto Sans TC', sans-serif` : chosenFamily;
-    const fontSize = h * (isCJK ? Math.min(style.sizeRatio, .40) : style.sizeRatio);
+    let fontSize = h * (isCJK ? Math.min(style.sizeRatio, .40) : style.sizeRatio);
     ctx.font = `${weight} ${fontSize}px ${family}`;
     ctx.textAlign='center';
     ctx.textBaseline='middle';
 
     const chars = Array.from(text);
+    let widths = chars.map(ch => ctx.measureText(ch).width || fontSize*0.55);
+    // 文字很多時自動縮小字級，讓所有字都放得進畫面
+    {
+      const needW = widths.reduce((a,b)=>a+b,0)*0.92;
+      const availW = w*0.94;
+      if(needW > availW){
+        fontSize *= Math.max(0.28, availW/needW);
+        ctx.font = `${weight} ${fontSize}px ${family}`;
+        widths = chars.map(ch => ctx.measureText(ch).width || fontSize*0.55);
+      }
+    }
     const spacing = fontSize*style.spacing;
-    const widths = chars.map(ch => ctx.measureText(ch).width || fontSize*0.55);
     const seedPhase = rng()*10;
 
     // 版面分佈模式：預設大多數時候讓每個字各自獨立散開（撐滿版面），
@@ -2210,6 +2220,29 @@
     // 隨機散落：每個字元有一定機率不依照集中的排版，而是掉到整個畫面的任意位置
     // （水平仍落在自己那一段範圍內、垂直在整個高度內隨機，之後仍會維持文字先後順序）
     const scatterChance = rng() < 0.35 ? 1 : 0.55;
+    // 長文字模式：每個字分到一段由左到右的水平範圍（保證順序），
+    // 範圍內水平隨機偏移、垂直隨機散落；字很擠時相鄰字元會錯開高度避免疊在一起
+    const longMode = chars.length >= 9 || totalWidth > w*0.92;
+    if(longMode){
+      const margin = Math.max(fontSize*0.45, w*0.02);
+      const slotW = (w-2*margin)/chars.length;
+      const jitterAmt = rng()<0.5 ? 0.9 : 0.55;
+      const crowd = slotW < fontSize*0.9;
+      const lo = fontSize*0.5, hi = h-fontSize*0.5;
+      let prevCy = null;
+      chars.forEach((ch,i)=>{
+        const cx = margin + slotW*(i+0.5) + (rng()-0.5)*slotW*jitterAmt;
+        let cy = Math.max(lo, Math.min(hi, h*(0.14+rng()*0.72)));
+        if(crowd && prevCy!==null && Math.abs(cy-prevCy) < fontSize*0.8){
+          const up = prevCy - fontSize*(0.8+rng()*0.4), dn = prevCy + fontSize*(0.8+rng()*0.4);
+          const canUp = up>=lo, canDn = dn<=hi;
+          cy = (canUp&&canDn) ? (rng()<0.5?up:dn) : (canUp?up:(canDn?dn:cy));
+        }
+        cy = Math.max(lo, Math.min(hi, cy));
+        prevCy = cy;
+        positions.push({ ch, cx, cy });
+      });
+    } else
     chars.forEach((ch,i)=>{
       const cw = widths[i];
       const followsBias = fillMode || rng() < 0.5;
