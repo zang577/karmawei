@@ -1579,19 +1579,10 @@
     const t = Math.max(4, h*0.045);        // 吐司邊厚度（底部會比上方再厚一些）
     const dy = -t*0.35;
 
-    // 1) 背景與吐司投影
-    const plate = ctx.createRadialGradient(w/2,h/2,h*0.2,w/2,h/2,w*0.7);
-    plate.addColorStop(0,'#eceae4');
-    plate.addColorStop(1,'#d3d1c8');
-    ctx.fillStyle = plate; ctx.fillRect(0,0,w,h);
-    ctx.save();
-    ctx.shadowColor = 'rgba(60,40,20,0.35)';
-    ctx.shadowBlur = h*0.05;
-    ctx.shadowOffsetY = h*0.02;
+    // 1) 吐司邊以外保持透明：不畫盤面、不畫投影，只先鋪吐司底色
     ctx.beginPath(); toastShapePath(ctx,w,h);
     ctx.fillStyle = '#d98f3a';
     ctx.fill();
-    ctx.restore();
 
     // 2) 吐司內部：靠邊較淺的奶油色，中央烤成金橘色
     ctx.save();
@@ -2055,7 +2046,7 @@
     { id:'night', name:'黑夜', bg:bgNight, overlay:nightOverlay, dark:true,
       font:"'Poppins', sans-serif", weight:800, sizeRatio:.40, spacing:.06,
       speckleDiv:6000, color:'nightHalo', palette:['#030305','#07070b','#0b0b10'], rot:14, jitter:.24 },
-    { id:'toast', name:'吐司', bg:bgToast,
+    { id:'toast', name:'吐司', bg:bgToast, transparentOutside:true,
       font:"'Fredoka', sans-serif", weight:700, sizeRatio:.40, spacing:.05,
       speckleDiv:1200, color:'toast',
       palette:['#8a4a14','#a85a1a','#6e3a10','#b86a22','#5a2e0c','#9a5218'], rot:12, jitter:.22 },
@@ -2584,8 +2575,11 @@
     ctx.save();
     roundedClip(ctx, logicalW, logicalH, radius);
     // 白色底：避免背景有縫隙時變成透明（疊在別的圖上會透出底圖）
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0,0,logicalW,logicalH);
+    // 吐司樣式例外：吐司邊以外要保持透明
+    if(!style.transparentOutside){
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,logicalW,logicalH);
+    }
     style.bg(ctx, logicalW, logicalH, rng);
     drawStyledText(ctx, logicalW, logicalH, text || ' ', style, rng, fontOverride);
 
@@ -2594,6 +2588,13 @@
       style.overlay(ctx, logicalW, logicalH, rng);
     }
 
+    // 吐司樣式：色調混合與雜訊只作用在吐司範圍內，外面維持透明
+    if(style.transparentOutside){
+      ctx.save();
+      ctx.beginPath();
+      toastShapePath(ctx, logicalW, logicalH);
+      ctx.clip();
+    }
     // 低對比度色調混合，讓純黑白二值化門檻不容易切乾淨
     addToneWash(ctx, logicalW, logicalH, rng);
 
@@ -2603,6 +2604,7 @@
       const darkSpeck = 'rgba(12,14,16,0.45)';
       addSaltPepperNoise(ctx, logicalW, logicalH, rng, lightSpeck, darkSpeck, Math.floor((logicalW*logicalH)/(style.speckleDiv||340)));
     }
+    if(style.transparentOutside) ctx.restore();
     ctx.restore();
 
     // 整張圖做輕微波浪扭曲，讓文字與雜訊邊緣一起變形、不規則化
