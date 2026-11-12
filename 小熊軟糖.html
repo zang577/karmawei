@@ -17,14 +17,14 @@ body{margin:0;min-height:100vh;color:var(--ink);font-family:'Noto Sans TC','Ping
 background:radial-gradient(420px 420px at 12% 6%,#ffffff 0,transparent 70%),radial-gradient(480px 480px at 95% 30%,#dcdfe3 0,transparent 70%),radial-gradient(520px 520px at 10% 85%,#e4e6e9 0,transparent 70%),#efefee;background-attachment:fixed}
 .wrap{width:100%;max-width:440px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 8px) 14px calc(env(safe-area-inset-bottom,0px) + 32px)}
 .glass{background:linear-gradient(145deg,rgba(255,255,255,.74),rgba(255,255,255,.36));backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);border:1px solid var(--line);border-radius:26px;box-shadow:0 10px 30px rgba(120,125,135,.16),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(170,175,185,.25)}
-#pv{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:20;padding:12px 12px 12px}
+#pv{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:20;padding:8px 10px 10px}
 .hd{display:flex;justify-content:space-between;align-items:baseline;padding:0 6px 8px}
 .hd h1{margin:0;font-size:18px;font-weight:700}
 .hd span{font-size:12px;color:var(--mute)}
-#stage{position:relative;height:215px;border-radius:20px;background:linear-gradient(160deg,#fbfbfa,#e5e7ea);display:flex;justify-content:center;overflow:hidden;box-shadow:inset 0 2px 8px rgba(150,155,165,.18)}
+#stage{position:relative;height:168px;border-radius:20px;background:linear-gradient(160deg,#fbfbfa,#e5e7ea);display:flex;justify-content:center;overflow:hidden;box-shadow:inset 0 2px 8px rgba(150,155,165,.18)}
 #box{position:relative;height:100%;aspect-ratio:400/480}#box>*{position:absolute;left:0;top:0;width:100%;height:100%;display:block}#box svg{width:100%;height:100%;display:block}.kv{display:none}#box.gl .sv{display:none}
 .bar{display:flex;gap:8px;margin-top:10px}
-.btn{flex:1;padding:0 4px;white-space:nowrap;height:42px;border-radius:21px;border:1px solid var(--line);font:500 13px 'Noto Sans TC',sans-serif;color:var(--ink);cursor:pointer;background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(228,230,233,.7));box-shadow:0 3px 10px rgba(120,125,135,.18),inset 0 1px 0 #fff}
+.btn{flex:1;padding:0 4px;white-space:nowrap;height:38px;border-radius:19px;border:1px solid var(--line);font:500 13px 'Noto Sans TC',sans-serif;color:var(--ink);cursor:pointer;background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(228,230,233,.7));box-shadow:0 3px 10px rgba(120,125,135,.18),inset 0 1px 0 #fff}
 .btn.main{flex:1.25;background:linear-gradient(160deg,#6a6f79,#4b4f57);color:#fff;border-color:rgba(255,255,255,.3)}
 .btn:active{transform:scale(.97)}
 .card{margin-top:14px;padding:14px}
@@ -52,10 +52,10 @@ background:radial-gradient(420px 420px at 12% 6%,#ffffff 0,transparent 70%),radi
 #md p{margin:0 0 10px;font-size:13px}
 #stage{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
 #stage.drag{cursor:grabbing}
-#rot{display:flex;justify-content:center;gap:10px;margin-top:10px}
-#rot button{height:32px;min-width:44px;padding:0 12px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(228,230,233,.7));color:var(--ink);font:500 13px 'Noto Sans TC',sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(120,125,135,.18)}
+#rot{display:flex;gap:6px;flex:none}
+#rot button{height:38px;min-width:38px;padding:0 8px;border-radius:19px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(228,230,233,.7));color:var(--ink);cursor:pointer;box-shadow:0 2px 6px rgba(120,125,135,.18)}
 #rot button:active{transform:scale(.96)}
-#rot.off,#stage:not(.ok)+#rot{display:none}
+#rot.off{display:none}
 #ldg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#8b9098;font-size:13px;pointer-events:none}
 #ldg svg{width:54px;height:54px;animation:bob 1.1s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -71,18 +71,9 @@ background:radial-gradient(420px 420px at 12% 6%,#ffffff 0,transparent 70%),radi
 <body>
 <div class="wrap">
   <section id="pv" class="glass">
-    <div class="hd"><h1>小熊軟糖</h1></div>
-    <div id="stage"><div id="box"><div id="s1" class="sv"></div><canvas id="k1" class="kv" width="800" height="960"></canvas><canvas id="cv" width="480" height="576"></canvas><div id="s2" class="sv"></div><canvas id="k2" class="kv" width="800" height="960"></canvas><canvas id="ca" width="480" height="576"></canvas><div id="s3" class="sv"></div><canvas id="k3" class="kv" width="800" height="960"></canvas><canvas id="ch" width="480" height="576"></canvas><div id="s4" class="sv"></div><canvas id="k4" class="kv" width="800" height="960"></canvas></div><div id="ldg"><svg viewBox="0 0 64 64"><circle cx="16" cy="16" r="9" fill="#f0c36a"/><circle cx="48" cy="16" r="9" fill="#f0c36a"/><circle cx="32" cy="36" r="22" fill="#f6cf7a"/><circle cx="24" cy="32" r="2.4" fill="#6b4a14"/><circle cx="40" cy="32" r="2.4" fill="#6b4a14"/><ellipse cx="32" cy="42" rx="5" ry="3.6" fill="#e9a94a"/></svg><span>小熊準備中…</span></div></div>
-    <div id="rot"><button onclick="rotBy(-45)" aria-label="向左轉"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><path d="M12 1.5v11L2 7z"/></svg></button><button onclick="rotTo(0)" aria-label="正面"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><circle cx="7" cy="7" r="5.2"/></svg></button><button onclick="rotBy(45)" aria-label="向右轉"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><path d="M2 1.5v11L12 7z"/></svg></button></div>
-    <div class="bar">
-      <button class="btn main" style="flex:1.6" onclick="save()">下載圖片</button>
-      <button class="btn" onclick="rnd()">隨機搭配</button>
-      <button class="btn" onclick="clr()">重置</button>
-    </div>
-    <div class="bar2">
-      <button class="btn" onclick="undo()">上一步</button>
-      <button class="btn" onclick="redo()">下一步</button>
-    </div>
+        <div id="stage"><div id="box"><div id="s1" class="sv"></div><canvas id="k1" class="kv" width="800" height="960"></canvas><canvas id="cv" width="480" height="576"></canvas><div id="s2" class="sv"></div><canvas id="k2" class="kv" width="800" height="960"></canvas><canvas id="ca" width="480" height="576"></canvas><div id="s3" class="sv"></div><canvas id="k3" class="kv" width="800" height="960"></canvas><canvas id="ch" width="480" height="576"></canvas><div id="s4" class="sv"></div><canvas id="k4" class="kv" width="800" height="960"></canvas></div><div id="ldg"><svg viewBox="0 0 64 64"><circle cx="16" cy="16" r="9" fill="#f0c36a"/><circle cx="48" cy="16" r="9" fill="#f0c36a"/><circle cx="32" cy="36" r="22" fill="#f6cf7a"/><circle cx="24" cy="32" r="2.4" fill="#6b4a14"/><circle cx="40" cy="32" r="2.4" fill="#6b4a14"/><ellipse cx="32" cy="42" rx="5" ry="3.6" fill="#e9a94a"/></svg><span>小熊準備中…</span></div></div>
+    <div class="bar"><div id="rot"><button onclick="rotBy(-45)" aria-label="向左轉"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><path d="M12 1.5v11L2 7z"/></svg></button><button onclick="rotTo(0)" aria-label="正面"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><circle cx="7" cy="7" r="5.2"/></svg></button><button onclick="rotBy(45)" aria-label="向右轉"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><path d="M2 1.5v11L12 7z"/></svg></button></div><button class="btn" onclick="undo()">上一步</button><button class="btn" onclick="redo()">下一步</button></div>
+    <div class="bar"><button class="btn main" style="flex:1.6" onclick="save()">下載圖片</button><button class="btn" onclick="rnd()">隨機搭配</button><button class="btn" onclick="clr()">重置</button></div>
     <div id="fbn"></div>
   </section>
 
@@ -918,8 +909,8 @@ try{const r=JSON.parse(localStorage.getItem(SKEY)||'null');
     if(r.bg&&typeof r.bg.k==='string'&&(r.bg.k==='grad'||r.bg.k==='transp'||r.bg.k==='custom'||/^#[0-9a-f]{6}$/i.test(r.bg.k))){BG.k=r.bg.k;if(typeof r.bg.c==='string'&&/^#[0-9a-f]{6}$/i.test(r.bg.c))BG.c=r.bg.c}
     if(r.lk&&typeof r.lk==='object')st.lock=r.lk;
   }}catch(e){}
-geoInit();
 ui();
+requestAnimationFrame(()=>requestAnimationFrame(geoInit));
 setTimeout(()=>$('stage').classList.add('ok'),6000);
 
 let hist=[],redoS=[],lastS=null,undoing=false;const snap=()=>JSON.stringify({b:st.bear,s:st.sel,c:st.col,p:st.pose,o:st.coatOpen});
