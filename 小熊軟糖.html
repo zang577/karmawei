@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>小熊軟糖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- 字型：Noto Sans TC（SIL OFL 授權，可商用） -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
+<style>
+:root{color-scheme:light;--ink:#4b4f57;--mute:#8b9098;--line:rgba(255,255,255,.8)}
+*{box-sizing:border-box;letter-spacing:1px;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+background:radial-gradient(420px 420px at 12% 6%,#ffffff 0,transparent 70%),radial-gradient(480px 480px at 95% 30%,#dcdfe3 0,transparent 70%),radial-gradient(520px 520px at 10% 85%,#e4e6e9 0,transparent 70%),#efefee;background-attachment:fixed}
+.wrap{width:100%;max-width:440px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 8px) 14px calc(env(safe-area-inset-bottom,0px) + 32px)}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.74),rgba(255,255,255,.36));backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);border:1px solid var(--line);border-radius:26px;box-shadow:0 10px 30px rgba(120,125,135,.16),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(170,175,185,.25)}
+#pv{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:20;padding:12px 12px 12px}
+.hd{display:flex;justify-content:space-between;align-items:baseline;padding:0 6px 8px}
+.hd h1{margin:0;font-size:18px;font-weight:700}
+.hd span{font-size:12px;color:var(--mute)}
+#stage{position:relative;height:215px;border-radius:20px;background:linear-gradient(160deg,#fbfbfa,#e5e7ea);display:flex;justify-content:center;overflow:hidden;box-shadow:inset 0 2px 8px rgba(150,155,165,.18)}
+#box{position:relative;height:100%;aspect-ratio:400/480}#box>*{position:absolute;left:0;top:0;width:100%;height:100%;display:block}#box svg{width:100%;height:100%;display:block}.kv{display:none}#box.gl .sv{display:none}
+.bar{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;padding:0 4px;white-space:nowrap;height:42px;border-radius:21px;border:1px solid var(--line);font:500 13px 'Noto Sans TC',sans-serif;color:var(--ink);cursor:pointer;background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(228,230,233,.7));box-shadow:0 3px 10px rgba(120,125,135,.18),inset 0 1px 0 #fff}
+.btn.main{flex:1.25;background:linear-gradient(160deg,#6a6f79,#4b4f57);color:#fff;border-color:rgba(255,255,255,.3)}
+.btn:active{transform:scale(.97)}
+.card{margin-top:14px;padding:14px}
+.card h2{margin:0 0 10px;font-size:14px;font-weight:700;color:var(--ink)}
+.bears{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.bears div{text-align:center;font-size:11px;color:var(--mute)}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid #fff;cursor:pointer;padding:0;box-shadow:0 2px 6px rgba(100,105,115,.3),inset 0 -3px 5px rgba(0,0,0,.08)}
+.sw.on{outline:2px solid #5a5f69;outline-offset:2px}
+.bears .sw{width:30px;height:30px;margin-bottom:3px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{padding:7px 12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.5);font:500 13px 'Noto Sans TC',sans-serif;color:var(--ink);cursor:pointer}
+.tab.on{background:#555a64;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.it{aspect-ratio:1;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.85),rgba(222,225,229,.6));padding:4px 4px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font:400 11px 'Noto Sans TC',sans-serif;color:var(--ink);box-shadow:0 2px 6px rgba(120,125,135,.14)}
+.it svg{width:100%;flex:1;min-height:0}
+.it.on{outline:2px solid #5a5f69;outline-offset:1px}
+.pal{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.mut{font-size:12px;color:var(--mute);margin:10px 0 6px}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translate(-50%,20px);opacity:0;pointer-events:none;padding:10px 18px;border-radius:20px;font-size:13px;background:rgba(75,79,87,.92);color:#fff;transition:.3s;z-index:60;max-width:90%;text-align:center}
+#toast.s{opacity:1;transform:translate(-50%,0)}
+#md{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(220,222,226,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:20px}
+#md.s{display:flex}
+#md .glass{padding:16px;max-width:360px;width:100%;text-align:center}
+#md img{width:100%;border-radius:16px;display:block;margin-bottom:10px;-webkit-touch-callout:default}
+#md p{margin:0 0 10px;font-size:13px}
+#stage{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+#stage.drag{cursor:grabbing}
+#rot{display:flex;justify-content:center;gap:10px;margin-top:10px}
+#rot button{height:32px;min-width:44px;padding:0 12px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(228,230,233,.7));color:var(--ink);font:500 13px 'Noto Sans TC',sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(120,125,135,.18)}
+#rot button:active{transform:scale(.96)}
+#rot.off,#stage:not(.ok)+#rot{display:none}
+#ldg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#8b9098;font-size:13px;pointer-events:none}
+#ldg svg{width:54px;height:54px;animation:bob 1.1s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+#stage.ok #ldg{display:none}
+#fbn{display:none;font-size:12px;color:var(--mute);margin:8px 2px 0}
+.bar2{display:flex;gap:8px;margin-top:8px}
+.lockrow{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin:0 0 10px}
+.bgs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;align-items:center}
+.bgs>button{width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.bgs>button.on{box-shadow:0 0 0 2.5px #4b4f57}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="pv" class="glass">
+    <div class="hd"><h1>小熊軟糖</h1></div>
+    <div id="stage"><div id="box"><div id="s1" class="sv"></div><canvas id="k1" class="kv" width="800" height="960"></canvas><canvas id="cv" width="480" height="576"></canvas><div id="s2" class="sv"></div><canvas id="k2" class="kv" width="800" height="960"></canvas><canvas id="ca" width="480" height="576"></canvas><div id="s3" class="sv"></div><canvas id="k3" class="kv" width="800" height="960"></canvas><canvas id="ch" width="480" height="576"></canvas><div id="s4" class="sv"></div><canvas id="k4" class="kv" width="800" height="960"></canvas></div><div id="ldg"><svg viewBox="0 0 64 64"><circle cx="16" cy="16" r="9" fill="#f0c36a"/><circle cx="48" cy="16" r="9" fill="#f0c36a"/><circle cx="32" cy="36" r="22" fill="#f6cf7a"/><circle cx="24" cy="32" r="2.4" fill="#6b4a14"/><circle cx="40" cy="32" r="2.4" fill="#6b4a14"/><ellipse cx="32" cy="42" rx="5" ry="3.6" fill="#e9a94a"/></svg><span>小熊準備中…</span></div></div>
+    <div id="rot"><button onclick="rotBy(-45)" aria-label="向左轉"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><path d="M12 1.5v11L2 7z"/></svg></button><button onclick="rotTo(0)" aria-label="正面"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><circle cx="7" cy="7" r="5.2"/></svg></button><button onclick="rotBy(45)" aria-label="向右轉"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" style="display:block;margin:auto"><path d="M2 1.5v11L12 7z"/></svg></button></div>
+    <div class="bar">
+      <button class="btn main" style="flex:1.6" onclick="save()">下載圖片</button>
+      <button class="btn" onclick="rnd()">隨機搭配</button>
+      <button class="btn" onclick="clr()">重置</button>
+    </div>
+    <div class="bar2">
+      <button class="btn" onclick="undo()">上一步</button>
+      <button class="btn" onclick="redo()">下一步</button>
+    </div>
+    <div id="fbn"></div>
+  </section>
+
+  <section class="card glass"><h2>軟糖顏色</h2><div class="bears" id="bears"></div></section>
+  <section class="card glass"><h2>擺姿勢</h2><div id="poses" style="display:flex;flex-wrap:wrap;gap:8px"></div></section>
+
+  <section class="card glass">
+    <h2>服飾配件</h2>
+    <div class="tabs" id="tabs"></div>
+    <div class="grid" id="grid"></div>
+    <div class="mut">配件顏色</div>
+    <div class="pal" id="pal"></div>
+  </section>
+</div>
+
+<section class="card glass" style="margin:12px"><h2>背景</h2><div class="bgs" id="bgs"></div></section>
+<div id="md"><div class="glass"><img id="mi" alt="小熊軟糖"><p>長按圖片，選擇「加入照片」或「儲存圖片」即可存到手機相簿</p><button class="btn" style="width:100%" onclick="md.classList.remove('s')">關閉</button></div></div>
+<div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const mix=(h,t)=>{const n=parseInt(h.slice(1),16),f=t<0?0:255,p=Math.abs(t);return '#'+[n>>16,n>>8&255,n&255].map(v=>Math.round(v+(f-v)*p).toString(16).padStart(2,'0')).join('')};
+const P=['#e5121f','#f58a12','#f6d62a','#8dc63f','#2a9fca','#a46fe0','#f3829e','#ffffff','#c3b091','#26262b','#9aa0a6','#3f63a6'];
+const G='#f0c75e';
+const BEAR=[['草莓','#e5121f',1],['橘子','#f58a12',1],['柳橙','#f7b01c',1],['檸檬','#f6d62a',1],['青蘋','#8dc63f',1],['藍莓','#2a9fca',1],['水蜜桃','#f3829e',1],['透明','#f0e08c',.89]];
+const W_=y=>74*Math.sqrt(Math.max(0,1-((y-298)/104)**2));
+const TP=(y0,y1,m=4,hem=14)=>{const L=[],R=[];for(let y=y0;y<=y1;y+=6){const w=W_(y)+m;L.push((200-w).toFixed(1)+' '+y);R.unshift((200+w).toFixed(1)+' '+y)}return 'M'+L.join(' L')+' Q200 '+(y1+hem)+' '+R[0]+' L'+R.join(' L')+' Q200 '+(y0-9)+' '+L[0]+'Z'};
+const T=TP(213,346,5,16);
+const SL=(c,ry=30)=>{const lg=ry>40,e=lg?[121,294]:[135,278],w=lg?58:62,q=(x0,x1,y1)=>`<path d="M${x0} 262 L${x1} ${y1}" stroke="${c}" stroke-opacity="1" stroke-width="${w}" stroke-linecap="round" fill="none"/>`;return `<g class="sl">${q(149,e[0],e[1])}${q(251,400-e[0],e[1])}</g>`};
+const H=(x,y,s,f)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M0 12 C-16 0 -12 -14 -2 -14 Q0 -13 0 -9 Q0 -13 2 -14 C12 -14 16 0 0 12Z" fill="${f}"/>`;
+const ST=(x,y,r,f)=>`<polygon points="${[...Array(10)].map((_,i)=>{const a=-Math.PI/2+i*Math.PI/5,q=i%2?r*.45:r;return (x+q*Math.cos(a)).toFixed(1)+','+(y+q*Math.sin(a)).toFixed(1)}).join(' ')}" fill="${f}"/>`;
+const AP=n=>[...Array(n)].map((_,i)=>{const t=(i+.5)/n,u=1-t;return[u*u*150+2*t*u*200+t*t*250,u*u*224+2*t*u*268+t*t*224]});
+const CH='M150 224 Q200 268 250 224';
+const SH=f=>[157,243].map(x=>`<g transform="translate(${x} 410) scale(.84) translate(${-x} -410)">${f(x)}</g>`).join('');
+
+const CATS=[
+{id:'hat',name:'帽子',vb:'90 0 220 125',items:[
+['毛帽',(c,d,l)=>`<path d="M140 106 Q140 40 200 38 Q260 40 260 106Z" fill="${c}"/><path d="M170 52V94M200 40V94M230 52V94" stroke="${d}" stroke-opacity=".4" stroke-width="3"/><rect x="134" y="94" width="132" height="22" rx="11" fill="${d}"/><circle cx="200" cy="34" r="14" fill="${l}"/>`],
+['高帽',(c,d,l)=>`<ellipse cx="200" cy="98" rx="76" ry="13" fill="${d}"/><rect x="158" y="28" width="84" height="72" rx="7" fill="${c}"/><rect x="158" y="76" width="84" height="15" fill="${l}"/>`],
+['皇冠',(c)=>`<polygon points="148,102 154,50 178,76 200,40 222,76 246,50 252,102" fill="${G}"/><rect x="148" y="94" width="104" height="12" rx="5" fill="#e0aa3e"/><circle cx="200" cy="86" r="6" fill="${c}"/><circle cx="170" cy="88" r="4" fill="${c}"/><circle cx="230" cy="88" r="4" fill="${c}"/>`],
+['派對帽',(c,d,l)=>`<clipPath id="pcl"><path d="M222 24 L248 106 L168 106Z"/></clipPath><path d="M222 24 L248 106 L168 106Z" fill="${c}"/><g clip-path="url(#pcl)" stroke="#fff" stroke-width="6">${[0,1,2,3,4,5,6].map(i=>`<path d="M160 ${112-i*14.3}L260 ${81-i*14.3}"/>`).join('')}</g><circle cx="222" cy="22" r="10" fill="#fff"/>`],
+['棒球帽',(c,d,l)=>`<path d="M142 102 Q148 46 205 46 Q256 50 258 102Z" fill="${c}"/><path d="M232 92 Q300 90 308 106 Q270 112 230 104Z" fill="${d}"/><circle cx="205" cy="46" r="6" fill="${d}"/>`],
+['光環',()=>`<ellipse cx="200" cy="62" rx="42" ry="10" fill="none" stroke="${G}" stroke-width="8"/>`],
+['三角錐',(c,d)=>`<path d="M200 22 L238 100 L162 100Z" fill="${c}"/><path d="M189 50 L211 50 L216 62 L184 62Z" fill="#fff"/><path d="M176 80 L224 80 L229 91 L171 91Z" fill="#fff"/><rect x="150" y="98" width="100" height="11" rx="4" fill="${d}"/>`]]},
+{id:'hair',name:'髮飾',vb:'110 30 180 120',items:[
+['蝴蝶結',(c,d)=>`<ellipse cx="203" cy="96" rx="27" ry="21" fill="${c}"/><ellipse cx="249" cy="96" rx="27" ry="21" fill="${c}"/><circle cx="226" cy="96" r="11" fill="${d}"/>`],
+['小花',(c)=>[0,1,2,3,4].map(i=>`<circle cx="${250+14*Math.cos(i*1.2566)}" cy="${92+14*Math.sin(i*1.2566)}" r="9" fill="${c}"/>`).join('')+`<circle cx="250" cy="92" r="7" fill="#f6dc6c"/>`],
+['耳機',(c,d)=>`<path d="M134 134 Q134 58 200 58 Q266 58 266 134" stroke="${d}" stroke-width="8" fill="none"/><rect x="120" y="116" width="24" height="46" rx="12" fill="${c}"/><rect x="256" y="116" width="24" height="46" rx="12" fill="${c}"/>`],
+['星星髮夾',()=>ST(252,92,12,G)]]},
+{id:'top',name:'上衣',vb:'60 195 280 190',items:[
+['T恤',(c,d)=>SL(c)+`<path d="${T}" fill="${c}"/><path d="M178 216 Q200 238 222 216" stroke="${d}" stroke-width="4" fill="none"/>`],
+['條紋衫',(c)=>SL(c)+`<path d="${T}" fill="${c}"/><g clip-path="url(#tc)" fill="#fff" fill-opacity=".75"><rect x="100" y="238" width="200" height="14"/><rect x="100" y="268" width="200" height="14"/><rect x="100" y="298" width="200" height="14"/><rect x="100" y="328" width="200" height="14"/></g>`],
+['連帽衣',(c,d)=>`<ellipse cx="200" cy="218" rx="58" ry="24" fill="${d}"/>`+SL(c,50)+`<path d="${T}" fill="${c}"/><path d="M152 298 Q200 314 248 298 L254 332 Q200 352 146 332Z" fill="${d}" fill-opacity=".4"/><path d="M188 230V264M212 230V264" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`],
+['背心',(c,d)=>`<path d="${TP(214,346,3,16)}" fill="${c}"/><path d="M180 214 L200 246 L220 214" fill="#fff" fill-opacity=".8"/>`],
+['西裝',(c,d)=>SL(c,48)+`<path d="${T}" fill="${c}"/><path d="M178 214 L222 214 L200 296Z" fill="#fff"/><path d="M178 214 L200 296 L168 250Z M222 214 L200 296 L232 250Z" fill="${d}"/><circle cx="200" cy="318" r="4" fill="#fff"/>`],
+['洋裝',(c,d)=>SL(c)+`<path d="${TP(213,306,5,0)}" fill="${c}"/><path d="M122 300 Q200 318 278 300 L304 392 Q200 420 96 392Z" fill="${c}"/><path d="M127 296 Q200 314 273 296 L275 310 Q200 328 125 310Z" fill="${d}"/>`]]},
+{id:'bottom',name:'下著',vb:'80 320 240 110',items:[
+['長褲',(c,d)=>`<path d="${TP(326,380,4,0)}" fill="${c}"/><path d="M200 372 V345" stroke="${d}" stroke-width="3"/>`],
+['裙子',(c,d)=>`<path d="M128 332 Q200 350 272 332 L298 396 Q200 418 102 396Z" fill="${c}"/><path d="M160 344 L148 404M200 350 V412M240 344 L252 404" stroke="${d}" stroke-opacity=".5" stroke-width="3"/>`],
+['牛仔褲',(c)=>`<path d="${TP(326,380,4,0)}" fill="${c}"/><path d="M200 334V376" stroke="#f0c75e" stroke-width="2.5"/><rect x="168" y="340" width="28" height="24" rx="7" fill="none" stroke="#f0c75e" stroke-width="2"/><rect x="204" y="340" width="28" height="24" rx="7" fill="none" stroke="#f0c75e" stroke-width="2"/>`]]},
+{id:'shoe',name:'鞋子',vb:'100 380 200 56',items:[
+['球鞋',(c)=>SH(x=>`<ellipse cx="${x}" cy="414" rx="40" ry="16" fill="${c}"/><ellipse cx="${x}" cy="424" rx="42" ry="7" fill="#fff"/><path d="M${x-14} 404l10 6M${x} 402l10 6" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`)],
+['涼鞋',(c,d)=>SH(x=>`<ellipse cx="${x}" cy="424" rx="40" ry="8" fill="${d}"/><path d="M${x-26} 418 Q${x} 394 ${x+26} 418" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/>`)],
+['膠質雨鞋',(c,d)=>SH(x=>`<rect x="${x-33}" y="382" width="66" height="30" rx="9" fill="${c}"/><ellipse cx="${x+3}" cy="414" rx="40" ry="12" fill="${c}"/><rect x="${x-35}" y="378" width="70" height="8" rx="4" fill="${d}"/>`)]]},
+{id:'neck',name:'項鍊',vb:'135 210 130 70',items:[
+['珍珠',(c)=>AP(11).map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="${c}" stroke="#cfcac3"/><circle cx="${p[0]-2}" cy="${p[1]-2}" r="2" fill="#fff"/>`).join('')],
+['愛心',(c)=>`<path d="${CH}" stroke="${G}" stroke-width="3" fill="none"/>${H(200,252,1.3,c)}`],
+['星星',(c)=>`<path d="${CH}" stroke="#bfc3ca" stroke-width="3" fill="none"/>${ST(200,254,13,c)}`],
+['鑽石',(c,d,l)=>`<path d="${CH}" stroke="${G}" stroke-width="3" fill="none"/><polygon points="200,240 214,252 200,270 186,252" fill="${c}" fill-opacity=".85"/><polygon points="200,240 207,252 200,270 193,252" fill="${l}"/>`]]},
+{id:'scarf',name:'領飾',vb:'125 205 150 125',items:[
+['圍巾',(c,d)=>`<path d="M230 258 L254 322 L226 326 L212 268Z" fill="${d}"/><path d="M138 224 Q200 266 262 224 L264 248 Q200 290 136 248Z" fill="${c}"/><path d="M232 290 L252 288M236 304 L254 302" stroke="#fff" stroke-opacity=".7" stroke-width="3"/>`],
+['領結',(c,d)=>`<path d="M200 236 L166 218 L166 254Z M200 236 L234 218 L234 254Z" fill="${c}"/><rect x="190" y="226" width="20" height="20" rx="6" fill="${d}"/>`],
+['領帶',(c,d)=>`<path d="M191 228 L209 228 L216 292 L200 308 L184 292Z" fill="${c}"/><rect x="190" y="222" width="20" height="14" rx="4" fill="${d}"/>`]]},
+{id:'face',name:'臉部',vb:'130 110 140 100',items:[
+['圓框眼鏡',(c)=>`<circle cx="172" cy="140" r="22" fill="#fff" fill-opacity=".2" stroke="${c}" stroke-width="4"/><circle cx="228" cy="140" r="22" fill="#fff" fill-opacity=".2" stroke="${c}" stroke-width="4"/><path d="M194 138 Q200 132 206 138M150 136 L136 130M250 136 L264 130" stroke="${c}" stroke-width="4" fill="none"/>`],
+['墨鏡',()=>`<rect x="148" y="124" width="48" height="34" rx="14" fill="#2f3238" fill-opacity=".88"/><rect x="204" y="124" width="48" height="34" rx="14" fill="#2f3238" fill-opacity=".88"/><path d="M196 134h8M148 132L136 128M252 132L264 128" stroke="#2f3238" stroke-width="4"/><path d="M156 130h16" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>`],
+['腮紅',(c)=>`<ellipse cx="148" cy="166" rx="13" ry="9" fill="${c}" fill-opacity=".6" stroke="none"/><ellipse cx="252" cy="166" rx="13" ry="9" fill="${c}" fill-opacity=".6" stroke="none"/>`],
+['面膜',(c)=>`<path fill-rule="evenodd" d="M132 112 Q200 94 268 112 L262 182 Q200 216 138 182Z M158 136 a14 11 0 1 0 28 0 a14 11 0 1 0 -28 0 M214 136 a14 11 0 1 0 28 0 a14 11 0 1 0 -28 0 M184 190 a16 6 0 1 0 32 0 a16 6 0 1 0 -32 0" fill="${c}"/>`]]},
+{id:'held',name:'手持',vb:'270 130 120 200',items:[
+['氣球',(c,d,l)=>`<path d="M301 316 Q330 262 324 188" stroke="#aeb2b9" stroke-width="2" fill="none"/><ellipse cx="324" cy="150" rx="30" ry="38" fill="${c}"/><ellipse cx="314" cy="136" rx="7" ry="12" fill="#fff" fill-opacity=".6" stroke="none"/><path d="M319 188 L324 196 L329 188Z" fill="${d}"/>`],
+['棒棒糖',(c,d,l)=>`<path d="M301 318 L312 236" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="314" cy="212" r="27" fill="${c}"/><path d="M314 212 m0 -4 a5 5 0 1 1 -5 5 a12 12 0 1 1 14 12 a19 19 0 1 1 -24 -24" stroke="#fff" stroke-opacity=".8" stroke-width="3" fill="none"/>`],
+['花束',(c,d,l)=>`<path d="M301 318 L290 262M301 318 L306 258M301 318 L320 268" stroke="#7fb58a" stroke-width="3"/><circle cx="288" cy="254" r="11" fill="${c}"/><circle cx="306" cy="248" r="11" fill="${l}"/><circle cx="322" cy="260" r="11" fill="${d}"/><circle cx="288" cy="254" r="4" fill="#f6dc6c" stroke="none"/><circle cx="306" cy="248" r="4" fill="#f6dc6c" stroke="none"/><circle cx="322" cy="260" r="4" fill="#f6dc6c" stroke="none"/>`]]},
+{id:'back',name:'背飾',vb:'0 190 400 240',items:[
+['天使翅膀',(c)=>`<path d="M132 232 Q40 160 22 244 Q46 244 52 270 Q68 264 82 296 Q108 288 134 304Z" fill="${c}"/><path d="M268 232 Q360 160 378 244 Q354 244 348 270 Q332 264 318 296 Q292 288 266 304Z" fill="${c}"/>`],
+['蝴蝶翅膀',(c,d,l)=>`<ellipse cx="82" cy="250" rx="64" ry="44" transform="rotate(-25 82 250)" fill="${c}" fill-opacity=".85"/><ellipse cx="96" cy="318" rx="42" ry="30" transform="rotate(20 96 318)" fill="${l}" fill-opacity=".85"/><ellipse cx="318" cy="250" rx="64" ry="44" transform="rotate(25 318 250)" fill="${c}" fill-opacity=".85"/><ellipse cx="304" cy="318" rx="42" ry="30" transform="rotate(-20 304 318)" fill="${l}" fill-opacity=".85"/>`],
+['披風',(c,d)=>`<path d="M140 222 L84 412 Q200 440 316 412 L260 222Z" fill="${c}"/><path d="M140 222 Q200 244 260 222" stroke="${G}" stroke-width="7" fill="none"/>`]]}
+];
+CATS[0].items.push(['貝雷帽',(c,d)=>`<ellipse cx="200" cy="88" rx="62" ry="22" fill="${c}"/><circle cx="200" cy="64" r="5" fill="${d}"/>`],['漁夫帽',(c,d)=>`<path d="M152 90 Q152 54 200 54 Q248 54 248 90Z" fill="${c}"/><ellipse cx="200" cy="92" rx="78" ry="11" fill="${d}"/>`],['兔耳',(c)=>`<ellipse cx="172" cy="56" rx="13" ry="42" fill="${c}"/><ellipse cx="228" cy="56" rx="13" ry="42" fill="${c}"/>`],['貓耳',(c)=>`<path d="M150 104 L162 44 L196 90Z M250 104 L238 44 L204 90Z" fill="${c}"/>`]);
+CATS[8].items.push(['冰淇淋',(c,d,l)=>`<path d="M298 220 L316 300 L334 220Z" fill="#e3b36b"/><circle cx="316" cy="204" r="26" fill="${c}"/><circle cx="316" cy="176" r="19" fill="${l}"/>`],['咖啡杯',(c)=>`<rect x="292" y="236" width="48" height="58" rx="8" fill="#fff"/><rect x="288" y="226" width="56" height="14" rx="6" fill="${c}"/>`],['購物袋',(c,d)=>`<path d="M300 226 Q316 196 332 226" stroke="${d}" stroke-width="4" fill="none"/><rect x="290" y="226" width="56" height="76" rx="8" fill="${c}"/>`]);
+CATS[2].items.push(['文字T恤',(c,d)=>SL(c)+`<path d="${T}" fill="${c}"/><path d="M166 262H234M172 277H214M168 292H228" stroke="#fff" stroke-width="6" stroke-linecap="round"/>`],['Boxy上衣',(c)=>`<path d="M92 236 L150 214 Q200 238 250 214 L308 236 L292 298 L262 288 L262 330 L138 330 L138 288 L108 298Z" fill="${c}"/>`],['針織毛衣',(c,d)=>SL(c)+`<path d="${T}" fill="${c}"/><path d="M110 250H290M110 270H290M110 290H290M110 310H290" stroke="${d}" stroke-opacity=".35" stroke-width="3"/>`],['拉鍊外套',(c,d)=>SL(c)+`<path d="${T}" fill="${c}"/><path d="M200 222V350" stroke="${G}" stroke-width="4"/>`],['吊帶背心',(c)=>`<path d="${TP(238,346,3,16)}" fill="${c}"/><path d="M172 240L178 206M228 240L222 206" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`]);
+CATS[3].items.push(['寬褲',(c)=>`<path d="${TP(326,388,9,0)}" fill="${c}"/>`],['落地褲',(c)=>`<path d="${TP(326,394,12,0)}" fill="${c}"/>`],['百褶短裙',(c,d)=>`<path d="M136 332 L264 332 L292 380 L108 380Z" fill="${c}"/><path d="M160 336L148 378M184 336L178 378M216 336L222 378M240 336L252 378" stroke="${d}" stroke-opacity=".5" stroke-width="3"/>`]);
+CATS[2].items.push(['愛心T',(c)=>SL(c)+`<path d="${T}" fill="${c}"/><path d="M200 292C168 268 168 240 188 240C196 240 200 246 200 250C200 246 204 240 212 240C232 240 232 268 200 292Z" fill="#e05060"/><g transform="translate(200 264) scale(.8) translate(-200 -264)"><path d="M200 292C168 268 168 240 188 240C196 240 200 246 200 250C200 246 204 240 212 240C232 240 232 268 200 292Z" fill="#5ba0dd"/></g><circle cx="200" cy="266" r="9" fill="#c98536"/>`]);
+CATS[3].items.push(['寬鬆直筒褲',(c)=>`<path d="${TP(326,392,10,0)}" fill="${c}"/><path d="M200 340V380" stroke="#000" stroke-opacity=".25" stroke-width="2"/>`]);
+CATS[8].items.splice(4,2);
+CATS[2].items.push(['Polo衫',(c)=>SL(c)+`<path d="${T}" fill="${c}"/><path d="M180 216L200 236L220 216L212 210L200 222L188 210Z" fill="#fff" fill-opacity=".5"/><path d="M200 230V268" stroke="#000" stroke-opacity=".25" stroke-width="3"/>`],['襯衫',(c)=>SL(c,95)+`<path d="${T}" fill="${c}"/><path d="M176 214L200 244L224 214L214 208L200 224L186 208Z" fill="#fff" fill-opacity=".6"/><path d="M200 240V330" stroke="#000" stroke-opacity=".25" stroke-width="3"/>`]);
+CATS[3].items.push(['工裝褲',(c)=>`<path d="${TP(326,392,9,0)}" fill="${c}"/><rect x="228" y="352" width="26" height="26" rx="4" fill="#000" fill-opacity=".18"/><rect x="146" y="352" width="26" height="26" rx="4" fill="#000" fill-opacity=".18"/>`]);
+CATS.push(Object.assign({},CATS[2],{id:'coat',name:'外套',items:[CATS[2].items[4],CATS[2].items[9],['連帽外套',(c)=>SL(c,75)+`<path d="${T}" fill="${c}"/><path d="M150 214Q200 170 250 214" stroke="${c}" stroke-width="16" fill="none"/><path d="M200 220V340" stroke="#000" stroke-opacity=".3" stroke-width="3"/>`],['棒球外套',(c)=>SL('#f4f4f2',90)+`<path d="${T}" fill="${c}"/><path d="M200 220V340" stroke="#fff" stroke-width="3" stroke-dasharray="3 14" stroke-linecap="round"/>`],['羽絨外套',(c)=>SL(c,80)+`<path d="${T}" fill="${c}"/><path d="M112 252H288M112 282H288M112 312H288" stroke="#000" stroke-opacity=".25" stroke-width="3"/>`],['針織背心',(c)=>`<path d="M142 216L200 262L258 216L272 330L128 330Z" fill="${c}"/><path d="M150 230V324M170 240V326M190 255V328M210 255V328M230 240V326M250 230V324" stroke="#000" stroke-opacity=".15" stroke-width="3"/>`]]}));
+CATS[CATS.length-1].items.pop();
+
+const DRESS=CATS[2].items[5][1];
+const ROBE=(c,d)=>SL(c,60)+`<path d="${TP(213,310,5,0)}" fill="${c}"/><path d="M122 300 Q200 318 278 300 L298 410 Q200 430 102 410Z" fill="${c}"/><path d="M178 214 L200 302 L222 214Z" fill="#fff" fill-opacity=".75"/><path d="M176 214 L200 302 M224 214 L200 302" stroke="${d}" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M124 298 Q200 316 276 298 L276 312 Q200 330 124 312Z" fill="${d}"/><path d="M102 402 Q200 422 298 402" stroke="${d}" stroke-width="8" fill="none"/>`;
+CATS.push({id:'suit',name:'套裝',vb:'60 195 280 235',items:[['洋裝',DRESS],['長袍',ROBE]]});
+CATS[8].items.push(['法國長棍',(c)=>`<g transform="translate(316 232) rotate(12)"><rect x="-15" y="-94" width="30" height="188" rx="15" fill="#e0a95a"/><path d="M-9 -70L9 -58M-9 -46L9 -34M-9 -22L9 -10M-9 2L9 14" stroke="#f6dfa3" stroke-width="5" stroke-linecap="round" fill="none"/><rect x="-17" y="32" width="34" height="64" rx="10" fill="${c}"/></g>`]);
+
+CATS.find(c=>c.id==='shoe').items.push(
+['馬丁靴',(c,d)=>SH(x=>`<rect x="${x-29}" y="366" width="58" height="46" rx="12" fill="${c}"/><ellipse cx="${x+4}" cy="412" rx="40" ry="14" fill="${c}"/><rect x="${x-43}" y="418" width="88" height="12" rx="6" fill="#1b1b1b"/><rect x="${x-41}" y="414" width="84" height="3" fill="#f2c94c"/><path d="M${x-8} 376h16M${x-8} 386h16M${x-8} 396h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`)],
+['樂福鞋',(c,d)=>SH(x=>`<ellipse cx="${x+2}" cy="410" rx="41" ry="16" fill="${c}"/><ellipse cx="${x-6}" cy="398" rx="22" ry="8" fill="${d}"/><rect x="${x-14}" y="399" width="30" height="7" rx="3" fill="#d9a93a"/><ellipse cx="${x}" cy="424" rx="40" ry="6" fill="#2a1a14"/>`)],
+['瑪莉珍鞋',(c,d)=>SH(x=>`<ellipse cx="${x+2}" cy="412" rx="39" ry="15" fill="${c}"/><ellipse cx="${x-4}" cy="400" rx="24" ry="8" fill="${d}"/><rect x="${x-12}" y="396" width="24" height="7" rx="3.5" fill="${c}" stroke="${d}"/><circle cx="${x}" cy="400" r="3.5" fill="#d9a93a"/><ellipse cx="${x}" cy="424" rx="38" ry="6" fill="#2a1a14"/>`)],
+['老爹鞋',(c,d)=>SH(x=>`<ellipse cx="${x+2}" cy="410" rx="40" ry="18" fill="${c}"/><ellipse cx="${x+22}" cy="414" rx="20" ry="12" fill="#fff" fill-opacity=".75"/><rect x="${x-44}" y="418" width="90" height="12" rx="6" fill="#fff"/><rect x="${x-45}" y="427" width="92" height="4" rx="2" fill="#8c8f96"/><path d="M${x-14} 398l10 6M${x} 396l10 6" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`)],
+['長靴',(c,d)=>SH(x=>`<rect x="${x-29}" y="352" width="58" height="62" rx="12" fill="${c}"/><ellipse cx="${x+4}" cy="412" rx="40" ry="14" fill="${c}"/><rect x="${x-31}" y="374" width="62" height="6" rx="3" fill="#d9a93a"/><rect x="${x-31}" y="392" width="62" height="6" rx="3" fill="#d9a93a"/><rect x="${x-42}" y="420" width="86" height="9" rx="4" fill="#1b1b1b"/>`)]);
+CATS.find(c=>c.id==='shoe').vb='100 346 200 90';
+CATS.find(c=>c.id==='coat').items.push(['皮夾克',(c,d)=>SL(c,80)+`<path d="${T}" fill="${c}"/><path d="M168 214L200 214L172 270Z M232 214L204 214L236 270Z" fill="#000" fill-opacity=".28"/><path d="M206 224L190 338" stroke="#e8e8e8" stroke-width="3.5" stroke-linecap="round"/><rect x="112" y="322" width="176" height="14" rx="5" fill="#000" fill-opacity=".22"/><rect x="214" y="324" width="16" height="10" rx="2" fill="#d9a93a"/>`]);
+CATS[8].items.push(['手提包',(c,d)=>`<path d="M281 340 Q301 306 321 340" stroke="#d9a93a" stroke-width="5" fill="none"/><rect x="269" y="336" width="64" height="44" rx="10" fill="${c}"/><path d="M269 352 H333" stroke="${d}" stroke-width="3"/><rect x="295" y="348" width="12" height="9" rx="2" fill="#d9a93a"/>`]);
+CATS[8].vb='260 140 130 240';
+CATS.find(c=>c.id==='back').items.push(['後背包',(c,d)=>`<rect x="104" y="214" width="192" height="132" rx="38" fill="${c}"/><rect x="150" y="296" width="100" height="46" rx="16" fill="${d}"/><path d="M148 214 Q142 276 170 304 M252 214 Q258 276 230 304" stroke="${d}" stroke-width="14" fill="none" stroke-linecap="round"/>`]);
+
+CATS.find(c=>c.id==='hat').items.push(
+['巫師帽',(c,d)=>`<ellipse cx="200" cy="98" rx="80" ry="11" fill="${d}"/><path d="M166 98Q196 68 204 40Q210 20 228 8Q222 46 234 98Z" fill="${c}"/><path d="M168 90Q200 100 234 90L234 98Q200 108 168 98Z" fill="${d}"/><path d="M203 56l4 9 10 1-8 6 3 10-9-6-9 6 3-10-8-6 10-1z" fill="#f6d62a"/>`],
+['廚師帽',(c,d)=>`<rect x="160" y="78" width="80" height="26" rx="6" fill="${c}"/><path d="M158 82Q140 60 162 48Q166 24 200 30Q234 24 238 48Q260 60 242 82Z" fill="${c}"/><path d="M178 80V102M200 80V102M222 80V102" stroke="${d}" stroke-width="2"/>`]);
+CATS.find(c=>c.id==='face').items.push(
+['口罩',(c,d)=>`<path d="M152 148Q200 141 248 148L247 192Q200 206 153 192Z" fill="${c}"/><path d="M156 162Q200 168 244 162M155 175Q200 181 245 175M155 187Q200 193 245 187" stroke="${d}" stroke-width="2" fill="none"/><path d="M152 151Q128 151 124 128M153 190Q118 188 124 130M248 151Q272 151 276 128M247 190Q282 188 276 130" stroke="${d}" stroke-width="3" fill="none" stroke-linecap="round"/>`],
+['愛心眼鏡',(c)=>`<g fill="none" stroke="${c}" stroke-width="4.5"><path d="M228 164C210 152 204 140 212 131C219 124 228 128 228 135C228 128 237 124 244 131C252 140 246 152 228 164Z"/><path d="M172 164C154 152 148 140 156 131C163 124 172 128 172 135C172 128 181 124 188 131C196 140 190 152 172 164Z"/><path d="M190 140Q200 134 210 140"/></g>`]);
+CATS.find(c=>c.id==='hair').items.push(['珍珠髮箍',(c)=>`<path d="M126 110Q200 20 274 110" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/><g fill="#fff"><circle cx="155.6" cy="81" r="7"/><circle cx="177.8" cy="69" r="7"/><circle cx="200" cy="65" r="7"/><circle cx="222.2" cy="69" r="7"/><circle cx="244.4" cy="81" r="7"/></g>`]);
+CATS.find(c=>c.id==='neck').items.push(
+['十字架',(c)=>`<path d="M150 224Q200 290 250 224" stroke="#d9a93a" stroke-width="3" fill="none"/><rect x="195" y="240" width="10" height="34" rx="2" fill="${c}"/><rect x="186" y="248" width="28" height="10" rx="2" fill="${c}"/>`],
+['領圈',(c)=>`<path d="M146 222Q200 238 254 222" stroke="${c}" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="200" cy="233" r="6" fill="#d9a93a"/>`]);
+CATS[8].items.push(['雨傘',(c,d)=>`<path d="M268 230Q300 150 340 152Q380 154 386 230Q366 214 348 230Q330 214 314 230Q296 214 268 230Z" fill="${c}"/><path d="M327 152V230" stroke="${d}" stroke-width="2"/><path d="M327 228L312 344" stroke="#8a8d93" stroke-width="4" stroke-linecap="round"/><path d="M312 344q-1 14-12 12" stroke="#59381e" stroke-width="6" fill="none" stroke-linecap="round"/>`]);
+CATS.find(c=>c.id==='back').items.push(['側背包',(c,d)=>`<path d="M268 214L130 330" stroke="${d}" stroke-width="12" stroke-linecap="round"/><rect x="92" y="300" width="64" height="56" rx="12" fill="${c}"/><rect x="92" y="306" width="64" height="20" rx="10" fill="${d}"/>`]);
+CATS.find(c=>c.id==='suit').items.push(['水手服',(c,d)=>SL(c,30)+`<path d="${TP(213,300,5,0)}" fill="${c}"/><path d="M122 300Q200 310 278 300L296 384Q200 394 104 384Z" fill="${c}"/><path d="M158 214H242L206 270L200 276L194 270Z" fill="#fff"/><path d="M164 220L196 262M236 220L204 262" stroke="${d}" stroke-width="3"/><path d="M186 270H214L200 288Z" fill="#e5121f"/>`]);
+CATS.find(c=>c.id==='bottom').items.push(
+['熱褲',(c,d)=>`<path d="${TP(326,360,4,0)}" fill="${c}"/><path d="M200 372V345" stroke="${d}" stroke-width="3"/>`],
+['蓬蓬紗裙',(c,d)=>`<path d="M126 326Q200 338 274 326L318 378Q300 386 288 376Q272 388 258 378Q240 390 226 378Q200 390 174 378Q158 388 142 378Q128 388 112 378Q104 386 82 378Z" fill="${c}"/><path d="M150 346Q200 360 250 346" stroke="${d}" stroke-width="3" fill="none" stroke-opacity=".5"/>`]);
+CATS.find(c=>c.id==='coat').items.push(
+['牛仔外套',(c,d)=>SL(c,80)+`<path d="${T}" fill="${c}"/><path d="M168 214L200 214L176 256Z M232 214L200 214L224 256Z" fill="#000" fill-opacity=".2"/><rect x="158" y="254" width="26" height="22" rx="4" fill="none" stroke="${d}" stroke-width="2.5"/><rect x="216" y="254" width="26" height="22" rx="4" fill="none" stroke="${d}" stroke-width="2.5"/><circle cx="200" cy="244" r="3" fill="#d9a93a"/><circle cx="200" cy="272" r="3" fill="#d9a93a"/><circle cx="200" cy="300" r="3" fill="#d9a93a"/>`],
+['風衣',(c,d)=>SL(c,80)+`<path d="${T}" fill="${c}"/><path d="M128 330L272 330L298 408Q200 420 102 408Z" fill="${c}"/><path d="M164 214L200 214L170 290Z M236 214L200 214L230 290Z" fill="#000" fill-opacity=".22"/><rect x="118" y="306" width="164" height="14" rx="5" fill="#000" fill-opacity=".25"/><rect x="192" y="306" width="16" height="14" rx="2" fill="#d9a93a"/><circle cx="186" cy="246" r="3.5" fill="#d9a93a"/><circle cx="214" cy="246" r="3.5" fill="#d9a93a"/><circle cx="186" cy="270" r="3.5" fill="#d9a93a"/><circle cx="214" cy="270" r="3.5" fill="#d9a93a"/>`]);
+
+CATS.find(c=>c.id==='shoe').items.push(
+['高筒帆布鞋',(c,d)=>SH(x=>`<rect x="${x-28}" y="364" width="56" height="48" rx="12" fill="${c}"/><ellipse cx="${x+4}" cy="410" rx="40" ry="15" fill="${c}"/><ellipse cx="${x+14}" cy="414" rx="28" ry="11" fill="#fff"/><rect x="${x-43}" y="418" width="88" height="11" rx="5" fill="#fff"/><rect x="${x-43}" y="422" width="88" height="3" fill="#d9232d"/><path d="M${x-8} 372h16M${x-8} 380h16M${x-8} 388h16M${x-8} 396h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`)],
+['芭蕾平底鞋',(c,d)=>SH(x=>`<ellipse cx="${x+2}" cy="414" rx="40" ry="11" fill="${c}"/><ellipse cx="${x-2}" cy="408" rx="26" ry="6" fill="${d}"/><path d="M${x-9} 404l8 4-8 4zM${x+9} 404l-8 4 8 4z" fill="${c}" stroke="${d}"/><circle cx="${x}" cy="408" r="3" fill="${d}"/>`)],
+['雪靴',(c,d)=>SH(x=>`<rect x="${x-30}" y="366" width="60" height="46" rx="14" fill="${c}"/><ellipse cx="${x+4}" cy="410" rx="41" ry="16" fill="${c}"/><rect x="${x-33}" y="360" width="66" height="14" rx="7" fill="#f3ead2"/><rect x="${x-44}" y="420" width="90" height="9" rx="4" fill="#e8dcc0"/>`)]);
+CATS.find(c=>c.id==='hat').items.push(
+['報童帽',(c,d)=>`<ellipse cx="200" cy="90" rx="64" ry="20" fill="${c}"/><path d="M146 92Q200 56 254 92Q200 110 146 92Z" fill="${d}"/><path d="M200 70V100" stroke="${d}" stroke-width="2"/><ellipse cx="200" cy="100" rx="42" ry="8" fill="${d}"/>`],
+['安全帽',(c,d)=>`<path d="M134 102Q134 42 200 40Q266 42 266 102Z" fill="${c}"/><path d="M190 102V43Q200 38 210 43V102Z" fill="${d}" fill-opacity=".45"/><rect x="130" y="98" width="140" height="8" rx="4" fill="${d}"/><path d="M158 106H242Q236 118 200 119Q164 118 158 106Z" fill="${d}" fill-opacity=".8"/>`]);
+CATS.find(c=>c.id==='hair').items.push(
+['花環冠',(c,d)=>`<path d="M130 112Q200 30 270 112" stroke="#5d9e3a" stroke-width="5" fill="none"/>${[[151,91],[176,76],[200,71],[224,76],[249,91]].map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="${i%2?'#fff':c}" stroke="${d}" stroke-opacity=".4"/><circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#f6d62a"/>`).join('')}`],
+['呆毛',(c)=>`<path d="M196 102C194 74 198 48 218 42C234 38 244 54 242 66C238 56 232 52 224 54C212 58 208 80 207 102Z" fill="${c}"/>`]);
+CATS.find(c=>c.id==='face').items.push(
+['鬍子',(c)=>`<path d="M200 176Q180 168 166 180Q176 186 190 184Q198 182 200 182Q202 182 210 184Q224 186 234 180Q220 168 200 176Z" fill="${c}"/>`],
+['貓咪鬍鬚',(c)=>`<g stroke="${c}" stroke-width="2.5" stroke-linecap="round"><path d="M160 172L128 164M160 180L126 182M160 188L128 200M240 172L272 164M240 180L274 182M240 188L272 200"/></g>`],
+['雀斑',(c)=>`<g fill="${c}"><circle cx="158" cy="176" r="2.5"/><circle cx="166" cy="182" r="2.5"/><circle cx="174" cy="174" r="2.5"/><circle cx="166" cy="170" r="2.5"/><circle cx="226" cy="176" r="2.5"/><circle cx="234" cy="182" r="2.5"/><circle cx="242" cy="174" r="2.5"/><circle cx="234" cy="170" r="2.5"/></g>`]);
+CATS.find(c=>c.id==='neck').items.push(['花環項鍊',(c)=>`<path d="M150 224Q200 296 250 224" stroke="#5d9e3a" stroke-width="3" fill="none"/>${[[165,242],[180,254],[200,260],[220,254],[235,242]].map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="${i%2?'#fff':c}" stroke="#0003"/><circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#f6d62a"/>`).join('')}`]);
+CATS.find(c=>c.id==='scarf').items.push(
+['圍兜',(c)=>`<path d="M150 218Q200 236 250 218" stroke="${c}" stroke-width="7" fill="none"/><path d="M162 226H238V274Q238 306 200 306Q162 306 162 274Z" fill="${c}"/>`],
+['毛領',(c)=>`<path d="M138 222Q200 250 262 222" stroke="${c}" stroke-width="26" fill="none" stroke-linecap="round"/><path d="M138 222Q200 250 262 222" stroke="#fff" stroke-opacity=".5" stroke-width="20" stroke-dasharray="1 15" stroke-linecap="round" fill="none"/>`]);
+CATS[8].items.push(['相機',(c)=>`<rect x="268" y="316" width="64" height="44" rx="9" fill="${c}"/><rect x="268" y="340" width="64" height="20" rx="8" fill="#cfd2d8"/><circle cx="300" cy="340" r="14" fill="#222"/><circle cx="300" cy="340" r="8" fill="#4a6c8c"/><rect x="274" y="322" width="14" height="7" rx="2" fill="#fff6c8"/>`]);
+CATS.find(c=>c.id==='suit').items.push(
+['旗袍',(c,d)=>SL(c,30)+`<path d="${TP(213,310,5,0)}" fill="${c}"/><path d="M124 304Q200 318 276 304L270 398Q200 408 130 398Z" fill="${c}"/><path d="M168 212H232V228H168Z" fill="${c}"/><path d="M200 228L246 258" stroke="#d9a93a" stroke-width="4" stroke-linecap="round"/><circle cx="214" cy="238" r="4" fill="#d9a93a"/><circle cx="232" cy="248" r="4" fill="#d9a93a"/><path d="M130 396Q200 408 270 396" stroke="#d9a93a" stroke-width="4" fill="none"/>`],
+['吊帶連身裙',(c,d)=>`<path d="M124 300Q200 312 276 300L304 388Q200 404 96 388Z" fill="${c}"/><rect x="162" y="244" width="76" height="62" rx="12" fill="${c}"/><path d="M170 246L176 214M230 246L224 214" stroke="${c}" stroke-width="12" stroke-linecap="round"/><circle cx="172" cy="256" r="4" fill="#d9a93a"/><circle cx="228" cy="256" r="4" fill="#d9a93a"/>`]);
+CATS.find(c=>c.id==='top').items.push(['短版上衣',(c)=>SL(c,30)+`<path d="${TP(213,292,5,0)}" fill="${c}"/>`]);
+CATS.find(c=>c.id==='bottom').items.push(['背帶褲',(c,d)=>`<path d="${TP(326,380,4,0)}" fill="${c}"/><rect x="172" y="322" width="56" height="26" rx="6" fill="${c}" stroke="${d}"/><path d="M178 322L170 320M222 322L230 320" stroke="${c}" stroke-width="8"/><circle cx="178" cy="336" r="3" fill="#d9a93a"/><circle cx="222" cy="336" r="3" fill="#d9a93a"/>`]);
+CATS.find(c=>c.id==='coat').items.push(
+['毛絨外套',(c)=>SL(c,80)+`<path d="${T}" fill="${c}"/><path d="M144 214Q200 190 256 214" stroke="${c}" stroke-width="22" fill="none" stroke-linecap="round"/><circle cx="200" cy="256" r="6" fill="#000" fill-opacity=".3"/><circle cx="200" cy="286" r="6" fill="#000" fill-opacity=".3"/>`],
+['飛行外套',(c)=>SL(c,80)+`<path d="${TP(213,330,5,0)}" fill="${c}"/><rect x="118" y="318" width="164" height="16" rx="6" fill="#000" fill-opacity=".3"/><path d="M200 222V318" stroke="#ddd" stroke-width="3"/><path d="M164 214Q200 230 236 214" stroke="#ff7a1a" stroke-width="10" fill="none"/>`]);
+
+CATS.find(c=>c.id==='top').items.push(['小熊T',(c,d)=>SL(c)+`<path d="${T}" fill="${c}"/><path d="M178 216 Q200 238 222 216" stroke="${d}" stroke-width="4" fill="none"/><g transform="translate(200 270) scale(.1) translate(-300 -460)" stroke="none"><ellipse cx="205" cy="800" rx="78" ry="42" fill="#99683f" stroke="#5e3d22" stroke-width="10"/><ellipse cx="395" cy="800" rx="78" ry="42" fill="#99683f" stroke="#5e3d22" stroke-width="10"/><path d="M228 540L224 785" stroke="#2c3956" stroke-width="136"/><path d="M372 540L376 785" stroke="#2c3956" stroke-width="136"/><rect x="178" y="488" width="244" height="100" rx="18" fill="#2c3956"/><rect x="178" y="488" width="244" height="34" fill="#141a2a"/><rect x="160" y="712" width="134" height="74" fill="#6b84ad"/><rect x="306" y="712" width="134" height="74" fill="#6b84ad"/><path d="M300 600V790" stroke="#0e1424" stroke-width="12"/><rect x="200" y="293" width="200" height="200" rx="30" fill="#f6f6f6"/><path d="M222 345L230 448M378 345L370 448" stroke="#5e3d22" stroke-width="96" stroke-linecap="round"/><path d="M222 345L230 448M378 345L370 448" stroke="#99683f" stroke-width="86" stroke-linecap="round"/><ellipse cx="222" cy="338" rx="48" ry="42" fill="#f6f6f6"/><ellipse cx="378" cy="338" rx="48" ry="42" fill="#f6f6f6"/><ellipse cx="380" cy="342" rx="14" ry="20" fill="#c0141a"/><ellipse cx="380" cy="342" rx="7" ry="11" fill="#fff"/><ellipse cx="380" cy="342" rx="3.5" ry="5.5" fill="#c0141a"/><path d="M370 456L212 404" stroke="#5e3d22" stroke-width="94" stroke-linecap="round"/><path d="M370 456L212 404" stroke="#99683f" stroke-width="84" stroke-linecap="round"/><path d="M230 456L388 404" stroke="#5e3d22" stroke-width="94" stroke-linecap="round"/><path d="M230 456L388 404" stroke="#99683f" stroke-width="84" stroke-linecap="round"/><g fill="#99683f" stroke="#5e3d22" stroke-width="10"><ellipse cx="180" cy="128" rx="44" ry="56"/><ellipse cx="420" cy="128" rx="44" ry="56"/><ellipse cx="300" cy="186" rx="135" ry="118"/><ellipse cx="300" cy="258" rx="88" ry="54"/></g><ellipse cx="300" cy="186" rx="133" ry="116" fill="#99683f"/><ellipse cx="300" cy="258" rx="86" ry="52" fill="#99683f"/><ellipse cx="184" cy="136" rx="22" ry="34" fill="#6b4226" fill-opacity=".6"/><ellipse cx="416" cy="136" rx="22" ry="34" fill="#6b4226" fill-opacity=".6"/><ellipse cx="300" cy="268" rx="55" ry="32" fill="#c79a66" fill-opacity=".6"/><ellipse cx="300" cy="228" rx="14" ry="11" fill="#150d0a"/><ellipse cx="246" cy="188" rx="46" ry="30" fill="#d4d6da"/><ellipse cx="354" cy="188" rx="46" ry="30" fill="#d4d6da"/><ellipse cx="246" cy="188" rx="40" ry="24" fill="#101319"/><ellipse cx="354" cy="188" rx="40" ry="24" fill="#101319"/><rect x="290" y="180" width="20" height="12" fill="#0c0e13"/><path d="M202 184L180 176M398 184L420 176" stroke="#0c0e13" stroke-width="6"/><ellipse cx="232" cy="176" rx="18" ry="6" fill="#8a93a6" fill-opacity=".5"/><ellipse cx="340" cy="176" rx="18" ry="6" fill="#8a93a6" fill-opacity=".5"/></g>`]);
+
+CATS.find(c=>c.id==='coat').items.push(['格紋襯衫',(c,d)=>`<defs><pattern id="plaidp" width="54" height="50" patternUnits="userSpaceOnUse" x="173"><rect width="54" height="50" fill="#dbd2bf"/><rect x="16" width="22" height="50" fill="${c}" fill-opacity=".85"/><rect y="14" width="54" height="22" fill="${c}" fill-opacity=".85"/></pattern></defs>`+SL('url(#plaidp)',80)+`<path d="${T}" fill="url(#plaidp)"/><path d="M166 212L200 212L184 250Z M234 212L200 212L216 250Z" fill="#e4dccb" stroke="#0005"/><path d="M200 224V344" stroke="#0004" stroke-width="2"/><g fill="#111"><circle cx="200" cy="240" r="3.3"/><circle cx="200" cy="264" r="3.3"/><circle cx="200" cy="288" r="3.3"/><circle cx="200" cy="312" r="3.3"/><circle cx="200" cy="336" r="3.3"/></g>`]);
+
+const setItem=(cid,name,fn)=>{const cat=CATS.find(c=>c.id===cid);const i=cat.items.findIndex(x=>x[0]===name);if(i>=0)cat.items[i]=[name,fn]};
+setItem('top','條紋衫',(c)=>SL(c)+`<clipPath id="tcs"><path d="${T}"/></clipPath><path d="${T}" fill="${c}"/><g clip-path="url(#tcs)" fill="#fff" fill-opacity=".75"><rect x="100" y="238" width="200" height="14"/><rect x="100" y="268" width="200" height="14"/><rect x="100" y="298" width="200" height="14"/><rect x="100" y="328" width="200" height="14"/></g>`);
+setItem('top','連帽衣',(c,d)=>SL(c,50)+`<path d="${T}" fill="${c}"/><path d="M152 298Q200 314 248 298L254 332Q200 352 146 332Z" fill="${d}" fill-opacity=".4"/><path d="M188 230V264M212 230V264" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`);
+setItem('top','背心',(c)=>`<path d="${TP(214,346,3,16)}" fill="${c}"/>`);
+setItem('top','Boxy上衣',(c)=>`<path d="M92 236 L150 214 Q200 224 250 214 L308 236 L292 298 L262 288 L262 330 L138 330 L138 288 L108 298Z" fill="${c}"/>`);
+setItem('bottom','寬鬆直筒褲',(c)=>`<path d="${TP(326,392,10,0)}" fill="${c}"/><g fill="none" stroke="#000" stroke-opacity=".22" stroke-width="2.5" stroke-linecap="round"><path d="M200 340V384"/><path d="M168 352Q176 364 166 380"/><path d="M232 352Q224 364 234 380"/><path d="M150 366Q160 372 154 386"/><path d="M250 366Q240 372 246 386"/></g>`);
+setItem('bottom','熱褲',(c)=>`<path d="${TP(326,376,4,0)}" fill="${c}"/><path d="M200 352V376" stroke="#000" stroke-opacity=".4" stroke-width="3"/>`);
+setItem('bottom','背帶褲',(c,d)=>`<path d="${TP(322,388,4,0)}" fill="${c}"/><rect x="169" y="272" width="62" height="52" rx="14" fill="${c}" stroke="${d}" stroke-width="2"/><rect x="186" y="302" width="28" height="16" rx="4" fill="${d}" fill-opacity=".35"/><path d="M174 276L172 262M226 276L228 262" stroke="${c}" stroke-width="12" stroke-linecap="round"/><circle cx="174" cy="279" r="4" fill="#d9a93a"/><circle cx="226" cy="279" r="4" fill="#d9a93a"/>`);
+CATS.find(c=>c.id==='bottom').vb='80 266 240 164';
+setItem('suit','水手服',(c,d)=>SL('#fff',30)+`<path d="${TP(213,300,5,0)}" fill="#fff"/><path d="M122 300Q200 310 278 300L296 384Q200 394 104 384Z" fill="${c}"/><path d="M158 214H242L206 270L200 276L194 270Z" fill="${c}"/><path d="M162 220L196 262M238 220L204 262" stroke="#fff" stroke-width="3"/><path d="M186 270H214L200 288Z" fill="#e5121f"/>`);
+setItem('suit','吊帶連身裙',(c,d)=>`<path d="M126 242Q200 254 274 242L278 304L122 304Z" fill="${c}"/><path d="M124 300Q200 312 276 300L304 388Q200 404 96 388Z" fill="${c}"/><path d="M170 244L176 214M230 244L224 214" stroke="${c}" stroke-width="12" stroke-linecap="round"/><circle cx="172" cy="252" r="4" fill="#d9a93a"/><circle cx="228" cy="252" r="4" fill="#d9a93a"/>`);
+setItem('suit','長袍',(c,d)=>ROBE(c,d)+`<path d="M138 217Q200 238 262 217" stroke="${d}" stroke-width="14" fill="none" stroke-linecap="round"/><path d="M144 213Q200 232 256 213" stroke="#fff" stroke-opacity=".35" stroke-width="3" fill="none"/>`);
+CATS.find(c=>c.id==='suit').items.push(['風衣',(c,d)=>SL(c,80)+`<path d="${T}" fill="${c}"/><path d="M128 330L272 330L298 408Q200 420 102 408Z" fill="${c}"/><path d="M164 214L200 214L170 290Z M236 214L200 214L230 290Z" fill="#000" fill-opacity=".22"/><rect x="118" y="306" width="164" height="14" rx="5" fill="#000" fill-opacity=".25"/><rect x="192" y="306" width="16" height="14" rx="2" fill="#d9a93a"/><circle cx="186" cy="246" r="3.5" fill="#d9a93a"/><circle cx="214" cy="246" r="3.5" fill="#d9a93a"/><circle cx="186" cy="270" r="3.5" fill="#d9a93a"/><circle cx="214" cy="270" r="3.5" fill="#d9a93a"/>`]);
+setItem('coat','棒球外套',(c,d)=>SL('#f4f4f2',90)+`<path d="${T}" fill="${c}"/><path d="M148 214Q200 234 252 214" stroke="${d}" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M200 224V340" stroke="#fff" stroke-width="3" stroke-dasharray="3 14" stroke-linecap="round"/>`);
+setItem('coat','羽絨外套',(c)=>SL(c,80)+`<path d="${T}" fill="${c}"/><path d="M112 252H288M112 282H288M112 312H288" stroke="#000" stroke-opacity=".25" stroke-width="3"/><path d="M200 224V340" stroke="#eee" stroke-width="3"/>`);
+CATS.find(c=>c.id==='scarf').items.splice(CATS.find(c=>c.id==='scarf').items.findIndex(x=>x[0]==='圍兜'),1);
+CATS.find(c=>c.id==='hair').items.splice(CATS.find(c=>c.id==='hair').items.findIndex(x=>x[0]==='呆毛'),1);
+const POSES=[['站立',[277,292,30]],['萬歲',[290,226,26]],['打招呼',[296,252,36]],['抱胸',[238,306,62]]];
+const st={bear:0,cat:0,sel:{},col:{},pose:0,coatOpen:false};
+CATS.forEach((c,i)=>{st.sel[c.id]=null;st.col[c.id]=P[i%9]});st.col.face='#26262b';st.col.hat=P[2];st.col.neck=P[4];st.col.held=P[1];st.col.top=P[3];st.col.bottom=P[9];st.col.back=P[7];st.col.coat=P[9];st.col.suit=P[5];st.cat=2;
+
+const TRN={hat:'translate(200 7) scale(.88 1) translate(-200 0)',face:'translate(0 3)',held:'translate(-24 -20)',scarf:'translate(200 0) scale(.82 1) translate(-200 0)'};
+const TRI={hair:['translate(-14 8)','translate(-12 8)','translate(0 24)','translate(-12 8)']};
+const useF=()=>!$('box').classList.contains('gl');
+function layerParts(c){const k=st.sel[c.id];if(k==null)return['',''];const a=st.col[c.id];let m=c.items[k][1](a,mix(a,-.28),mix(a,.5)),sl='';
+  if(c.id==='top'||c.id==='suit'){const q=m.match(/<g class="sl">[\s\S]*?<\/g>/g)||[];sl=q.join('');m=m.replace(/<g class="sl">[\s\S]*?<\/g>/g,'')}
+  const tf=TRI[c.id]?TRI[c.id][k]:TRN[c.id],w=x=>x?`<g${tf?' transform="'+tf+'"':''}><g stroke="${mix(a,-.35)}" stroke-opacity=".3" stroke-width="1.5" stroke-linejoin="round"${useF()?' filter="url(#jl)"':''}>${x}</g></g>`:'';
+  return[w(m),w(sl)]}
+function layer(c){return layerParts(c)[0]}
+
+/* ===== 3D 軟糖：WebGL2 光線追蹤（隱函數造型、折射、吸光、攝影棚環境反光） ===== */
+const BW=480,BH=576;
+const FRAG=`uniform vec3 uHR;uniform vec3 uFt;uniform float uOpen;uniform float uSh;uniform float uK;uniform vec3 uC;uniform float uL;uniform int uPass;uniform vec2 uRes;uniform float uAng;float gCA=1.,gSA=0.;vec3 rt(vec3 p){if(gSA==0.&&gCA==1.)return p;vec3 d=p-vec3(200.,0.,4.);return vec3(200.+gCA*d.x-gSA*d.z,p.y,4.+gSA*d.x+gCA*d.z);}
+out vec4 fc;
+const float CUT=218.;
+float gB;float nOff;float nTh;float sTh;float sLf;
+float nz(float x,float y){return (56.+nTh)*sqrt(max(0.,1.-pow((x-200.)/(74.+nTh),2.)-pow((y-298.)/(104.+nTh),2.)));}
+float smin(float a,float b,float k){float h=max(k-abs(a-b),0.)/k;if(k>8.)gB=max(gB,h*h*k*.25);return min(a,b)-h*h*k*.25;}
+float smax(float a,float b,float k){float h=max(k-abs(a-b),0.)/k;return max(a,b)+h*h*k*.25;}
+float ell(vec3 p,vec3 c,vec3 r){vec3 q=(p-c)/r;float k0=length(q);float k1=length(q/r);return k0*(k0-1.)/max(k1,1e-4);}
+float cap(vec3 p,vec3 a,vec3 b,float r){vec3 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);return length(pa-ba*h)-r;}
+float rcone(vec3 p,vec3 a,vec3 b,float r1,float r2){
+  vec3 ba=b-a;float l2=dot(ba,ba),rr=r1-r2,a2=l2-rr*rr,il2=1./l2;
+  vec3 pa=p-a;float y=dot(pa,ba),z=y-l2;vec3 v=pa*l2-ba*y;float x2=dot(v,v),y2=y*y*l2,z2=z*z*l2;
+  float k=sign(rr)*rr*rr*x2;
+  if(sign(z)*a2*z2>k)return sqrt(x2+z2)*il2-r2;
+  if(sign(y)*a2*y2<k)return sqrt(x2+y2)*il2-r1;
+  return(sqrt(x2*a2*il2)+y*rr)*il2-r1;}
+float bmap(vec3 p){p=rt(p);
+  gB=0.;
+  float d=ell(p,vec3(200.,298.,0.),vec3(74.,104.,56.));
+  d=smin(d,ell(p,vec3(200.,152.,6.),vec3(73.,64.,58.)),24.);
+  d=smin(d,length(p-vec3(139.,98.,-4.))-25.,14.);
+  d=smin(d,length(p-vec3(261.,98.,-4.))-25.,14.);
+  d=smin(d,rcone(p,vec3(148.,266.,10.),vec3(400.-uHR.x,uHR.y,uHR.z),27.,25.),12.);
+  d=smin(d,rcone(p,vec3(252.,266.,10.),uHR,27.,25.),12.);
+  d=smin(d,ell(p,vec3(157.-uFt.x,399.+uFt.y,14.+uFt.z),vec3(32.,24.,29.)),18.);
+  d=smin(d,ell(p,vec3(243.+uFt.x,399.+uFt.y,14.+uFt.z),vec3(32.,24.,29.)),18.);
+  d=smin(d,ell(p,vec3(200.,177.,50.),vec3(30.,23.,20.)),8.);
+  d=smin(d,length(p-vec3(200.,166.,68.))-8.,4.);
+  d=smin(d,ell(p,vec3(172.,143.,58.),vec3(5.8,8.2,7.)),2.5);
+  d=smin(d,ell(p,vec3(228.,143.,58.),vec3(5.8,8.2,7.)),2.5);
+  d=smax(d,-cap(p,vec3(200.,174.,73.),vec3(200.,181.,72.),1.8),1.5);
+  d=smax(d,-cap(p,vec3(190.,184.,69.),vec3(200.,189.,72.),1.8),1.5);
+  d=smax(d,-cap(p,vec3(210.,184.,69.),vec3(200.,189.,72.),1.8),1.5);
+  return d;}
+
+uniform int uIt[12];uniform vec3 uCl[12];
+float gD;vec3 gC;float gG;
+void A(float d,vec3 c){if(d<gD){gD=d;gC=c;gG=0.;}}
+void Ag(float d,vec3 c){if(d<gD){gD=d;gC=c;gG=1.;}}
+void Ag2(float d,vec3 c){if(d<gD){gD=d;gC=c;gG=2.;}}
+void Am(float d,vec3 c){if(d<gD){gD=d;gC=c;gG=-1.;}}
+const vec3 GOLD=vec3(.94,.78,.37),WH=vec3(1.);
+float ext(float d2,float z,float h,float r){vec2 w=vec2(d2,abs(z)-h);return min(max(w.x,w.y),0.)+length(max(w,0.))-r;}
+float sdHeart(vec2 p){p.x=abs(p.x);if(p.y+p.x>1.)return sqrt(dot(p-vec2(.25,.75),p-vec2(.25,.75)))-sqrt(2.)/4.;return sqrt(min(dot(p-vec2(0.,1.),p-vec2(0.,1.)),dot(p-.5*max(p.x+p.y,0.),p-.5*max(p.x+p.y,0.))))*sign(p.x-p.y);}
+float heart(vec3 p,vec2 c,float s,float z,float h){vec2 u=vec2((p.x-c.x)/s,-(p.y-c.y)/s+.5);return ext(sdHeart(u)*s,p.z-z,h,1.5);}
+float star5r(vec3 p,vec2 c,float r,float z,float h,float rr){vec2 q=(p.xy-c)/r;const vec2 k1=vec2(.809016994375,-.587785252292),k2=vec2(-k1.x,k1.y);q.x=abs(q.x);q-=2.*max(dot(k1,q),0.)*k1;q-=2.*max(dot(k2,q),0.)*k2;q.x=abs(q.x);q.y-=1.;vec2 ba=.5*vec2(-k1.y,k1.x)-vec2(0.,1.);float hh=clamp(dot(q,ba)/dot(ba,ba),0.,1.);float d=length(q-ba*hh)*sign(q.y*ba.x-q.x*ba.y)*r;return ext(d,p.z-z,h,rr);}
+float star5(vec3 p,vec2 c,float r,float z,float h){return star5r(p,c,r,z,h,1.5);}
+float bxs(vec3 p,vec3 c,vec3 h,float r){vec3 q=abs(p-c)-h+r;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.)-r;}
+float rb(vec2 p,vec2 b,float r){vec2 q=abs(p)-b+r;return min(max(q.x,q.y),0.)+length(max(q,0.))-r;}
+float tor(vec3 p,vec3 c,float R,float r){vec3 q=p-c;return length(vec2(length(q.xz)-R,q.y))-r;}
+float cylY(vec3 p,vec3 c,float r,float h,float rr){vec2 d=vec2(length(p.xz-c.xz)-r,abs(p.y-c.y)-h);return min(max(d.x,d.y),0.)+length(max(d,0.))-rr;}
+float cz(float x,float y){return 56.*sqrt(max(0.,1.-pow((x-200.)/74.,2.)-pow((y-298.)/104.,2.)))+3.;}
+float tsh(vec3 p,float y0,float y1,float th){bool pm=(y0>300.&&y0<330.&&y1>350.);th+=(y0<300.)?3.:(pm?3.*smoothstep(345.,385.,p.y):0.);th*=(.75+.25*smoothstep(y1,y1-30.,p.y));float d=ell(p,vec3(200.,298.,0.),vec3(74.+th,104.+th,56.+th));d=smax(d,y0-p.y,3.);d=smax(d,p.y-(pm?mix(414.,y1+8.,smoothstep(0.,46.,abs(p.x-200.))):y1),4.);return d;}
+float skirt(vec3 p,float y0,float y1,float r0,float r1){float t=clamp((p.y-y0)/(y1-y0),0.,1.);float r=mix(r0,r1,t)-3.;vec2 d=vec2(length(vec2(p.x-200.,p.z*1.25))-r,abs(p.y-(y0+y1)*.5)-(y1-y0)*.5+3.);return min(max(d.x,d.y),0.)+length(max(d,0.))-3.;}
+float sdHt(vec2 p){p.x=abs(p.x);if(p.y+p.x>1.)return sqrt(dot(p-vec2(.25,.75),p-vec2(.25,.75)))-sqrt(2.)/4.;return sqrt(min(dot(p-vec2(0.,1.),p-vec2(0.,1.)),dot(p-.5*max(p.x+p.y,0.),p-.5*max(p.x+p.y,0.))))*sign(p.x-p.y);}
+float pz(float y,float t){return (56.+t)*sqrt(max(1.-pow((y-298.)/(104.+t),2.),0.));}
+float sdTr(vec2 p,vec2 a,vec2 b,vec2 c){vec2 e0=b-a,e1=c-b,e2=a-c,v0=p-a,v1=p-b,v2=p-c;vec2 q0=v0-e0*clamp(dot(v0,e0)/dot(e0,e0),0.,1.),q1=v1-e1*clamp(dot(v1,e1)/dot(e1,e1),0.,1.),q2=v2-e2*clamp(dot(v2,e2)/dot(e2,e2),0.,1.);float sg=sign(e0.x*e2.y-e0.y*e2.x);vec2 d=min(min(vec2(dot(q0,q0),sg*(v0.x*e0.y-v0.y*e0.x)),vec2(dot(q1,q1),sg*(v1.x*e1.y-v1.y*e1.x))),vec2(dot(q2,q2),sg*(v2.x*e2.y-v2.y*e2.x)));return -sqrt(d.x)*sign(d.y);}
+float ctsh(vec3 p,float y0,float y1,float th){float d=tsh(p,y0,y1,th);return uOpen>.5?smax(d,min(26.-abs(p.x-200.),p.z-2.),2.):d;}
+float slvT(vec3 q,float len,float r){vec3 a=vec3(250.,262.,8.),b=uHR+vec3(2.,1.,0.);vec3 dir=normalize(b-a);vec3 e=mix(a,b,len);float d=rcone(q,a,b+dir*30.,r+1.5,r);return smax(d,dot(q-e,dir),2.5);}
+float slv(vec3 q,float len){vec3 a=vec3(250.,262.,8.),b=uHR+vec3(2.,1.,0.);vec3 dir=normalize(b-a);vec3 e=mix(a,b,len);float d=rcone(q,a,b+dir*30.,31.,29.5);return smax(d,dot(q-e,dir),2.5);}
+vec3 chainP(float t){float x=150.+100.*t,y=224.+176.*t*(1.-t);return vec3(x,y,nz(x,y)+4.);}
+float chainD(vec3 p,float r){float d=1e5;vec3 a=chainP(0.);for(int i=1;i<=10;i++){vec3 b=chainP(float(i)/10.);d=min(d,cap(p,a,b,r));a=b;}return d;}
+float shz(float x,float y,float t){return (56.+t)*sqrt(max(0.,1.-pow((x-200.)/(74.+t),2.)-pow((y-298.)/(104.+t),2.)));}
+float tut(vec3 p,float y0,float y1,float r0,float r1,float w){float t=clamp((p.y-y0)/(y1-y0),0.,1.);float ba=atan(p.z*1.2,p.x-200.);float r=mix(r0,r1,t)+w*t*sin(ba*16.)-3.;vec2 d=vec2(length(vec2(p.x-200.,p.z*1.2))-r,abs(p.y-(y0+y1)*.5)-(y1-y0)*.5+3.);return min(max(d.x,d.y),0.)+length(max(d,0.))-3.;}
+float hz3(vec2 u){return 9.+58.*sqrt(max(0.,1.-pow((u.x-200.)/73.,2.)-pow((u.y-152.)/64.,2.)));}
+float sg2(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;return length(pa-ba*clamp(dot(pa,ba)/dot(ba,ba),0.,1.));}
+float strp(vec3 q,vec2 a,vec2 b,vec2 c){float d2=min(sg2(q.xy,a,b),sg2(q.xy,b,c));return (length(vec2(d2,(q.z-hz3(q.xy)-1.)*.6))-2.6)*.8;}
+float msk(float d){return 1.-smoothstep(-8.,8.,d);}
+float elp(vec2 p,vec2 c,vec2 r){return (length((p-c)/r)-1.)*min(r.x,r.y);}
+float seg2(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);return length(pa-ba*h);}
+vec3 bearPrint(vec2 uv,vec3 base){
+  vec2 b=(uv-vec2(200.,270.))*10.+vec2(300.,460.);
+  vec3 fb=vec3(.66,.49,.33),fd=vec3(.47,.32,.2)*.85,fl=vec3(.78,.61,.43),jn=vec3(.17,.22,.33);
+  fb*=.97+.03*sin(b.x*.11+b.y*.15+sin(b.y*.07)*2.);
+  vec3 col=base;float r=8.;
+  float ft=min(elp(b,vec2(205.,800.),vec2(78.,42.)),elp(b,vec2(395.,800.),vec2(78.,42.)));
+  col=mix(col,fd,msk(ft));col=mix(col,fb,msk(ft+r));
+  float jl=seg2(b,vec2(228.,540.),vec2(224.,740.))-68.;
+  float jr=seg2(b,vec2(372.,540.),vec2(376.,740.))-68.;
+  float jw=length(max(abs(b-vec2(300.,538.))-vec2(122.,50.),0.))-18.;
+  float dj=min(min(jl,jr),jw);dj=max(dj,b.y-785.);
+  vec3 jc=jn*(1.+.45*(.5+.5*sin(b.x*.05+b.y*.03)));
+  jc=mix(jc,jn*1.9,.3*msk(length((b-vec2(350.,610.))/vec2(40.,70.))*40.-40.));
+  jc=mix(jc,vec3(.08,.1,.15),1.-smoothstep(496.,530.,b.y));
+  jc=mix(jc,vec3(.05,.06,.1),(1.-smoothstep(0.,7.,abs(b.x-300.)))*smoothstep(580.,640.,b.y));
+  float cl=b.y-712.;
+  jc=mix(jc,vec3(.42,.52,.68),smoothstep(-2.,6.,cl));jc=mix(jc,vec3(.1,.13,.2),1.-smoothstep(0.,6.,abs(cl)));
+  col=mix(col,vec3(.05,.07,.12),msk(dj));col=mix(col,jc,msk(dj+r*.7));
+  float dt=length(max(abs(b-vec2(300.,395.))-vec2(70.,66.),0.))-30.;
+  col=mix(col,vec3(.8),msk(dt));col=mix(col,vec3(.96),msk(dt+r*.6));
+  float ua=min(seg2(b,vec2(222.,345.),vec2(230.,448.))-43.,seg2(b,vec2(378.,345.),vec2(370.,448.))-43.);
+  col=mix(col,fd,msk(ua));col=mix(col,fb,msk(ua+r));
+  float sv=min(elp(b,vec2(222.,338.),vec2(48.,42.)),elp(b,vec2(378.,338.),vec2(48.,42.)));
+  col=mix(col,vec3(.8),msk(sv));col=mix(col,vec3(.96),msk(sv+r*.6));
+  vec2 lc=vec2(380.,342.);float lm=msk(sv+r*.6);
+  col=mix(col,vec3(.75,.08,.1),msk(elp(b,lc,vec2(14.,20.)))*lm);
+  col=mix(col,vec3(.95),msk(elp(b,lc,vec2(7.,11.)))*lm);
+  col=mix(col,vec3(.75,.08,.1),msk(elp(b,lc,vec2(3.5,5.5)))*lm);
+  float f2=min(seg2(b,vec2(370.,456.),vec2(212.,404.))-42.,length(b-vec2(212.,404.))-44.);
+  col=mix(col,fd,msk(f2));col=mix(col,fb*.97,msk(f2+r));
+  float f1=min(seg2(b,vec2(230.,456.),vec2(388.,404.))-42.,length(b-vec2(388.,404.))-44.);
+  col=mix(col,fd,msk(f1));col=mix(col,fb,msk(f1+r));
+  col=mix(col,fl,.3*msk(elp(b,vec2(300.,432.),vec2(36.,12.))));
+  float hh=min(min(elp(b,vec2(180.,128.),vec2(44.,56.)),elp(b,vec2(420.,128.),vec2(44.,56.))),min(elp(b,vec2(300.,186.),vec2(135.,118.)),elp(b,vec2(300.,258.),vec2(88.,54.))));
+  col=mix(col,fd,msk(hh));col=mix(col,fb,msk(hh+r));
+  col=mix(col,fl,.3*msk(elp(b,vec2(300.,118.),vec2(90.,32.))));
+  col=mix(col,fd,.5*msk(min(elp(b,vec2(184.,136.),vec2(22.,34.)),elp(b,vec2(416.,136.),vec2(22.,34.)))));
+  col=mix(col,fl,.35*msk(elp(b,vec2(300.,268.),vec2(55.,32.))));
+  col=mix(col,vec3(.08,.05,.04),msk(elp(b,vec2(300.,228.),vec2(14.,11.))));
+  float g1=min(elp(b,vec2(246.,188.),vec2(46.,30.)),elp(b,vec2(354.,188.),vec2(46.,30.)));
+  col=mix(col,vec3(.82),msk(g1));col=mix(col,vec3(.07,.09,.12),msk(g1+8.));
+  col=mix(col,vec3(.05,.06,.08),msk(seg2(b,vec2(292.,186.),vec2(308.,186.))-6.));
+  col=mix(col,vec3(.05,.06,.08),msk(min(seg2(b,vec2(202.,184.),vec2(180.,176.)),seg2(b,vec2(398.,184.),vec2(420.,176.)))-3.));
+  col=mix(col,vec3(.5,.55,.65),.5*msk(min(elp(b,vec2(232.,176.),vec2(18.,6.)),elp(b,vec2(340.,176.),vec2(18.,6.)))));
+  return col;}
+vec3 plaid(vec2 xy,vec3 dk){
+  float ux=fract((xy.x-200.)/60.),uy=fract(xy.y/54.);
+  float vw=1.-smoothstep(.04,.17,abs(ux-.25)),vn=1.-smoothstep(.0,.05,abs(ux-.75));
+  float hw=1.-smoothstep(.04,.17,abs(uy-.30)),hn=1.-smoothstep(0.,.05,abs(uy-.80));
+  float V=clamp(.8*vw+.42*vn,0.,1.),H=clamp(.8*hw+.4*hn,0.,1.);
+  float dn=1.-(1.-V)*(1.-H);
+  vec3 cream=vec3(.9,.86,.78);
+  vec3 col=mix(cream,dk*.5,clamp(dn,0.,1.));
+  float tw=.93+.07*sin((xy.x+xy.y)*1.1)*sin((xy.x-xy.y)*.9);
+  float fz=.96+.04*sin(xy.x*7.3+xy.y*3.1)*sin(xy.y*6.7-xy.x*2.3);
+  return col*tw*fz;}
+void vline(vec3 p,float x,float y0,float y1,float off,float r,vec3 col,int md){
+  for(int gi=0;gi<8;gi++){float g0=y0+float(gi)*(y1-y0)/8.,g1=g0+(y1-y0)/8.;
+    float dd=cap(p,vec3(x,g0,cz(x,g0)+off),vec3(x,g1,cz(x,g1)+off),r);
+    if(md==0)A(dd,col);else Am(dd,col);}}
+void zipper(vec3 p,float y0,float y1,float lift,bool op){
+  float teeth=step(.5,fract(p.y/4.));vec3 zc=mix(vec3(.35),vec3(.95),teeth);vec3 tp=vec3(.12);
+  if(!op){vline(p,200.,y0,y1,lift-1.,3.6,tp,0);vline(p,200.,y0,y1,lift+1.,2.2,zc,0);A(ell(p,vec3(200.,y0+10.,cz(200.,y0+10.)+lift+3.),vec3(4.4,8.,2.8)),vec3(1.));}
+  else{for(int si=0;si<2;si++){float xx=200.+(float(si)*2.-1.)*30.;vline(p,xx,y0,y1,lift-3.,3.8,tp,0);vline(p,xx,y0,y1,lift-1.,2.2,zc,0);}A(ell(p,vec3(170.,y0+10.,cz(170.,y0+10.)+lift+1.),vec3(4.4,8.,2.8)),vec3(1.));}}
+float skirtZ(vec3 p,float y0,float y1,float r0,float r1,float f0,float f1){float t=clamp((p.y-y0)/(y1-y0),0.,1.);float r=mix(r0,r1,t)-3.;vec2 d=vec2(length(vec2(p.x-200.,p.z*mix(f0,f1,t)))-r,abs(p.y-(y0+y1)*.5)-(y1-y0)*.5+3.);return min(max(d.x,d.y),0.)+length(max(d,0.))-3.;}
+float cmap(vec3 p){p=rt(p);
+  gD=1e5;gC=WH;gG=0.;
+  vec3 q=vec3(200.+abs(p.x-200.),p.y,p.z);
+  float d;vec3 c;int k;
+  bool hp=(uPass==3);
+  k=hp?((uIt[0]==10)?10:-1):uIt[0];c=uCl[0];
+  if(k>=0){
+    if(k==7){A(ell(p,vec3(200.,88.,6.),vec3(60.,20.,56.)),c);A(cap(p,vec3(200.,70.,6.),vec3(200.,65.,6.),3.),c*.7);}
+    else if(k==8){A(cylY(p,vec3(200.,76.,6.),42.,16.,5.),c);A(cylY(p,vec3(200.,96.,6.),72.,4.,3.),c*.85);}
+    else if(k==9){A(ell(q,vec3(228.,50.,8.),vec3(11.,42.,8.)),c);A(ell(q,vec3(228.,54.,12.),vec3(5.,32.,5.)),mix(c,WH,.5));}
+    else if(k==10){if(hp){A(ext(sdTr(q.xy,vec2(207.,100.),vec2(246.,98.),vec2(240.,50.)),q.z-6.,5.,3.),c);A(ext(sdTr(q.xy,vec2(214.,98.),vec2(236.,97.),vec2(234.,68.)),q.z-12.,1.5,1.),mix(c,vec3(1.,.7,.78),.7));}}
+    else if(k==0){float ba=atan(p.x-200.,p.z-6.);float rib=.5+.5*sin(ba*26.);d=ell(p,vec3(200.,110.,6.),vec3(63.,56.,58.));d=smax(d,p.y-124.,3.);d-=.9*rib;A(d,mix(c*.82,c,rib));
+      vec2 w=vec2(abs(length(p.xz-vec2(200.,6.))-65.)-4.,abs(p.y-124.)-10.);float cf=min(max(w.x,w.y),0.)+length(max(w,0.))-3.5-.7*(.5+.5*sin(ba*34.));A(cf,mix(c*.76,c*.94,.5+.5*sin(ba*34.)));
+      float pom=length(p-vec3(200.,52.,6.))-15.-1.2*sin(p.x*.8)*sin(p.y*.8)*sin(p.z*.8);A(pom,mix(c,WH,.7));}
+    else if(k==1){A(cylY(p,vec3(200.,64.,6.),40.,36.,3.),c);A(cylY(p,vec3(200.,100.,6.),76.,5.,2.),c*.85);A(cylY(p,vec3(200.,88.,6.),41.,7.,2.),mix(c,WH,.55));}
+    else if(k==2){float dd=max(abs(length(p.xz-vec2(200.,6.))-47.)-5.,abs(p.y-98.)-9.);for(int i=0;i<5;i++){float ca=1.5708+float(i)*1.2566;vec3 pb=vec3(200.+47.*cos(ca),92.,6.+47.*sin(ca));dd=smin(dd,rcone(p,pb,pb-vec3(0.,40.,0.),14.,6.),6.);dd=smin(dd,length(p-(pb-vec3(0.,42.,0.)))-7.5,3.);}vec3 Y=vec3(1.,.8,.15);A(dd,Y);A(length(p-vec3(200.,98.,58.))-5.5,c);A(length(p-vec3(170.,98.,48.5))-4.5,c);A(length(p-vec3(230.,98.,48.5))-4.5,c);}
+    else if(k==3){d=rcone(p,vec3(208.,106.,6.),vec3(222.,24.,6.),40.,4.);A(d,mix(c,WH,step(.6,fract(dot(p.xy,vec2(.022,.07))))));A(length(p-vec3(222.,22.,6.))-10.,vec3(1.));}
+    else if(k==4){d=ell(p,vec3(200.,117.,6.),vec3(66.,46.,60.));d=smax(d,p.y-120.,3.);A(d,c);A(ell(p,vec3(200.,119.,62.),vec3(48.,5.,40.)),c*.75);A(length(p-vec3(200.,72.,6.))-5.,c*.8);}
+    else if(k==5){A(tor(p,vec3(200.,60.,6.),42.,6.),GOLD);}
+    else if(k==11){A(cylY(p,vec3(200.,98.,6.),80.,4.,3.),c*.9);
+      float d1=rcone(p,vec3(200.,96.,6.),vec3(206.,52.,6.),37.,20.);float d2=rcone(p,vec3(206.,52.,6.),vec3(230.,14.,6.),20.,3.5);d=smax(smin(d1,d2,10.),p.y-98.,2.);A(d,c);
+      A(tor(p,vec3(200.,90.,6.),35.5,4.5),c*.55);A(star5r(p,vec2(203.,66.),12.,33.,3.,5.),vec3(1.,.82,.2));}
+    else if(k==12){float ba=atan(p.x-200.,p.z-6.);A(cylY(p,vec3(200.,88.,6.),44.,14.,4.),mix(c*.85,c,.5+.5*sin(ba*22.)));
+      d=ell(p,vec3(200.,52.,6.),vec3(54.,34.,50.));d=smin(d,length(p-vec3(166.,56.,6.))-28.,12.);d=smin(d,length(p-vec3(234.,56.,6.))-28.,12.);d=smin(d,length(p-vec3(200.,38.,-14.))-30.,12.);d=smin(d,length(p-vec3(200.,38.,26.))-30.,12.);d-=1.3*sin(ba*9.)*sin(p.y*.12);A(d,c);}
+    else if(k==13){float ba=atan(p.x-200.,p.z-6.);d=ell(p,vec3(200.,92.,8.),vec3(63.,25.,58.));d=smax(d,p.y-104.,3.);A(d,mix(c,c*.88,step(.5,fract(ba*1.9))));A(ell(p,vec3(200.,101.,70.),vec3(46.,6.,32.)),c*.72);A(length(p-vec3(200.,69.,8.))-4.,c*.7);}
+    else if(k==14){d=ell(p,vec3(200.,92.,6.),vec3(65.,48.,60.));d=smax(d,p.y-101.,3.);A(d,c);float rd=smax(smax(ell(p,vec3(200.,92.,6.),vec3(69.,52.,64.)),abs(p.x-200.)-8.,2.),p.y-101.,2.);A(rd,c*.92);A(cylY(p,vec3(200.,99.,6.),67.,3.,2.),c*.88);float vs=smax(ell(p,vec3(200.,100.,64.),vec3(44.,3.5,30.)),-(p.z-40.)-6.,2.);A(vs,c*.84);}
+    else {float cd=smax(rcone(p,vec3(200.,94.,6.),vec3(200.,16.,6.),33.,6.),p.y-94.,2.);bool wb=(p.y>34.&&p.y<50.)||(p.y>62.&&p.y<76.);A(cd,wb?WH:c);A(bxs(p,vec3(200.,98.,6.),vec3(44.,4.,44.),5.),c*.85);}
+  }
+  k=hp?uIt[1]:-1;c=uCl[1];
+  if(k>=0){
+    if(k==0){A(ell(p,vec3(203.,96.,36.),vec3(27.,21.,11.)),c);A(ell(p,vec3(249.,96.,36.),vec3(27.,21.,11.)),c);A(length(p-vec3(226.,96.,42.))-11.,c*.78);}
+    else if(k==1){for(int i=0;i<5;i++){float a=float(i)*1.2566;A(length(p-vec3(228.+19.*cos(a),98.+19.*sin(a),36.))-12.,c);}A(length(p-vec3(228.,98.,42.))-10.,vec3(.97,.85,.35));}
+    else if(k==2){float r=length(vec2(p.x-200.,(p.y-150.)/1.15))-79.;A(max(max(abs(r)-4.,abs(p.z-6.)-5.),p.y-150.),c*.85);A(ell(q,vec3(275.,152.,6.),vec3(12.,26.,26.)),c);}
+    else if(k==3){A(star5r(p,vec2(226.,100.),17.,23.,6.,5.),GOLD);}
+    else if(k==4){float r=length(vec2(p.x-200.,(p.y-152.)/.93))-79.;A(max(max(abs(r)-3.2,abs(p.z-6.)-5.),p.y-148.),c);
+      for(int i=0;i<5;i++){float a=(float(i)-2.)*.4;A(length(p-vec3(200.+79.*sin(a),152.-73.5*cos(a),6.))-5.5,vec3(1.));}}
+    else if(k==5){float r=length(vec2(p.x-200.,(p.y-152.)/.93))-79.;A(max(max(abs(r)-2.2,abs(p.z-6.)-3.),p.y-148.),vec3(.35,.6,.25));
+      for(int i=0;i<5;i++){float a=(float(i)-2.)*.4;vec3 b=vec3(200.+79.*sin(a),152.-73.5*cos(a),10.);vec3 fc=(i%2==0)?c:mix(c,WH,.5);A(length(p-b-vec3(0.,0.,2.))-3.8,vec3(1.,.85,.2));for(int j=0;j<5;j++){float an=float(j)*1.2566+float(i);A(length(p-b-vec3(6.5*cos(an),6.5*sin(an),0.))-4.4,fc);}}}
+
+  }
+  k=hp?-1:uIt[2];c=uCl[2];
+  if(k>=0){
+    if(k==6){A(tsh(p,208.,348.,5.),c);A(slv(q,.4),c);float zz=p.z-cz(p.x,p.y)-5.;A(ext(rb(p.xy-vec2(200.,262.),vec2(34.,4.),2.),zz,1.8,1.),WH);A(ext(rb(p.xy-vec2(192.,277.),vec2(22.,4.),2.),zz,1.8,1.),WH);A(ext(rb(p.xy-vec2(198.,292.),vec2(28.,4.),2.),zz,1.8,1.),WH);}
+    else if(k==7){A(tsh(p,208.,322.,11.),c);A(slv(q,.5),c*.97);}
+    else if(k==8){vec3 cc=mix(c,c*.82,step(.5,fract(p.y/9.)));A(tsh(p,208.,352.,9.),cc);A(slv(q,.65),cc);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-7.,c*.9);}
+    else if(k==9){float jd=tsh(p,208.,352.,8.);jd=smax(jd,p.z>6.?2.2-abs(p.x-200.):-50.,.8);A(jd,c);for(int gi=0;gi<8;gi++){float g0=222.+float(gi)*16.,g1=g0+16.;A(cap(p,vec3(200.,g0,cz(200.,g0)+6.),vec3(200.,g1,cz(200.,g1)+6.),3.4),c*.4);}A(slv(q,.7),c);float tz=step(.5,fract(p.y/5.));A(cap(p,vec3(196.5,222.,cz(196.5,222.)+7.),vec3(196.5,350.,cz(196.5,350.)+7.),1.1),mix(GOLD,GOLD*.5,tz));A(cap(p,vec3(203.5,222.,cz(203.5,222.)+7.),vec3(203.5,350.,cz(203.5,350.)+7.),1.1),mix(GOLD,GOLD*.5,1.-tz));A(ell(p,vec3(200.,230.,cz(200.,230.)+9.),vec3(3.5,7.,2.5)),vec3(.88));A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-7.,c*.85);}
+    else if(k==10){A(tsh(p,238.,330.,3.),c);A(cap(q,vec3(224.,216.,cz(224.,216.)+2.),vec3(220.,242.,cz(220.,242.)+2.),3.5),c);}
+    else if(k==11){vec3 cc=c;if(p.z>10.){vec2 hq=vec2((p.x-200.)/38.,(268.-p.y)/38.);float hd=sdHt(hq)*38.;cc=mix(cc,vec3(.9,.45,.5),1.-smoothstep(-.4,.4,hd));cc=mix(cc,vec3(.5,.75,.95),1.-smoothstep(-.4,.4,hd+3.2));cc=mix(cc,vec3(.76,.5,.2),1.-smoothstep(-.4,.4,length((p.xy-vec2(200.,249.))/vec2(8.,9.))*8.-8.));cc=mix(cc,vec3(.86,.68,.4),1.-smoothstep(-.4,.4,length((p.xy-vec2(203.,254.))/vec2(4.2,3.2))*3.2-3.2));cc=mix(cc,vec3(.88,.15,.2),1.-smoothstep(-.4,.4,max(abs(p.x-199.)-6.,abs(p.y-246.)-1.4)));cc=mix(cc,vec3(.12),1.-smoothstep(-.4,.4,length(p.xy-vec2(205.,252.5))-1.2));}A(tsh(p,208.,334.,9.),cc);A(slv(q,.55),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-6.5,c*.96);}
+    else if(k==12){A(tsh(p,208.,334.,9.),c);A(slv(q,.45),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-5.,c*.92);A(ell(q,vec3(214.,224.,cz(214.,224.)+11.),vec3(14.,8.,4.)),c*.85);A(cap(p,vec3(200.,224.,cz(200.,224.)+11.),vec3(200.,262.,cz(200.,262.)+11.),2.6),c*.9);A(length(p-vec3(200.,238.,cz(200.,238.)+13.))-2.4,WH);A(length(p-vec3(200.,252.,cz(200.,252.)+13.))-2.4,WH);}
+    else if(k==13){A(tsh(p,208.,342.,8.),c);A(slv(q,.95),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-5.,c*.92);A(ell(q,vec3(216.,226.,cz(216.,226.)+11.),vec3(17.,10.,4.)),c*.85);A(cap(p,vec3(200.,226.,cz(200.,226.)+11.),vec3(200.,330.,cz(200.,330.)+11.),2.4),c*.92);for(int gi=0;gi<5;gi++){float gy=244.+float(gi)*21.;A(length(p-vec3(200.,gy,cz(200.,gy)+13.))-2.4,WH);}}
+    else if(k==0){A(tsh(p,208.,348.,5.),c);A(slv(q,.4),c);}
+    else if(k==1){vec3 cc=mix(c,WH,step(.55,fract(p.y/26.)));A(tsh(p,208.,348.,5.),cc);A(slv(q,.4),cc);}
+    else if(k==2){A(tsh(p,208.,358.,7.),c);A(slv(q,.62),c);A(ell(p,vec3(200.,214.,-12.),vec3(54.,24.,44.)),c*.88);A(ext(rb(p.xy-vec2(200.,302.),vec2(40.,15.),10.),p.z-cz(p.x,p.y)-5.,2.,1.2),c*.9);A(cap(q,vec3(212.,226.,54.),vec3(212.,260.,58.),2.),WH);}
+    else if(k==3){A(tsh(p,208.,346.,4.),c);}
+    else if(k==4){vec3 cc=(abs(p.x-200.)<(p.y-208.)*.26&&p.y<290.&&p.z>10.)?WH:c;A(tsh(p,208.,348.,5.),cc);A(slv(q,.62),c);A(length(p-vec3(200.,318.,57.))-4.,WH);}
+    else if(k==14){A(tsh(p,208.,292.,6.),c);A(slv(q,.45),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-82.5,p.y-290.))-3.4,c*.85);}
+    else if(k==15){vec3 cc=c;if(p.z>10.)cc=bearPrint(p.xy,c);A(tsh(p,208.,348.,7.),cc);A(slv(q,.5),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-5.5,c*.94);}
+    else {}
+  }
+  k=hp?-1:uIt[11];c=uCl[11];
+  if(k>=0){
+    if(k==0){A(tsh(p,208.,308.,5.),c);A(slv(q,.35),c);A(skirt(p,300.,398.,78.,106.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.28))-79.,p.y-306.))-4.,c*.75);}
+    else if(k==1){
+      vec3 cc=c;if(p.z>8.&&p.y<302.&&abs(p.x-200.)<(302.-p.y)*.27)cc=mix(c,WH,.7);
+      A(tsh(p,208.,332.,6.),cc);
+      A(skirtZ(p,306.,408.,77.,98.,1.25,1.),(p.y>396.)?c*.62:c);
+      A(slvT(q,.9,33.),c);
+      A(length(vec2(length(vec2(p.x-200.,p.z*1.2))-64.,p.y-212.))-7.,c*.85);
+      A(length(vec2(length(vec2(p.x-200.,p.z*1.28))-81.,p.y-306.))-4.5,c*.6);
+      A(cap(q,vec3(224.,214.,cz(224.,214.)+7.),vec3(200.,302.,cz(200.,302.)+7.),2.4),c*.6);
+    }
+    else if(k==2){A(tsh(p,208.,302.,5.),vec3(1.));A(slv(q,.5),vec3(1.));A(skirt(p,296.,382.,77.,100.),mix(c,c*.78,step(.5,fract(p.x/13.))));
+      A(length(vec2(length(vec2(p.x-200.,p.z*1.28))-79.,p.y-300.))-4.,c*.7);
+      A(ext(sdTr(q.xy,vec2(206.,212.),vec2(262.,230.),vec2(202.,274.)),p.z-cz(p.x,p.y)-8.,2.,2.),c);A(cap(q,vec3(254.,235.,cz(254.,235.)+10.),vec3(208.,268.,cz(208.,268.)+10.),1.3),vec3(1.));
+      A(ell(q,vec3(214.,278.,cz(214.,278.)+11.),vec3(13.,7.,5.)),vec3(.9,.1,.15));A(length(p-vec3(200.,278.,cz(200.,278.)+12.))-5.5,vec3(.9,.1,.15));}
+    else if(k==3){A(tsh(p,208.,322.,5.),c);A(slv(q,.4),c);A(skirt(p,312.,398.,76.,70.),c);
+      A(max(abs(length(vec2(p.x-200.,p.z*1.3))-53.)-4.,abs(p.y-217.)-10.),c*.92);
+      A(cap(p,vec3(206.,228.,cz(206.,228.)+8.),vec3(248.,256.,cz(248.,256.)+7.),2.),GOLD);
+      for(int i=0;i<3;i++){float t=.25+float(i)*.32;vec2 b=mix(vec2(206.,228.),vec2(248.,256.),t);A(length(p-vec3(b,cz(b.x,b.y)+9.))-3.4,GOLD);}
+      A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-70.,p.y-394.))-2.6,GOLD);}
+    else if(k==4){A(skirt(p,298.,388.,76.,104.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.28))-77.,p.y-300.))-4.,c*.85);
+      A(tsh(p,240.,304.,5.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-70.,p.y-241.))-3.,c*.85);
+      float dsh=ell(p,vec3(200.,298.,0.),vec3(83.,113.,65.));A(smax(smax(abs(dsh)-2.4,abs(q.x-226.)-6.,1.),smax(p.y-250.,214.-p.y,1.),2.),c);
+      A(length(vec3(q.x-224.,q.y-258.,q.z-shz(224.,258.,8.)-4.))-3.4,GOLD);}
+    else if(k==5){bool op0=false;float li=22.,lb=4.;
+      A(ext(sdTr(q.xy,vec2(200.+li,212.),vec2(200.+li+34.,238.),vec2(200.+lb+8.,296.)),p.z-cz(p.x,p.y)-11.,3.,2.),c*.9);
+      A(tsh(p,208.,340.,6.),c);A(skirt(p,330.,398.,82.,95.),c);A(slvT(q,.8,33.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-64.,p.y-211.))-7.5,c*.88);
+      A(tsh(p,302.,316.,9.),c*.74);A(bxs(p,vec3(200.,309.,cz(200.,309.)+14.),vec3(9.,6.,3.),1.5),GOLD);
+      for(int i=0;i<3;i++){float by=246.+float(i)*24.;A(length(vec3(q.x-212.,q.y-by,q.z-cz(212.,by)-13.))-3.4,GOLD);}
+      A(bxs(q,vec3(236.,222.,cz(236.,222.)+11.),vec3(10.,4.,2.),1.5),c*.8);}
+  }
+  k=hp?((uIt[10]==2)?2:-1):uIt[10];c=uCl[10];
+  if(k>=0){
+    float cw=1.-smoothstep(0.,1.,0.);
+    if(k==0){vec3 cc=c;float vv=290.-p.y;if(p.z>10.&&p.y<292.){if(abs(p.x-200.)<vv*.26)cc=WH;}float li=(uOpen>.5)?26.:20.,lb=(uOpen>.5)?26.:0.;A(ext(sdTr(q.xy,vec2(200.+li,212.),vec2(200.+li+26.,234.),vec2(200.+lb,294.)),p.z-cz(p.x,p.y)-15.,4.,2.5),c*.8);A(ctsh(p,208.,348.,14.),cc);A(slvT(q,.7,36.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-65.,p.y-212.))-7.,c*.9);A(length(p-vec3((uOpen>.5)?169.:200.,318.,cz((uOpen>.5)?169.:200.,318.)+17.))-4.,WH);}
+    else if(k==1){float jd=smax(ctsh(p,208.,352.,14.),p.z>6.?2.2-abs(p.x-200.):-50.,.8);A(jd,c);if(uOpen<.5)for(int gi=0;gi<8;gi++){float g0=222.+float(gi)*16.,g1=g0+16.;A(cap(p,vec3(200.,g0,cz(200.,g0)+12.),vec3(200.,g1,cz(200.,g1)+12.),3.4),c*.4);}A(slvT(q,.75,36.),c);if(uOpen<.5)A(ell(p,vec3(200.,232.,cz(200.,232.)+17.),vec3(3.5,7.,2.5)),vec3(.88));else{for(int gi=0;gi<8;gi++){float g0=222.+float(gi)*16.,g1=g0+16.;A(cap(p,vec3(173.,g0,cz(173.,g0)+14.),vec3(173.,g1,cz(173.,g1)+14.),2.4),mix(c*.4,vec3(.82),step(.5,fract(p.y/5.))));A(cap(p,vec3(227.,g0,cz(227.,g0)+14.),vec3(227.,g1,cz(227.,g1)+14.),2.4),mix(vec3(.82),c*.4,step(.5,fract(p.y/5.))));}A(ell(p,vec3(173.,232.,cz(173.,232.)+17.),vec3(3.5,7.,2.5)),vec3(.88));}A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-65.,p.y-212.))-7.,c*.9);}
+    else if(k==2){if(!hp){A(ctsh(p,208.,352.,14.),c);A(slvT(q,.75,36.),c);A(ctsh(p,336.,352.,17.),c*.75);zipper(p,226.,336.,15.,uOpen>.5);}
+      if(hp){A(length(vec2(length(vec2(p.x-200.,p.z*1.2))-64.,p.y-212.))-11.,c);{float ddx=(uOpen>.5)?14.:0.;A(cap(p,vec3(186.-ddx,224.,60.),vec3(184.-ddx,262.,62.),1.5),WH);A(cap(p,vec3(214.+ddx,224.,60.),vec3(216.+ddx,262.,62.),1.5),WH);}}}
+    else if(k==3){A(ctsh(p,208.,348.,14.),(p.y>334.)?c*.85:c);A(slvT(q,.9,36.),vec3(.96));A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-65.,p.y-212.))-7.,c*.85);for(int gi=0;gi<5;gi++){float gy=236.+float(gi)*24.;float gx=(uOpen>.5)?168.:200.;A(length(p-vec3(gx,gy,cz(gx,gy)+17.))-3.4,WH);}}
+    else if(k==4){A(ctsh(p,208.,342.,13.+1.8*sin(p.y*.38)),c);A(slvT(q,.8,36.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.2))-64.,p.y-210.))-11.,c*.95);zipper(p,224.,338.,16.,uOpen>.5);}
+    else if(k==5){float li=(uOpen>.5)?26.:20.,lb=(uOpen>.5)?26.:0.;
+      Ag2(ext(sdTr(q.xy,vec2(200.+li,212.),vec2(200.+li+30.,232.),vec2(200.+lb+6.,282.)),p.z-cz(p.x,p.y)-15.,4.,2.5),c*.85);
+      Ag2(ctsh(p,208.,340.,14.),c);Ag2(slvT(q,.76,36.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-65.,p.y-212.))-7.,c*.9);
+      Ag2(ctsh(p,324.,340.,17.),c*.8);A(ell(p,vec3(224.,332.,cz(224.,332.)+17.),vec3(8.,4.,3.)),GOLD);
+      if(uOpen<.5){A(cap(p,vec3(205.,236.,cz(205.,236.)+15.),vec3(191.,322.,cz(191.,322.)+15.),1.8),vec3(.86));A(cap(p,vec3(236.,262.,cz(236.,262.)+14.),vec3(252.,266.,cz(252.,266.)+12.),1.4),vec3(.8));}
+    }
+    else if(k==6){float li=(uOpen>.5)?26.:20.,lb=(uOpen>.5)?26.:6.;
+      A(ext(sdTr(q.xy,vec2(200.+li,212.),vec2(200.+li+24.,226.),vec2(200.+lb+4.,262.)),p.z-cz(p.x,p.y)-14.,3.,2.),c*.92);
+      A(ctsh(p,208.,338.,14.),c);A(slvT(q,.7,36.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-65.,p.y-212.))-7.,c*.92);A(ctsh(p,326.,338.,16.),c*.86);
+      A(bxs(q,vec3(232.,266.,cz(232.,266.)+16.),vec3(13.,12.,2.5),1.5),c*.9);A(bxs(q,vec3(232.,255.,cz(232.,255.)+17.),vec3(13.,5.,2.),1.2),c*.8);A(length(vec3(q.x-232.,q.y-256.,q.z-cz(232.,256.)-20.))-2.2,GOLD);
+      {float bx=(uOpen>.5)?168.:200.;for(int i=0;i<4;i++){float by=240.+float(i)*28.;A(length(p-vec3(bx,by,cz(bx,by)+17.))-3.3,GOLD);}}
+      A(cap(q,vec3(224.,232.,cz(224.,232.)+15.),vec3(218.,332.,cz(218.,332.)+15.),1.1),vec3(.98,.82,.4));}
+    else if(k==7){float li=(uOpen>.5)?28.:22.,lb=(uOpen>.5)?28.:4.;
+      A(ext(sdTr(q.xy,vec2(200.+li,212.),vec2(200.+li+34.,238.),vec2(200.+lb+8.,296.)),p.z-cz(p.x,p.y)-14.,3.5,2.),c*.9);
+      A(ctsh(p,208.,340.,14.),c);A(skirt(p,330.,398.,84.,97.),c);A(slvT(q,.8,36.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-66.,p.y-211.))-8.5,c*.88);
+      A(ctsh(p,302.,316.,17.),c*.74);A(bxs(p,vec3(200.,309.,cz(200.,309.)+17.),vec3(9.,6.,3.),1.5),GOLD);
+      for(int i=0;i<3;i++){float by=246.+float(i)*24.;A(length(vec3(q.x-212.,q.y-by,q.z-cz(212.,by)-17.))-3.4,GOLD);}
+      A(bxs(q,vec3(236.,222.,cz(236.,222.)+14.),vec3(10.,4.,2.),1.5),c*.8);}
+    else if(k==8){float bm=.55*(sin(p.x*1.3+p.y*.4)*sin(p.y*1.1-p.z*.5)+sin(p.z*1.7+p.x*.9)*sin(p.y*1.9+p.x*.6));
+      A(ctsh(p,208.,344.,15.)-bm,c);A(slvT(q,.9,37.)-bm,c);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-66.,p.y-212.))-9.-bm,c);
+      {float bx=(uOpen>.5)?164.:200.;for(int i=0;i<3;i++){float by=252.+float(i)*30.;A(ell(p,vec3(bx,by,cz(bx,by)+19.),vec3(7.,5.,4.)),c*.55);}}}
+    else if(k==9){Ag2(ctsh(p,208.,328.,15.),c);Ag2(slvT(q,.82,36.),c);A(ctsh(p,314.,332.,16.),c*.7);
+      A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-65.,p.y-212.))-7.,c*.7);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-60.,p.y-218.))-4.,vec3(1.,.45,.1));
+      zipper(p,226.,318.,16.,uOpen>.5);}
+    else if(k==10){vec3 pc=plaid(p.xy,c);bool op=(uOpen>.5);float li=op?26.:20.,lb=op?26.:0.;
+      float fl=sin(p.y*.11+sin(p.x*.05)*2.)*sin(p.x*.09+1.)+.55*sin(p.y*.23+p.x*.04)+.35*sin(p.x*.21-p.y*.05);pc*=(1.+.1*fl)*(1.-.18*smoothstep(300.,346.,p.y));Am(ctsh(p,208.,346.,15.)-1.3*fl,pc);Am(slvT(q,.92,37.)-1.1*fl,pc);
+      Am(length(vec2(length(vec2(p.x-200.,p.z*1.25))-66.,p.y-211.))-7.5,pc*.95);
+      Am(ext(sdTr(q.xy,vec2(200.+li,212.),vec2(200.+li+24.,224.),vec2(200.+lb+4.,256.)),p.z-cz(p.x,p.y)-14.,3.,2.),pc*1.06);
+      float bx=op?169.:200.;
+      if(op)vline(p,176.,228.,338.,13.,3.4,pc*1.05,1);
+      else vline(p,200.,228.,338.,14.,1.2,pc*.6,1);
+      for(int i=0;i<5;i++){float by=240.+float(i)*24.;A(length(p-vec3(bx,by,cz(bx,by)+16.))-3.3,vec3(.04));}}
+  }
+  k=hp?-1:uIt[3];c=uCl[3];
+  if(k>=0){
+    if(k==3){Ag(tsh(p,322.,388.,8.),c);Ag(cap(p,vec3(200.,334.,cz(200.,334.)+9.),vec3(200.,384.,cz(200.,384.)+9.),1.2),c*.7);}
+    else if(k==4){Ag(tsh(p,322.,394.,9.),c);Ag(cap(p,vec3(200.,334.,cz(200.,334.)+11.),vec3(200.,390.,cz(200.,390.)+11.),1.2),c*.7);}
+    else if(k==5){A(skirt(p,322.,374.,76.,92.),mix(c,c*.8,step(.5,fract(p.x/14.))));}
+    else if(k==6){vec3 cc=mix(c*.82,c*1.12,.5+.5*sin(p.y*.3+p.x*.15)*sin(p.x*.45+1.));
+      float pd=smax(tsh(p,322.,392.,8.),(p.y>338.&&p.y<384.)?min(1.4-abs(p.x-200.),p.z-5.):-50.,.6);Ag(pd,cc);for(int gi=0;gi<3;gi++){float g0=340.+float(gi)*16.,g1=g0+16.;Ag(cap(p,vec3(200.,g0,cz(200.,g0)+6.),vec3(200.,g1,cz(200.,g1)+6.),2.6),c*.4);}
+      Ag(tsh(p,322.,336.,10.),c*.9);Ag(length(p-vec3(200.,337.,cz(200.,337.)+13.))-3.2,vec3(.72));
+      }
+    else if(k==7){Ag(tsh(p,322.,392.,9.),c);Ag(tsh(p,322.,334.,11.),c*.9);Ag(bxs(q,vec3(232.,364.,cz(232.,364.)+9.),vec3(12.,13.,5.),2.),c*.93);Ag(bxs(q,vec3(232.,353.,cz(232.,353.)+11.),vec3(12.,3.5,4.),1.5),c*.8);}
+    else if(k==0){Ag(tsh(p,322.,386.,6.),c);}
+    else if(k==1){A(skirt(p,322.,400.,76.,102.),c);if(uIt[2]<0)A(length(vec2(length(vec2(p.x-200.,p.z*1.28))-76.,p.y-324.))-4.,c*.78);}
+    else if(k==8){float rS=max(abs(p.x-200.)-2.6,350.-p.y);Ag(smax(smax(smax(ell(p,vec3(200.,298.,0.),vec3(80.,110.,62.)),322.-p.y,3.),p.y-376.,4.),-rS,1.),c);Ag(smax(length(vec2(length(vec2(p.x-200.,p.z*1.28))-59.8,p.y-374.))-3.6,-rS,1.),c*.8);Ag(length(vec2(length(vec2(p.x-200.,p.z*1.28))-76.5,p.y-326.))-3.2,c*.75);}
+    else if(k==9){A(tut(p,318.,368.,76.,104.,5.),c*.9);A(tut(p,322.,358.,76.,112.,6.),c);A(tut(p,326.,346.,76.,120.,6.),mix(c,WH,.2));A(length(vec2(length(vec2(p.x-200.,p.z*1.28))-76.,p.y-322.))-4.,c*.7);}
+    else if(k==10){Ag(tsh(p,322.,388.,7.),c);float tth=(uIt[2]>=0)?9.:0.;float bz=shz(p.x,p.y,tth+3.)+1.;Ag(ext(rb(p.xy-vec2(200.,310.),vec2(31.,38.),7.),p.z-(bz-37.5),40.,1.5),c);
+      float dsh=ell(p,vec3(200.,298.,0.),vec3(76.+tth,106.+tth,58.+tth));Ag(smax(smax(smax(dsh-2.2,-dsh-30.,1.),abs(q.x-226.)-6.,1.),smax(p.y-276.,222.-p.y,1.),2.),c);
+      A(length(vec3(q.x-226.,q.y-277.,q.z-shz(226.,277.,tth+3.)-1.))-3.2,GOLD);Ag(ext(rb(p.xy-vec2(200.,322.),vec2(14.,8.),3.),p.z-(bz-16.5),20.,1.),c*.85);}
+    else {bool nt=(uIt[2]<0);float pt=nt?4.:2.2;vec3 cc=mix(c,c*.72,step(p.y,336.));Ag(tsh(p,322.,386.,pt),cc);
+      if(nt){Ag(ext(rb(vec2(q.x-222.,q.y-348.),vec2(15.,13.),6.),q.z-cz(q.x,q.y)-5.,1.5,1.),c*.85);Ag(cap(p,vec3(200.,334.,cz(200.,334.)+5.),vec3(200.,376.,cz(200.,376.)+5.),1.4),GOLD);Ag(length(vec3(q.x-231.,q.y-338.,q.z-cz(q.x,q.y)-6.))-2.2,GOLD);}}
+    if(k<8&&k!=1&&k!=5){float hr=(k==3)?33.:((k==4)?37.:((k==6||k==7)?31.:29.));float pth=(k==0)?6.:((k==3)?8.:((k==4)?9.:((k==6)?8.:((k==7)?9.:7.))));for(int gi=0;gi<5;gi++){float g0=352.+float(gi)*10.,g1=min(g0+10.,402.);float t0=(pth+3.*smoothstep(345.,385.,g0))*(.75+.25*smoothstep(390.,360.,g0));float t1=(pth+3.*smoothstep(345.,385.,g1))*(.75+.25*smoothstep(390.,360.,g1));Ag(cap(p,vec3(200.,g0,pz(g0,t0)),vec3(200.,g1,pz(g1,t1)),1.5),c*.08);}}
+  }
+  k=hp?-1:uIt[4];c=uCl[4];vec3 qS=q;q-=uFt;float shc=(uIt[11]>=0)?382.:((uIt[3]>=0&&uIt[3]!=1&&uIt[3]!=5&&uIt[3]!=9)?((uIt[3]==8)?374.:388.):0.);
+  if(k>=0){
+    if(k==0){A(ell(q,vec3(243.,402.,24.),vec3(39.,23.,41.)),c);A(ell(q,vec3(243.,421.,24.),vec3(41.,6.,43.)),WH);}
+    else if(k==1){A(ell(q,vec3(243.,419.,22.),vec3(38.,5.,42.)),c*.8);A(max(length(vec2(length(q.xy-vec2(243.,404.))-30.,q.z-30.))-3.5,q.y-404.),c);}
+    else if(k==2){vec3 C0=vec3(243.,400.,14.),E0=vec3(236.,386.,14.);vec3 ax=normalize(E0-C0);d=smin(ell(q,C0,vec3(36.5,29.5,35.)),rcone(q,C0,E0,33.,29.),10.);d=smax(d,dot(q-E0,ax),3.);A(d,c);vec3 u0=q-E0;vec3 pr=u0-ax*dot(u0,ax);A(length(vec2(length(pr)-29.,dot(u0,ax)))-4.2,c*.8);}
+    else if(k==3){d=smin(ell(q,vec3(243.,402.,22.),vec3(38.,22.,40.)),rcone(q,vec3(243.,392.,12.),vec3(241.,350.,12.),30.,27.),9.);d=smax(d,362.-q.y,2.5);if(shc>0.)d=smax(d,shc-q.y,2.);Ag2(d,c);
+      if(shc<=0.){Ag2(length(vec2(length(vec2(q.x-241.,q.z-12.))-28.,q.y-362.))-4.,c*.7);}
+      if(shc<=0.)for(int gi=0;gi<4;gi++){float ly=368.+float(gi)*8.;float zf=12.+mix(27.,30.,(ly-364.)/28.)*.98;A(cap(q,vec3(235.,ly,zf),vec3(248.,ly,zf),1.6),vec3(.93));}
+      A(ell(q,vec3(243.,420.,22.),vec3(42.,8.,44.)),vec3(.1));A(ell(q,vec3(243.,413.,22.),vec3(40.5,2.2,42.5)),vec3(.95,.78,.2));}
+    else if(k==4){d=ell(q,vec3(243.,402.,24.),vec3(39.,23.,41.));d=smax(d,-ell(q,vec3(243.,384.,-6.),vec3(24.,13.,13.)),3.);Ag2(d,c);
+      for(int gi=0;gi<6;gi++){float t0=-26.+float(gi)*8.67,t1=t0+8.67;float y0=402.-24.*sqrt(max(0.,1.-pow(t0/40.,2.)-.02)),y1=402.-24.*sqrt(max(0.,1.-pow(t1/40.,2.)-.02));Ag2(cap(q,vec3(243.+t0,y0,30.),vec3(243.+t1,y1,30.),3.),mix(c,WH,.3));}
+      A(ell(q,vec3(243.,377.5,31.),vec3(10.,4.,4.)),GOLD);
+      A(ell(q,vec3(243.,421.,24.),vec3(40.,5.,42.)),vec3(.16,.1,.08));A(ell(q,vec3(243.,422.,0.),vec3(33.,7.,16.)),vec3(.16,.1,.08));}
+    else if(k==5){d=ell(q,vec3(243.,403.,24.),vec3(39.,22.,41.));d=smax(d,-ell(q,vec3(243.,381.,14.),vec3(28.,14.,24.)),3.);Ag2(d,c);
+      Ag2(smax(abs(ell(q,vec3(243.,399.,14.),vec3(35.5,27.,32.)))-3.,abs(q.z-30.)-5.5,1.5),mix(c,WH,.3));A(ell(q,vec3(243.,375.,31.),vec3(6.,4.,5.)),GOLD);
+      A(ell(q,vec3(243.,421.,24.),vec3(39.,5.,41.)),vec3(.15,.1,.08));A(cylY(q,vec3(243.,420.,0.),12.,8.,3.),vec3(.15,.1,.08));}
+    else if(k==6){A(ell(q,vec3(243.,401.,24.),vec3(40.,24.,43.)),c);A(ell(q,vec3(243.,403.,52.),vec3(30.,17.,14.)),mix(c,WH,.75));A(ell(q,vec3(243.,404.,-6.),vec3(33.,16.,14.)),mix(c,vec3(.5),.4));A(ell(q,vec3(280.,401.,22.),vec3(5.,12.,24.)),WH);
+      for(int gi=0;gi<3;gi++){float lz=14.+float(gi)*10.;float ly=401.-24.*sqrt(max(0.,1.-pow((lz-24.)/43.,2.)))-1.;A(cap(q,vec3(234.,ly,lz),vec3(252.,ly,lz),2.),WH);}
+      A(ell(q,vec3(243.,418.,24.),vec3(44.,8.,47.)),WH);A(ell(q,vec3(243.,424.,24.),vec3(45.,3.5,48.)),vec3(.55,.56,.6));}
+    else if(k==7){d=smin(ell(q,vec3(243.,402.,22.),vec3(37.,22.,40.)),rcone(q,vec3(243.,392.,10.),vec3(240.,322.,10.),30.,28.),10.);d=smax(d,338.-q.y,2.5);if(shc>0.)d=smax(d,shc-q.y,2.);Ag2(d,c);
+      if(shc<=0.){Ag2(length(vec2(length(vec2(q.x-240.,q.z-10.))-28.5,q.y-338.))-4.5,c*.75);
+      A(length(vec2(length(vec2(q.x-241.,q.z-10.))-29.8,q.y-376.))-2.8,GOLD);A(length(vec2(length(vec2(q.x-241.,q.z-10.))-29.4,q.y-352.))-2.8,GOLD);}
+      A(ell(q,vec3(243.,421.,22.),vec3(40.,6.,42.)),vec3(.12));}
+    else if(k==8){d=smin(ell(q,vec3(243.,402.,22.),vec3(38.,22.,40.)),rcone(q,vec3(243.,392.,12.),vec3(242.,346.,12.),29.,27.),9.);d=smax(d,354.-q.y,2.5);if(shc>0.)d=smax(d,shc-q.y,2.);A(d,c);
+      if(shc<=0.)A(length(vec2(length(vec2(q.x-242.,q.z-12.))-28.,q.y-354.))-3.,mix(c,WH,.5));A(ell(q,vec3(243.,408.,50.),vec3(30.,17.,15.)),vec3(1.));
+      if(shc<=0.)for(int gi=0;gi<5;gi++){float ly=362.+float(gi)*7.5;float zf=12.+mix(27.5,29.,(ly-354.)/40.)*.98;A(cap(q,vec3(235.,ly,zf),vec3(249.,ly,zf),1.5),vec3(1.));}
+      A(ell(q,vec3(243.,418.,22.),vec3(42.,8.,44.)),vec3(1.));A(ell(q,vec3(243.,415.5,22.),vec3(43.,2.2,45.)),vec3(.85,.1,.15));}
+    else if(k==9){d=ell(q,vec3(243.,409.,24.),vec3(38.,14.,40.));d=smax(d,-ell(q,vec3(243.,397.,12.),vec3(30.,12.,27.)),3.);Ag2(d,c);
+      A(ell(q,vec3(243.,421.,24.),vec3(39.,4.,41.)),c*.45);A(ell(q,vec3(234.,394.,40.),vec3(8.,4.5,4.)),c*.9);A(ell(q,vec3(252.,394.,40.),vec3(8.,4.5,4.)),c*.9);A(length(q-vec3(243.,394.,41.))-3.4,c*.65);}
+    else if(k==10){d=smin(ell(q,vec3(243.,401.,22.),vec3(40.,24.,42.)),rcone(q,vec3(243.,392.,12.),vec3(242.,340.,12.),31.,29.),10.);d=smax(d,352.-q.y,2.5);if(shc>0.)d=smax(d,shc-q.y,2.);A(d,c);
+      float fa=atan(q.x-242.,q.z-12.);if(shc<=0.)A(length(vec2(length(vec2(q.x-242.,q.z-12.))-29.,q.y-351.))-6.5-1.1*abs(sin(fa*11.)),vec3(.93,.9,.82));
+      A(ell(q,vec3(243.,421.,22.),vec3(43.,7.,45.)),vec3(.85,.8,.7));}
+    q=qS;
+  }
+  k=hp?-1:uIt[5];c=uCl[5];
+  if(k>=0){
+    if(k==0){for(int i=0;i<11;i++){vec3 b=chainP((float(i)+.5)/11.);A(length(p-b)-6.5,c);}}
+    else if(k==1){A(chainD(p,3.2),GOLD);float z0=nz(200.,276.)+7.;A(heart(p,vec2(200.,278.),15.,z0,8.),c);A(length(p-vec3(200.,266.,nz(200.,266.)+7.))-4.,GOLD);}
+    else if(k==2){A(chainD(p,3.2),GOLD);float z0=nz(200.,280.)+7.;A(star5r(p,vec2(200.,282.),21.,z0,7.,5.5),c);A(length(p-vec3(200.,266.,nz(200.,266.)+7.))-4.,GOLD);}
+    else if(k==3){A(chainD(p,3.2),GOLD);vec3 u=p-vec3(200.,282.,nz(200.,282.)+11.);A((abs(u.x*1.05)+abs(u.y*.85)+abs(u.z*1.3)-17.)*.55,c);A(length(p-vec3(200.,267.,nz(200.,267.)+7.))-4.,GOLD);}
+    else if(k==4){A(chainD(p,3.2),GOLD);float z0=nz(200.,282.)+8.;A(bxs(p,vec3(200.,284.,z0),vec3(4.5,19.,3.),1.5),c);A(bxs(p,vec3(200.,276.,z0),vec3(12.,4.5,3.),1.5),c);A(length(p-vec3(200.,266.,nz(200.,266.)+7.))-4.,GOLD);}
+    else if(k==5){float t=nTh;float sq=sqrt(max(.01,1.-pow(76./(104.+t),2.)));float xr=(74.+t)*sq;float zs=(74.+t)/(56.+t);A(length(vec2(length(vec2(p.x-200.,p.z*zs))-xr,p.y-222.))-3.6,c);A(length(p-vec3(200.,230.,nz(200.,230.)+6.))-5.5,GOLD);}
+    else if(k==6){A(chainD(p,2.2),vec3(.35,.6,.25));for(int i=0;i<6;i++){vec3 b=chainP((float(i)+.5)/6.);vec3 fc=(i%2==0)?c:mix(c,WH,.55);A(length(p-b-vec3(0.,0.,2.))-4.,vec3(1.,.85,.2));for(int j=0;j<5;j++){float an=float(j)*1.2566+float(i);A(length(p-b-vec3(6.8*cos(an),6.8*sin(an),0.))-4.6,fc);}}}
+  }
+  k=hp?-1:uIt[6];c=uCl[6];
+  if(k>=0){
+    if(k==0){float sR=50.+((74.+sTh)*sqrt(max(0.,1.-pow(74./(104.+sTh),2.)))-51.98)/1.05;float r=length(vec2((p.x-200.)/1.05,(p.z-4.)/.95))-sR;float d1=length(vec2(r,p.y-224.))-13.;float d2=ell(p,vec3(232.,262.,54.+sLf),vec3(13.,42.,8.));A(smin(d1,d2,16.),c);}
+    else if(k==1){A(ell(q,vec3(226.,238.,50.+sLf),vec3(22.,15.,9.)),c);A(length(p-vec3(200.,238.,53.+sLf))-8.,c*.78);}
+    else if(k==2){A(length(p-vec3(200.,232.,54.+sLf))-8.,c*.8);A(ell(p,vec3(200.,274.,57.+sLf),vec3(10.,36.,6.)),c);}
+    else {float sR=50.+((74.+sTh)*sqrt(max(0.,1.-pow(74./(104.+sTh),2.)))-51.98)/1.05;float ba=atan(p.z-4.,p.x-200.);float r=length(vec2((p.x-200.)/1.05,(p.z-4.)/.95))-sR;A(length(vec2(r,p.y-226.))-12.5-1.5*abs(sin(ba*13.))*(.6+.4*sin(p.y*.5)),c);}
+  }
+
+  k=hp?-1:uIt[7];c=uCl[7];
+  if(k>=0){
+    if(k==0){A(length(vec2(length(q.xy-vec2(228.,143.))-21.,q.z-62.))-2.2,c);A(cap(p,vec3(193.,141.,64.),vec3(207.,141.,64.),2.),c);A(cap(q,vec3(249.,140.,60.),vec3(272.,146.,20.),2.),c);}
+    else if(k==1){A(ell(q,vec3(228.,143.,63.),vec3(22.,16.,6.)),c);A(cap(p,vec3(193.,141.,65.),vec3(207.,141.,65.),2.),c);A(cap(q,vec3(249.,140.,60.),vec3(272.,146.,20.),2.),c);}
+    else if(k==2){A(ell(q,vec3(254.,170.,46.),vec3(14.,10.,6.)),c);}
+    else if(k==3){d=ell(p,vec3(200.,152.,6.),vec3(76.,67.,64.));d=smin(d,ell(p,vec3(200.,176.,52.),vec3(36.,29.,29.)),8.);d=smin(d,length(p-vec3(200.,166.,70.))-12.,6.);
+      d=smax(d,100.-p.y,3.);d=smax(d,p.y-212.,3.);d=smax(d,8.-p.z,3.);
+      d=smax(d,-ell(q,vec3(228.,143.,64.),vec3(15.,19.,40.)),3.);d=smax(d,-bxs(q,vec3(274.,126.,6.),vec3(12.,1.8,80.),.8),1.2);d=smax(d,-bxs(q,vec3(274.,166.,6.),vec3(12.,1.8,80.),.8),1.2);d=smax(d,-bxs(q,vec3(272.,146.,6.),vec3(8.,1.8,80.),.8),1.2);d=smax(d,-ell(p,vec3(200.,193.,76.),vec3(19.,10.,30.)),3.);A(d,c);}
+    else if(k==4){d=ell(p,vec3(200.,184.,50.),vec3(50.,33.,34.));d=smax(d,abs(p.x-200.)-40.,5.);d=smax(d,154.-p.y,4.);d=smax(d,p.y-217.,4.);d=smax(d,8.-p.z,3.);
+      float lum=dot(c,vec3(.3,.59,.11));vec3 stc=lum<.4?c+vec3(.22):c*.76;A(d,mix(c,stc,step(.72,fract(p.y/11.))));
+      vec3 sc=c*.85+vec3(.06);
+      A(strp(q,vec2(237.,170.),vec2(255.,158.),vec2(273.,146.)),sc);
+      A(strp(q,vec2(236.,199.),vec2(255.,178.),vec2(273.,157.)),sc);}
+    else if(k==5){A(max(heart(q,vec2(228.,141.),26.,62.,3.),-heart(q,vec2(228.,141.),21.,62.,8.)),c);A(cap(p,vec3(186.,139.,63.),vec3(214.,139.,63.),2.),c);A(cap(q,vec3(241.,138.,62.),vec3(272.,146.,20.),2.),c);}
+    else if(k==6){A(ell(q,vec3(215.,180.,77.),vec3(19.,7.,7.)),c);A(ell(p,vec3(200.,180.,79.),vec3(8.,5.,4.)),c);}
+    else if(k==7){for(int i=0;i<3;i++){float fy=float(i)-1.;A(cap(q,vec3(232.,176.+fy*8.,60.),vec3(288.,168.+fy*22.,38.),1.3),c);}}
+    else if(k==8){for(int i=0;i<7;i++){float a=float(i)*2.399;float rr=4.+float(i)*2.2;float fx=238.+rr*cos(a)*.9,fy=174.+rr*sin(a)*.7;float fz=6.+64.*sqrt(max(0.,1.-pow((fx-200.)/76.,2.)-pow((fy-152.)/67.,2.)))+.4;A(length(q-vec3(fx,fy,fz))-2.2,c);}}
+  }
+  k=hp?-1:uIt[8];c=uCl[8];
+  if(k>=0){
+    vec3 H0=vec3(292.,297.,62.);vec3 DH=uHR+vec3(15.,5.,32.)-H0;p-=DH;
+    if(k==3){A(rcone(p,H0,H0+vec3(3.,-50.,-4.),3.,13.),vec3(.86,.64,.34));A(length(p-(H0+vec3(4.,-62.,-4.)))-17.,c);A(length(p-(H0+vec3(4.,-82.,-4.)))-13.,mix(c,WH,.5));}
+    else if(k==4){vec3 dS=normalize(vec3(.3,-.95,.05));vec3 ex=normalize(vec3(.95,.3,0.));vec3 ez=cross(ex,dS);vec3 u=p-(H0+dS*54.);vec3 pl=vec3(dot(u,ex),dot(u,dS),dot(u,ez));
+      float sf=fract((pl.y+pl.x*1.7)/24.);bool cut=(pl.z<-4.&&pl.y>-4.&&pl.y<72.&&sf<.25&&abs(pl.x)<8.);
+      vec3 bc=cut?vec3(.97,.86,.62):mix(vec3(.84,.57,.26),vec3(.9,.66,.33),.5+.5*sin(pl.y*.35));
+      A(ell(pl,vec3(0.),vec3(12.5,80.,12.5)),bc);
+      A(smax(ell(pl,vec3(0.),vec3(14.5,82.,14.5)),pl.y+10.,2.),c);}
+    else if(k==5){vec3 m=H0+vec3(4.,46.,0.);vec3 cen=H0+vec3(4.,24.,0.);
+      float hd=length(vec2(length(p.xy-cen.xy)-20.,p.z-cen.z))-2.4;hd=smax(hd,p.y-cen.y,1.);A(hd,vec3(.85,.7,.3));
+      Ag2(bxs(p,m,vec3(30.,21.,13.),6.),c);Ag2(bxs(p,m+vec3(0.,-8.,12.),vec3(30.,10.,2.5),3.),c*.88);A(ell(p,m+vec3(0.,2.,15.),vec3(5.,4.,2.)),GOLD);}
+    else if(k==6){vec3 dS=normalize(vec3(.34,-.94,.05));vec3 ex=normalize(vec3(.94,.34,0.));vec3 ez=cross(ex,dS);vec3 u=p-H0;vec3 pl=vec3(dot(u,ex),dot(u,dS),dot(u,ez));
+      A(cap(pl,vec3(0.,-26.,0.),vec3(0.,96.,0.),2.4),vec3(.78));A(cap(pl,vec3(0.,-26.,0.),vec3(0.,-12.,0.),4.4),vec3(.35,.22,.12));A(cap(pl,vec3(0.,126.,0.),vec3(0.,142.,0.),1.8),vec3(.78));
+      float ba=atan(pl.x,pl.z);float dm=ell(pl,vec3(0.,96.,0.),vec3(46.,34.,46.));dm=smax(dm,-(pl.y-96.),2.);dm+=1.1*(1.-smoothstep(0.,.12,abs(sin(ba*4.))));
+      A(dm,mix(c,WH,.62*step(0.,sin(ba*4.))));}
+    else if(k==7){vec3 m=H0+vec3(4.,-8.,4.);A(bxs(p,m,vec3(30.,20.,14.),6.),c);A(bxs(p,m+vec3(0.,9.,0.),vec3(30.,11.,14.5),5.),vec3(.8,.82,.86));
+      A(cap(p,m+vec3(0.,2.,13.),m+vec3(0.,2.,22.),12.),vec3(.12));A(cap(p,m+vec3(0.,2.,22.),m+vec3(0.,2.,24.),7.),vec3(.28,.4,.55));A(length(p-(m+vec3(-3.,-1.,27.)))-2.,vec3(.9));
+      A(bxs(p,m+vec3(-18.,-13.,13.),vec3(7.,4.,2.),1.),vec3(.97,.95,.8));A(cylY(p,m+vec3(17.,-22.,0.),5.,3.,1.),c*.6);}
+    else if(k==0){vec3 dS=normalize(vec3(.25,-.97,.04));vec3 Bc=H0+dS*124.;vec3 u=p-Bc;vec3 ex=normalize(vec3(.97,.25,0.));vec3 ez=cross(ex,dS);vec3 pl=vec3(dot(u,ex),dot(u,dS),dot(u,ez));
+      A(cap(p,H0,H0+dS*84.,1.1),vec3(.8,.82,.86));A(ell(pl,vec3(0.),vec3(31.,40.,31.)),c);A(rcone(pl,vec3(0.,-39.,0.),vec3(0.,-46.,0.),5.,3.),c*.8);}
+    else if(k==1){A(cap(p,H0,vec3(300.,246.,70.),3.),WH);vec2 u=p.xy-vec2(304.,222.);A(ell(p,vec3(304.,222.,72.),vec3(28.,28.,9.)),mix(c,WH,step(.5,fract(atan(u.y,u.x)/6.283+length(u)/14.))));}
+    else {vec3 sg=vec3(.45,.7,.45);A(cap(p,H0,vec3(282.,262.,74.),2.),sg);A(cap(p,H0,vec3(304.,258.,74.),2.),sg);A(cap(p,H0,vec3(322.,278.,74.),2.),sg);A(length(p-vec3(280.,254.,76.))-12.,c);A(length(p-vec3(304.,248.,76.))-12.,mix(c,WH,.5));A(length(p-vec3(324.,270.,76.))-12.,c*.85);}
+    p+=DH;
+  }
+  k=hp?-1:uIt[9];c=uCl[9];
+  if(k>=0){
+    if(k==0){vec3 u=q-vec3(262.,246.,-30.);float cs=.866,sn=.5;vec3 r=vec3(cs*u.x-sn*u.y,sn*u.x+cs*u.y,u.z);A(ell(r,vec3(44.,-4.,0.),vec3(48.,17.,6.)),c);A(ell(r,vec3(32.,24.,0.),vec3(40.,14.,6.)),c);A(ell(r,vec3(18.,46.,0.),vec3(28.,12.,6.)),c);}
+    else if(k==1){vec3 u=q-vec3(262.,250.,-34.);float cs=.9,sn=.44;vec3 r=vec3(cs*u.x-sn*u.y,sn*u.x+cs*u.y,u.z);A(ell(r,vec3(44.,-4.,0.),vec3(52.,34.,6.)),c);A(ell(r,vec3(34.,56.,0.),vec3(34.,24.,6.)),mix(c,WH,.5));}
+    else if(k==3){vec3 m=vec3(200.,286.,-(56.+sTh)-17.);Ag2(bxs(p,m,vec3(90.,60.,20.),16.),c);A(bxs(p,m+vec3(0.,22.,-14.),vec3(46.,22.,6.),8.),c*.82);
+      float dsh=ell(p,vec3(200.,298.,0.),vec3(77.+sTh,107.+sTh,59.+sTh));A(smax(smax(smax(abs(dsh)-2.4,abs(q.x-228.)-7.,1.),p.y-290.,3.),222.-p.y,3.),c*.75);
+      A(cap(p,vec3(169.,262.,nz(169.,262.)+1.),vec3(231.,262.,nz(231.,262.)+1.),1.8),c*.6);}
+    else if(k==4){float sk=0.;int bt=uIt[3];if(bt==1)sk=16.;else if(bt==5)sk=14.;else if(bt==9)sk=24.;else if(bt==3||bt==4||bt==6)sk=8.;if(uIt[11]>=0)sk=max(sk,22.);float bx=120.-sTh-sk;
+      vec2 s0=vec2(246.,214.),s1=vec2(212.,254.),s2=vec2(170.,292.),s3=vec2(bx+14.,314.);float d2=min(sg2(p.xy,s0,s1),min(sg2(p.xy,s1,s2),sg2(p.xy,s2,s3)));float zS=shz(p.x,p.y,sTh+5.);
+      A((length(vec2(d2,(p.z-zS)*1.6))-3.4)*.7,c*.8);
+      A(bxs(p,vec3(bx,338.,14.),vec3(19.,26.,27.),8.),c);A(bxs(p,vec3(bx,326.,14.),vec3(19.,12.,28.),6.),c*.85);A(ell(p,vec3(bx,329.,41.),vec3(5.,4.,2.5)),GOLD);}
+    else {float t=clamp((p.y-222.)/170.,0.,1.);float r=mix(56.,108.,t);float dd=abs(length(vec2(p.x-200.,p.z+4.))-r)-5.;dd=smax(dd,p.z-10.,4.);dd=smax(dd,222.-p.y,3.);dd=smax(dd,p.y-390.,4.);A(dd,c);A(length(vec2(length(vec2(p.x-200.,(p.z+4.)/.9))-57.,p.y-224.))-8.,c*.82);}
+  }
+  return gD;}
+float map(vec3 p){if(uPass==3)return cmap(p);return min(bmap(p),cmap(p));}
+float armD(vec3 p){return min(rcone(p,vec3(148.,266.,10.),vec3(400.-uHR.x,uHR.y,uHR.z),27.,25.),rcone(p,vec3(252.,266.,10.),uHR,27.,25.));}
+float headD(vec3 p){
+  float d=ell(p,vec3(200.,152.,6.),vec3(73.,64.,58.));
+  d=min(d,length(p-vec3(139.,98.,-4.))-25.);d=min(d,length(p-vec3(261.,98.,-4.))-25.);
+  return min(d,ell(p,vec3(200.,177.,50.),vec3(30.,23.,20.)));}
+float bodyD(vec3 p){
+  float d=ell(p,vec3(200.,298.,0.),vec3(74.,104.,56.));
+  d=min(d,armD(p));d=min(d,ell(p,vec3(157.-uFt.x,399.+uFt.y,14.+uFt.z),vec3(32.,24.,29.)));d=min(d,ell(p,vec3(243.+uFt.x,399.+uFt.y,14.+uFt.z),vec3(32.,24.,29.)));
+  return d;}
+vec3 norX(vec3 p,bool cl){vec2 e=vec2(1.,-1.)*.5;if(cl)return normalize(e.xyy*cmap(p+e.xyy)+e.yyx*cmap(p+e.yyx)+e.yxy*cmap(p+e.yxy)+e.xxx*cmap(p+e.xxx));return normalize(e.xyy*bmap(p+e.xyy)+e.yyx*bmap(p+e.yyx)+e.yxy*bmap(p+e.yxy)+e.xxx*bmap(p+e.xxx));}
+vec3 nor(vec3 p){vec2 e=vec2(1.,-1.)*.5;return normalize(e.xyy*map(p+e.xyy)+e.yyx*map(p+e.yyx)+e.yxy*map(p+e.yxy)+e.xxx*map(p+e.xxx));}
+vec3 bgc(vec3 d){
+  float up=clamp(-d.y*.5+.5,0.,1.);
+  vec3 b=mix(vec3(.80,.82,.85),vec3(1.05),up);
+  float hs=pow(max(dot(normalize(d),normalize(vec3(.35,-.55,-.75))),0.),10.);
+  return b+vec3(1.1,1.05,.95)*hs;}
+vec3 bgk(vec3 d,float k){float up=clamp(-d.y*.5+.5,0.,1.);vec3 b=mix(vec3(.80,.82,.85),vec3(1.05),up);float hs=pow(max(dot(normalize(d),normalize(vec3(.35,-.55,-.75))),0.),10.);return b+vec3(1.1,1.05,.95)*hs*k;}
+vec3 env(vec3 r){
+  vec3 base=vec3(.66,.69,.74)*mix(.3,1.,clamp(-r.y*.5+.5,0.,1.));
+  float d=dot(r,normalize(vec3(-.5,-.6,.62)));
+  return base+vec3(.3)*smoothstep(.9,.995,d)+vec3(.1,.12,.16)*smoothstep(.55,.95,dot(r,normalize(vec3(.6,.1,.5))));}
+void main(){gCA=cos(uAng);gSA=sin(uAng);bool wt=(uIt[2]>=0||uIt[11]>=0);nOff=(uIt[10]>=0)?26.:(wt?13.:0.);nTh=((uIt[10]>=0)?22.:(wt?14.:0.))+((uIt[6]>=0)?12.:0.);sTh=(uIt[10]>=0)?17.:(wt?12.:0.);sLf=(uIt[10]>=0&&uOpen<.5)?18.:(wt?12.:0.);
+  vec2 xy=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y)*(400./uRes.x);
+  vec3 C=uC,Cs=min(C+.1*(1.-C),vec3(1.));
+  float md=1e9;vec3 pm=vec3(xy,0.);
+  if(xy.x>10.&&xy.x<390.&&xy.y>0.&&xy.y<440.){
+    float z=170.;
+    for(int i=0;i<100;i++){vec3 p=vec3(xy,z);float d=map(p);if(d<md){md=d;pm=p;}if(d<.1)break;z-=d*.9;if(z<-170.)break;}
+  }
+  float a=1.-smoothstep(.1,.9,md);
+  bool head=xy.y<CUT;
+  vec4 outc=vec4(0.);
+  if(a>0.){
+    vec3 p=pm,rd=vec3(0.,0.,-1.),n;float dbb=bmap(p);float gb=gB;float dcc=cmap(p);vec3 gcc=gC;float ggl=gG;bool isC=(uPass==3)||dcc<dbb+.4;n=norX(p,isC);vec3 Cm=isC?gcc:C;float lum=dot(Cm,vec3(.3,.59,.11));Cm=mix(Cm,vec3(.46,.46,.52),clamp((.32-lum)*4.,0.,1.)*.78);vec3 Cs2=min(Cm+.1*(1.-Cm),vec3(1.));
+    vec3 rr=refract(rd,n,1./1.45);if(dot(rr,rr)<.5)rr=rd;
+    vec3 q=p+rr;float t=1.;
+    for(int i=0;i<56;i++){float d=isC?cmap(q):bmap(q);if(d>-.05)break;float s=max(-d*.9,.6);q+=rr*s;t+=s;if(t>320.)break;}
+    vec3 nq=norX(q,isC);vec3 ed=refract(rr,-nq,1.45);if(dot(ed,ed)<.5)ed=reflect(rr,-nq);
+    if(isC){ed=refract(rr,-n,1.45);if(dot(ed,ed)<.5)ed=reflect(rr,-n);}
+    vec3 pr=rt(p);vec2 e1=(pr.xy-vec2(172.,143.))/vec2(6.8,9.4),e2=(pr.xy-vec2(228.,143.))/vec2(6.8,9.4);
+    float em=isC?0.:(1.-smoothstep(.85,1.05,min(length(e1),length(e2))))*smoothstep(15.,35.,pr.z);
+    float te=isC?(62.+1.5*t):(52.+.5*t);
+    vec3 tr=pow(Cs2,vec3(te/uL));
+    vec3 trans=bgc(ed)*tr;
+    vec3 L=normalize(vec3(-.5,-.6,.62));
+    float wb=clamp(.5-.5*dot(n,L),0.,1.);
+    vec3 glow=pow(Cs2,vec3(.6))*wb*wb*.32*(1.-exp(-t/70.));
+    float nv=clamp(n.z,0.,1.);
+    vec3 rim=pow(Cs2,vec3(.7))*pow(1.-nv,2.2)*(.3+.7*wb)*.3;
+    float F=(.04+.36*pow(1.-nv,4.))*((isC&&ggl<-.5)?.3:1.);
+    vec3 e=env(reflect(rd,n));
+    vec3 H=normalize(L+vec3(0.,0.,1.));
+    float spec=pow(max(dot(n,H),0.),240.)*1.5+pow(max(dot(n,H),0.),30.)*.12;if(isC)spec+=ggl*(pow(max(dot(n,H),0.),60.)*.4+pow(max(dot(n,H),0.),10.)*.07);if(isC&&ggl<-.5)spec*=.1;
+    if(!isC)spec*=smoothstep(30.,44.,length(vec2(abs(pr.x-200.)-61.,pr.y-98.)))*smoothstep(.8,1.3,length((p.xy-vec2(179.,243.))/vec2(26.,30.)));
+    vec3 col=(trans*(1.-F)+e*F*uK+glow+rim)*uK+vec3(spec);
+    if(isC)col*=(.7+.45*clamp(dot(n,L)*.5+.5,0.,1.))*mix(1.,.82,pow(1.-nv,2.));
+    float ao=clamp((isC?cmap(p+n*9.):bmap(p+n*9.))/9.,0.,1.);spec*=1.-smoothstep(.8,2.4,gb);float ao2=clamp((isC?cmap(p+n*16.):bmap(p+n*16.))/16.,0.,1.);col=col-vec3(spec)*(1.-pow(ao2,3.));col*=mix(.55,1.,ao);
+    col=mix(col,col*vec3(.58)+vec3(spec)*.5,em);
+    if(isC&&ggl>.5){col*=mix(1.,.82,smoothstep(.15,.7,n.y));vec3 nh=normalize(vec3(n.x,n.y*.15,n.z));float s1=pow(max(dot(nh,normalize(vec3(-.42,0.,.91))),0.),70.);float s2=pow(max(dot(nh,normalize(vec3(.55,0.,.84))),0.),90.);float hv=(ggl>1.5)?1.:smoothstep(322.,334.,p.y)*(1.-.5*smoothstep(372.,400.,p.y));col+=vec3((.85*s1+.35*s2)*hv*(1.-.4*clamp(lum*1.3,0.,1.)));}col=pow(clamp(col,0.,1.5),vec3(.95));
+    float vis=(uPass==2)?1.-smoothstep(2.5,6.,armD(p)):((uPass==1)?1.-smoothstep(-3.,3.,headD(p)-bodyD(p)):1.);
+    outc=vec4(col,a*vis);
+  } else if(uPass==0&&uSh>.5){
+    vec2 q1=(xy-vec2(210.,426.))/vec2(115.,13.);float sh=exp(-dot(q1,q1)*1.6);
+    vec2 q2=(xy-vec2(232.,430.))/vec2(80.,8.);float gl=exp(-dot(q2,q2)*1.5);
+    vec3 sc=C*.45+.1,gc=min(C*.9+.25,vec3(1.));
+    float aa=clamp(sh*.32+gl*.34,0.,1.);
+    outc=vec4(mix(sc,gc,gl/(gl+sh*.8+1e-4)),aa);
+  }
+  fc=outc;}
+`;
+let GLC,gl,GP,GU={};
+let PEXT=null;const GSH=[];
+function glDone(){return !PEXT||gl.getProgramParameter(GP,PEXT.COMPLETION_STATUS_KHR)}
+function glOK(){try{GSH.forEach(o=>{if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o))});if(!gl.getProgramParameter(GP,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(GP));return true}catch(e){console.error(e);return false}}
+function initGL(){
+  try{
+    GLC=document.createElement('canvas');GLC.width=BW;GLC.height=BH;
+    gl=GLC.getContext('webgl2',{premultipliedAlpha:false,preserveDrawingBuffer:true,alpha:true,antialias:false});
+    if(!gl)return false;
+    PEXT=gl.getExtension('KHR_parallel_shader_compile');const mk=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);GSH.push(o);return o};
+    GP=gl.createProgram();
+    gl.attachShader(GP,mk(gl.VERTEX_SHADER,'#version 300 es\nin vec2 pos;void main(){gl_Position=vec4(pos,0.,1.);}'));
+    gl.attachShader(GP,mk(gl.FRAGMENT_SHADER,'#version 300 es\nprecision highp float;\n'+FRAG));
+    gl.bindAttribLocation(GP,0,'pos');gl.linkProgram(GP);
+    gl.useProgram(GP);
+    const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+    ['uC','uL','uK','uSh','uPass','uRes','uAng','uHR','uFt','uOpen'].forEach(k=>GU[k]=gl.getUniformLocation(GP,k));GU.uIt=gl.getUniformLocation(GP,'uIt[0]');GU.uCl=gl.getUniformLocation(GP,'uCl[0]');
+    return true;
+  }catch(e){console.error(e);return false}
+}
+
+function filt(id,k){return `<filter id="${id}" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feComponentTransfer in="SourceGraphic" result="sg"><feFuncA type="linear" slope="${k}"/></feComponentTransfer><feGaussianBlur in="SourceAlpha" stdDeviation="5" result="b"/><feDiffuseLighting in="b" surfaceScale="6" diffuseConstant="1" lighting-color="#fff" result="df"><feDistantLight azimuth="225" elevation="58"/></feDiffuseLighting><feComponentTransfer in="df" result="df2"><feFuncR type="linear" slope="1.25"/><feFuncG type="linear" slope="1.25"/><feFuncB type="linear" slope="1.25"/></feComponentTransfer><feBlend in="sg" in2="df2" mode="multiply" result="sh"/><feComposite in="sh" in2="SourceAlpha" operator="in" result="sh2"/><feSpecularLighting in="b" surfaceScale="7" specularConstant="1.1" specularExponent="38" lighting-color="#fff" result="sp"><feDistantLight azimuth="225" elevation="50"/></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/><feGaussianBlur in="SourceAlpha" stdDeviation="6" result="b2"/><feComposite in="SourceAlpha" in2="b2" operator="arithmetic" k2="1" k3="-1" result="ed"/><feFlood flood-color="#fff" flood-opacity=".3"/><feComposite in2="ed" operator="in" result="rim"/><feMerge><feMergeNode in="sh2"/><feMergeNode in="rim"/><feMergeNode in="sp2"/></feMerge></filter>`}
+const SVGW=i=>`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="960" viewBox="0 0 400 480"><defs>${filt('jl',.92)}<clipPath id="tc"><path d="${T}"/></clipPath></defs>${i}</svg>`;
+function layersSvg(){const L=Object.fromEntries(CATS.map(x=>[x.id,layerParts(x)]));
+  return[SVGW(L.back[0]),SVGW(L.bottom[0]+L.shoe[0]+L.top[0]+L.suit[0]),SVGW(L.top[1]+L.suit[1]),SVGW(L.neck[0]+L.scarf[0]+L.face[0]+L.held[0]+L.hat[0]+L.hair[0])]}
+let bearOK=false,bearKey='',fullKey='',renderTok=0,idleT=0;
+function hex3(h){const n=parseInt(h.slice(1),16);return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]}
+function setU(W,H,sh){
+  const [,c,o]=BEAR[st.bear],its=CATS.map(x=>st.sel[x.id]==null?-1:st.sel[x.id]),cls=CATS.map(x=>st.col[x.id]);
+  gl.useProgram(GP);gl.viewport(0,0,W,H);
+  gl.uniform3fv(GU.uC,new Float32Array(hex3(c)));
+  gl.uniform1f(GU.uL,95/(o*o));gl.uniform1f(GU.uK,1-(1-o)*.7);gl.uniform1f(GU.uSh,sh);gl.uniform2f(GU.uRes,W,H);gl.uniform1f(GU.uAng,st.ang||0);
+  gl.uniform3fv(GU.uHR,new Float32Array(POSES[st.pose][1]));gl.uniform1f(GU.uOpen,st.coatOpen?1:0);gl.uniform3fv(GU.uFt,new Float32Array(POSES[st.pose][2]||[0,0,0]));gl.uniform1iv(GU.uIt,new Int32Array(its));
+  gl.uniform3fv(GU.uCl,new Float32Array(cls.flatMap(hex3)));
+}
+function runPass(ps){gl.uniform1i(GU.uPass,ps);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3)}
+function drawBear(quick){
+  if(!bearOK)return;
+  const [,c,o]=BEAR[st.bear],its=CATS.map(x=>st.sel[x.id]==null?-1:st.sel[x.id]),cls=CATS.map(x=>st.col[x.id]);
+  const ang=st.ang||0;
+  const key=c+o+its.join()+cls.join()+st.pose+st.coatOpen+'|'+ang.toFixed(3);
+  const same=(key===bearKey);
+  if(same&&(quick||fullKey===key))return;
+  bearKey=key;
+  if(fbMode){drawFB(c,o);return}
+  const tok=++renderTok;
+  const clrH=()=>$('ch').getContext('2d').clearRect(0,0,BW,BH);
+  if(!same){
+    const w=Math.round(BW/3),h=Math.round(BH/3);GLC.width=w;GLC.height=h;setU(w,h,1);
+    runPass(0);const x=$('cv').getContext('2d');x.clearRect(0,0,BW,BH);x.drawImage(GLC,0,0,BW,BH);
+    if(ang===0){runPass(3);const y=$('ch').getContext('2d');y.clearRect(0,0,BW,BH);y.drawImage(GLC,0,0,BW,BH)}else clrH();
+    $('stage').classList.add('ok');
+  }
+  clearTimeout(idleT);
+  if(quick){idleT=setTimeout(()=>drawBear(),130);return}
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(tok!==renderTok||fbMode)return;
+    GLC.width=BW;GLC.height=BH;setU(BW,BH,1);
+    runPass(0);const x=$('cv').getContext('2d');x.clearRect(0,0,BW,BH);x.drawImage(GLC,0,0);
+    requestAnimationFrame(()=>{if(tok!==renderTok||fbMode)return;if(ang===0){setU(BW,BH,1);runPass(3);const y=$('ch').getContext('2d');y.clearRect(0,0,BW,BH);y.drawImage(GLC,0,0)}else clrH();fullKey=key});
+  }));
+}
+function renderHi(tr){
+  const W=1200,H=1440;GLC.width=W;GLC.height=H;setU(W,H,tr?0:1);
+  const o=document.createElement('canvas');o.width=W;o.height=H;const x=o.getContext('2d');
+  fillBg(x,W,H);
+  runPass(0);x.drawImage(GLC,0,0);if(!(st.ang))runPass(3),x.drawImage(GLC,0,0);
+  GLC.width=BW;GLC.height=BH;bearKey='';drawBear();
+  return o}
+function fbSvg(c,o){
+  const d=mix(c,-.38),l=mix(c,.6),ln=(q,w,col,op)=>`<path d="${q}" stroke="${col}" stroke-opacity="${op}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480"><defs>${filt('jb',Math.max(.6,o))}
+<radialGradient id="gb" gradientUnits="userSpaceOnUse" cx="190" cy="230" r="235" fx="175" fy="200"><stop offset="0" stop-color="${mix(c,-.2)}"/><stop offset=".5" stop-color="${c}"/><stop offset="1" stop-color="${mix(c,.45)}"/></radialGradient></defs>
+<ellipse cx="238" cy="441" rx="142" ry="17" fill="${d}" fill-opacity=".25"/>
+<g filter="url(#jb)" fill="url(#gb)"><ellipse cx="152" cy="388" rx="42" ry="35"/><ellipse cx="248" cy="388" rx="42" ry="35"/><rect x="120" y="190" width="160" height="196" rx="72"/><ellipse cx="114" cy="272" rx="27" ry="48" transform="rotate(16 114 272)"/><ellipse cx="286" cy="272" rx="27" ry="48" transform="rotate(-16 286 272)"/><circle cx="140" cy="96" r="27"/><circle cx="260" cy="96" r="27"/><rect x="130" y="82" width="140" height="136" rx="62"/></g>
+${ln('M150 238Q142 282 152 330',9,'#fff',.6)}${ln('M156 110Q166 96 188 92',10,'#fff',.75)}<circle cx="146" cy="130" r="5" fill="#fff" fill-opacity=".85"/>
+<ellipse cx="200" cy="172" rx="30" ry="23" fill="${l}" fill-opacity=".4" stroke="${d}" stroke-opacity=".25" stroke-width="2"/>
+<ellipse cx="200" cy="162" rx="8.5" ry="5.5" fill="#4a2c32" fill-opacity=".85"/>${ln('M200 168V176M190 181Q200 190 210 181',2.5,'#4a2c32',.6)}
+<ellipse cx="172" cy="140" rx="6" ry="8.5" fill="#3a2429"/><ellipse cx="228" cy="140" rx="6" ry="8.5" fill="#3a2429"/>
+<circle cx="170" cy="136.5" r="2.4" fill="#fff"/><circle cx="226" cy="136.5" r="2.4" fill="#fff"/></svg>`}
+function drawFB(c,o){
+  try{const img=new Image();img.onload=()=>{try{const x=$('cv').getContext('2d');x.clearRect(0,0,BW,BH);x.drawImage(img,0,0,BW,BH);$('ch').getContext('2d').clearRect(0,0,BW,BH);$('ca').getContext('2d').clearRect(0,0,BW,BH)}catch(e){}};
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(fbSvg(c,o))}catch(e){}}
+function paint(){if(!bearOK)return;if(!fbMode){drawBear();return}$('stage').classList.add('ok');const s=layersSvg();['s1','s2','s3','s4'].forEach((id,i)=>$(id).innerHTML=s[i]);drawBear()}
+function geoInit(){
+  if(!initGL()){fbMode=true;bearOK=true;bearKey='';syncFb();paint();return}
+  const wait=()=>{
+    if(!glDone()){requestAnimationFrame(wait);return}
+    bearOK=true;fbMode=!glOK();syncFb();
+    if(!fbMode){$('box').classList.add('gl');GLC.addEventListener('webglcontextlost',e=>{e.preventDefault();fbMode=true;$('box').classList.remove('gl');bearKey='';syncFb();paint()})}
+    bearKey='';paint();
+  };
+  wait();
+}
+function ui(){
+  paint();
+  $('bears').innerHTML=BEAR.map((b,i)=>`<div><button class="sw${i==st.bear?' on':''}" aria-label="${b[0]}" style="background:radial-gradient(circle at 35% 30%,#fff,${b[1]} 60%,${mix(b[1],-.25)})" onclick="setBear(${i})"></button><br>${b[0]}</div>`).join('');
+  const ORD=['top','bottom','suit','coat','shoe','hat','neck','face','held','hair','scarf','back'].map(id=>CATS.findIndex(c=>c.id===id));$('tabs').innerHTML=ORD.map(i=>{const c=CATS[i];return `<button class="tab${i==st.cat?' on':''}" onclick="setCat(${i})">${c.name}</button>`}).join('');
+  let co=$('coatop');if(!co){co=document.createElement('div');co.id='coatop';co.style.cssText='display:flex;gap:8px;margin:0 0 10px';$('grid').parentNode.insertBefore(co,$('grid'))}
+  co.innerHTML=CATS[st.cat].id==='coat'?`<button class="btn${!st.coatOpen?' main':''}" onclick="setOpen(false)">閉合</button><button class="btn${st.coatOpen?' main':''}" onclick="setOpen(true)">打開</button>`:'';
+  let lr=$('lockrow');if(!lr){lr=document.createElement('label');lr.id='lockrow';lr.className='lockrow';$('grid').parentNode.insertBefore(lr,$('grid'));lr.addEventListener('change',e=>{st.lock=st.lock||{};st.lock[CATS[st.cat].id]=e.target.checked;persist()})}
+  lr.innerHTML=`<input type="checkbox" ${(st.lock&&st.lock[CATS[st.cat].id])?'checked':''}> 隨機搭配時保留這一類`;
+  const c=CATS[st.cat],a=st.col[c.id],cur=st.sel[c.id];
+  $('grid').innerHTML=`<button class="it${cur==null?' on':''}" onclick="pick(-1)"><span style="flex:1;display:flex;align-items:center;font-size:15px;color:#8b9098">無</span><span>不穿戴</span></button>`+
+    IX(c).map(i=>{const it=c.items[i];return ((c.id==='top'&&(i==4||i==5||i==9))||(c.id==='coat'&&i==7))?'':`<button class="it${cur==i?' on':''}" onclick="pick(${i})"><svg viewBox="${c.vb}" preserveAspectRatio="xMidYMid meet"><g stroke="${mix(a,-.35)}" stroke-opacity=".3" stroke-width="1.5">${it[1](a,mix(a,-.28),mix(a,.5))}</g></svg><span>${it[0]}</span></button>`}).join('');
+  $('pal').innerHTML=P.map(p=>`<button class="sw${p==a?' on':''}" aria-label="顏色" style="background:radial-gradient(circle at 35% 30%,#fff,${p} 65%)" onclick="setCol('${p}')"></button>`).join('');
+}
+const IX=c=>{const a=c.items.map((_,i)=>i);if(c.id==='bottom')a.sort((x,y)=>((x==1||x==5)-(y==1||y==5))||x-y);return a};
+const setBear=i=>{st.bear=i;ui()};
+const setCat=i=>{st.cat=i;ui()};
+const pick=i=>{const c=CATS[st.cat];st.sel[c.id]=i<0?null:i;if(i>=0){if(c.id==='suit'){st.sel.top=null;st.sel.bottom=null}else if(c.id==='top'||c.id==='bottom')st.sel.suit=null}if(c.id==='held'){if(i===4&&st.col.held===P[1])st.col.held=P[7];else if(i!==4&&st.col.held===P[7])st.col.held=P[1]}if(c.id==='top'&&i===15&&st.col.top===P[2])st.col.top=P[7];if(c.id==='hat'){if(i===2&&st.col.hat===P[2])st.col.hat=P[4];else if(i!==2&&st.col.hat===P[4])st.col.hat=P[2]}if(c.id==='face'){if(i===2)st.col.face=P[6];else if(st.col.face===P[6])st.col.face='#26262b'}if(c.id==='bottom'&&i===2&&st.col.bottom===P[3])st.col.bottom='#3f63a6';if(c.id==='hat'&&i===6&&st.col.hat===P[0])st.col.hat=P[1];if(c.id==='shoe'&&i===2&&st.col.shoe===P[4])st.col.shoe=P[2];ui()};
+const setCol=p=>{st.col[CATS[st.cat].id]=p;ui()};
+function clr(){CATS.forEach(c=>st.sel[c.id]=null);st.pose=0;st.coatOpen=false;ui();toast('已重置')}
+function rnd(){
+  const L=st.lock||{},S=st.sel;
+  st.bear=Math.random()*BEAR.length|0;
+  CATS.forEach(c=>{if(L[c.id])return;if(Math.random()<.65){S[c.id]=Math.random()*c.items.length|0;if(c.id==='top'&&(S.top==4||S.top==5||S.top==9))S.top=0;if(c.id==='coat'&&S.coat==7)S.coat=0;st.col[c.id]=P[Math.random()*P.length|0]}else S[c.id]=null});
+  if(S.suit!=null&&(S.top!=null||S.bottom!=null)){if(!L.suit&&(Math.random()<.5||L.top||L.bottom))S.suit=null;else{if(!L.top)S.top=null;if(!L.bottom)S.bottom=null}}
+  if(S.hat!=null&&S.hair!=null){if(!L.hair)S.hair=null;else if(!L.hat)S.hat=null}
+  if(S.neck!=null&&S.scarf!=null){if(!L.neck)S.neck=null;else if(!L.scarf)S.scarf=null}
+  ui();toast('已隨機搭配完成')}
+
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('s');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('s'),2400)}
+
+const loadSvg=t=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(t)});
+async function makePng(tr){
+  if(!bearOK)throw 0;
+  let cv;
+  if(!fbMode)cv=renderHi(tr);
+  else{
+    cv=document.createElement('canvas');cv.width=1200;cv.height=1440;
+    const x=cv.getContext('2d');
+    fillBg(x,1200,1440);
+    x.imageSmoothingQuality='high';
+    const [a,b,c,d]=await Promise.all(layersSvg().map(loadSvg));[a,$('cv'),b,$('ca'),c,$('ch'),d].forEach(m=>x.drawImage(m,0,0,1200,1440));
+  }
+  return new Promise(r=>cv.toBlob(r,'image/png'));
+}
+async function save(){const tr=BG.k==='transp';
+  try{
+    const nm=tr?'小熊軟糖-透明背景.png':'小熊軟糖.png',b=await makePng(tr),f=new File([b],nm,{type:'image/png'});
+    const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(ios&&navigator.canShare&&navigator.canShare({files:[f]})){
+      try{await navigator.share({files:[f],title:'小熊軟糖'});toast('請在選單中點選「儲存影像」');return}
+      catch(e){if(e.name==='AbortError')return}
+    }
+    const u=URL.createObjectURL(b),a=document.createElement('a');
+    a.href=u;a.download=nm;document.body.appendChild(a);a.click();a.remove();
+    if(ios){$('mi').src=u;$('md').classList.add('s')}
+    toast(tr?'透明背景 PNG 已儲存':'照片已儲存');
+  }catch(e){toast('儲存失敗，請再試一次')}
+}
+document.body.insertAdjacentHTML('afterbegin','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>'+filt('jl',.92)+'<clipPath id="tc"><path d="'+T+'"/></clipPath></defs></svg>');
+window.addEventListener('error',e=>{try{toast('發生錯誤：'+(e.message||'未知'))}catch(x){}});
+const SKEY='bearGummyV1';let BG={k:'grad',c:'#ffffff'};st.lock={};
+try{const r=JSON.parse(localStorage.getItem(SKEY)||'null');
+  if(r&&r.v===1){
+    if(Number.isInteger(r.b)&&r.b>=0&&r.b<BEAR.length)st.bear=r.b;
+    CATS.forEach(c=>{const v=r.s&&r.s[c.id];st.sel[c.id]=(Number.isInteger(v)&&v>=0&&v<c.items.length)?v:null;const col=r.c&&r.c[c.id];if(typeof col==='string'&&/^#[0-9a-f]{3,8}$/i.test(col))st.col[c.id]=col});
+    if(Number.isInteger(r.p)&&r.p>=0&&r.p<POSES.length)st.pose=r.p;
+    st.coatOpen=!!r.o;
+    if(r.bg&&typeof r.bg.k==='string'&&(r.bg.k==='grad'||r.bg.k==='transp'||r.bg.k==='custom'||/^#[0-9a-f]{6}$/i.test(r.bg.k))){BG.k=r.bg.k;if(typeof r.bg.c==='string'&&/^#[0-9a-f]{6}$/i.test(r.bg.c))BG.c=r.bg.c}
+    if(r.lk&&typeof r.lk==='object')st.lock=r.lk;
+  }}catch(e){}
+geoInit();
+ui();
+setTimeout(()=>$('stage').classList.add('ok'),6000);
+
+let hist=[],redoS=[],lastS=null,undoing=false;const snap=()=>JSON.stringify({b:st.bear,s:st.sel,c:st.col,p:st.pose,o:st.coatOpen});
+const _ui=ui;ui=function(){const k=snap();if(lastS!==null&&k!==lastS&&!undoing){hist.push(lastS);if(hist.length>50)hist.shift();redoS.length=0}lastS=k;_ui();pb();persist()};
+function applySnap(j){const o=JSON.parse(j);st.bear=o.b;st.sel=o.s;st.col=o.c;st.pose=o.p;st.coatOpen=!!o.o;undoing=true;ui();undoing=false}
+function undo(){if(!hist.length){toast('沒有可復原的動作');return}redoS.push(lastS);applySnap(hist.pop());toast('已回到上一步')}
+function redo(){if(!redoS.length){toast('沒有可重做的動作');return}hist.push(lastS);applySnap(redoS.pop());toast('已回到下一步')}
+function setOpen(v){st.coatOpen=v;ui()}
+function setPose(i){st.pose=i;ui()}
+function pb(){$('poses').innerHTML=POSES.map((p,i)=>`<button class="btn${i==st.pose?' main':''}" onclick="setPose(${i})">${p[0]}</button>`).join('')}
+pb();
+
+/* ===== 角度旋轉 ===== */
+st.ang=0;
+const normA=a=>{a=a%(2*Math.PI);if(a>Math.PI)a-=2*Math.PI;if(a<-Math.PI)a+=2*Math.PI;return a};
+let angAnim=0;
+function rotTo(t){
+  if(fbMode)return;cancelAnimationFrame(angAnim);
+  const a0=st.ang||0,d=normA(t-a0),t0=performance.now(),D=220;
+  const step=now=>{const k=Math.min(1,(now-t0)/D),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    if(k<1){st.ang=normA(a0+d*e);drawBear(true);angAnim=requestAnimationFrame(step)}
+    else{st.ang=Math.abs(normA(t))<1e-6?0:normA(t);drawBear()}};
+  angAnim=requestAnimationFrame(step);
+}
+function rotBy(deg){rotTo((st.ang||0)+deg*Math.PI/180)}
+(function(){
+  const sg=$('stage');let down=false,x0=0,a0=0,moved=false;
+  sg.addEventListener('pointerdown',e=>{if(fbMode||e.target.closest('#rot'))return;down=true;moved=false;x0=e.clientX;a0=st.ang||0;cancelAnimationFrame(angAnim);try{sg.setPointerCapture(e.pointerId)}catch(_){}});
+  sg.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-x0;if(!moved&&Math.abs(dx)<4)return;moved=true;sg.classList.add('drag');st.ang=normA(a0+dx*.014);drawBear(true)});
+  const end=()=>{if(!down)return;down=false;sg.classList.remove('drag');if(moved){if(Math.abs(st.ang||0)<.1)st.ang=0;drawBear()}};
+  sg.addEventListener('pointerup',end);sg.addEventListener('pointercancel',end);
+})();
+function syncFb(){const fb=!!fbMode;$('rot').classList.toggle('off',fb);const n=$('fbn');n.style.display=fb?'block':'none';if(fb)n.textContent='此裝置無法使用 3D 渲染，已改用簡易預覽，暫時無法旋轉角度。'}
+
+/* ===== 下載背景 ===== */
+const BGO=[['grad','預設漸層','linear-gradient(135deg,#fbfbfa,#e3e6ea)'],['transp','透明','conic-gradient(#cfd2d8 25%,#fff 0 50%,#cfd2d8 0 75%,#fff 0) 0 0/12px 12px'],['#ffffff','白色','#fff'],['#ffe1ea','粉色','#ffe1ea'],['#dcefff','淡藍','#dcefff'],['#e0f4de','淡綠','#e0f4de'],['#3b3e46','深灰','#3b3e46']];
+function fillBg(x,W,H){const k=BG.k;if(k==='transp')return;if(k==='grad'){const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#fbfbfa');g.addColorStop(1,'#e3e6ea');x.fillStyle=g}else x.fillStyle=(k==='custom')?BG.c:k;x.fillRect(0,0,W,H)}
+function bgPrev(){const k=BG.k,e=$('stage');e.style.background=k==='grad'?'':(k==='transp'?'conic-gradient(#d9dce1 25%,#fff 0 50%,#d9dce1 0 75%,#fff 0) 0 0/16px 16px':(k==='custom'?BG.c:k))}
+function renderBG(){bgPrev();
+  $('bgs').innerHTML=BGO.map(o=>`<button aria-label="${o[1]}" title="${o[1]}" class="${o[0]===BG.k?'on':''}" style="background:${o[2]}" onclick="setBG('${o[0]}')"></button>`).join('')+
+  `<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mute)">自訂<input type="color" value="${BG.c||'#ffffff'}" oninput="setBGc(this.value)" style="width:34px;height:34px;border:none;background:none;padding:0"></label>`;
+}
+function setBG(k){BG.k=k;renderBG();persist();toast('背景：'+(BGO.find(o=>o[0]===k)||[0,'自訂'])[1])}
+function setBGc(c){BG.k='custom';BG.c=c;bgPrev();persist();[...$('bgs').children].forEach(b=>{if(b.tagName==='BUTTON')b.classList.remove('on')})}
+
+/* ===== 儲存上次搭配 ===== */
+function persist(){try{localStorage.setItem(SKEY,JSON.stringify({v:1,b:st.bear,s:st.sel,c:st.col,p:st.pose,o:st.coatOpen,bg:BG,lk:st.lock}))}catch(e){}}
+renderBG();
+</script>
+</body>
+</html>
