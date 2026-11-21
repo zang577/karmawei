@@ -272,9 +272,9 @@ CATS.find(c=>c.id==='hair').items.push(
 ['頭頂小雲朵',(c,d,l)=>`<ellipse cx="200" cy="64" rx="38" ry="13" fill="${c}"/><circle cx="178" cy="60" r="15" fill="${c}"/><circle cx="200" cy="50" r="19" fill="${c}"/><circle cx="224" cy="58" r="16" fill="${c}"/><ellipse cx="192" cy="45" rx="7" ry="4" fill="#fff" fill-opacity=".6" stroke="none"/>`]);
 
 CATS.find(c=>c.id==='suit').items.push(
-['運動套裝',(c,d)=>{const w=c==='#ffffff'?'#aeb3bb':'#fff';return `<path d="${TP(326,392,6,0)}" fill="${c}"/><path d="M138 336L132 390M262 336L268 390" stroke="${w}" stroke-width="5" fill="none" stroke-opacity="1"/>`+SL(c,48)+`<path d="${TP(213,338,5,6)}" fill="${c}"/><path d="M128 256Q200 268 272 256" stroke="${w}" stroke-width="5" fill="none" stroke-opacity="1"/><path d="M200 222V334" stroke="${w}" stroke-width="3" stroke-opacity="1"/><circle cx="200" cy="232" r="4" fill="${w}"/>`}],
-['睡衣套裝',(c,d)=>{const w=c==='#ffffff'?'#aeb3bb':'#fff';const dots=[...Array(6)].map((_,r)=>[...Array(7)].map((_,k)=>`<circle cx="${128+k*24+(r%2)*12}" cy="${236+r*18}" r="4"/>`).join('')).join('');return `<path d="${TP(326,392,8,0)}" fill="${c}"/>`+SL(c,48)+`<path d="${TP(213,342,6,6)}" fill="${c}"/><g fill="${w}" fill-opacity=".85" stroke="none">${dots}</g><path d="M178 213L200 244L222 213L212 210Z" fill="${w}"/><path d="M200 244V336" stroke="${d}" stroke-width="3" stroke-opacity=".6"/><g fill="#fff" stroke="none"><circle cx="200" cy="256" r="3"/><circle cx="200" cy="278" r="3"/><circle cx="200" cy="300" r="3"/><circle cx="200" cy="322" r="3"/></g>`}],
-['西裝套裝',(c,d)=>`<path d="${TP(326,392,4,0)}" fill="${c}"/><path d="M200 356V388" stroke="${d}" stroke-width="3"/>`+SL(c,48)+`<path d="${TP(213,346,5,16)}" fill="${c}"/><path d="M178 214L222 214L200 296Z" fill="#fff"/><path d="M178 214L200 296L168 250Z M222 214L200 296L232 250Z" fill="${d}"/><path d="M196 230H204L207 268L200 280L193 268Z" fill="#c8202e"/><circle cx="204" cy="318" r="4" fill="${d}"/>`]);
+['運動套裝',(c,d)=>{const w=c==='#ffffff'?'#aeb3bb':'#fff';return `<path d="${TP(326,392,6,0)}" fill="${c}"/><path d="M200 356V390" stroke="${d}" stroke-width="3" stroke-opacity=".7" fill="none"/><path d="M138 336L132 390M262 336L268 390" stroke="${w}" stroke-width="5" fill="none" stroke-opacity="1"/>`+SL(c,48)+`<path d="${TP(213,338,5,6)}" fill="${c}"/><path d="M128 256Q200 268 272 256" stroke="${w}" stroke-width="5" fill="none" stroke-opacity="1"/><path d="M200 222V334" stroke="${w}" stroke-width="3" stroke-opacity="1"/><circle cx="200" cy="232" r="4" fill="${w}"/>`}],
+['睡衣套裝',(c,d)=>{const w=c==='#ffffff'?'#aeb3bb':'#fff';const dots=[...Array(6)].map((_,r)=>[...Array(7)].map((_,k)=>`<circle cx="${128+k*24+(r%2)*12}" cy="${236+r*18}" r="4"/>`).join('')).join('');return `<path d="${TP(326,392,8,0)}" fill="${c}"/><path d="M200 356V390" stroke="${d}" stroke-width="3" stroke-opacity=".7" fill="none"/>`+SL(c,48)+`<path d="${TP(213,342,6,6)}" fill="${c}"/><g fill="${w}" fill-opacity=".85" stroke="none">${dots}</g><path d="M178 213L200 244L222 213L212 210Z" fill="${w}"/><path d="M200 244V336" stroke="${d}" stroke-width="3" stroke-opacity=".6"/><g fill="#fff" stroke="none"><circle cx="200" cy="256" r="3"/><circle cx="200" cy="278" r="3"/><circle cx="200" cy="300" r="3"/><circle cx="200" cy="322" r="3"/></g>`}],
+['西裝套裝',(c,d)=>`<path d="${TP(326,392,4,0)}" fill="${c}"/><path d="M200 356V388" stroke="${d}" stroke-width="3"/>`+SL(c,48)+`<path d="${TP(213,346,5,16)}" fill="${c}"/><path d="M178 214L222 214L200 296Z" fill="${c==='#ffffff'?'#c7d6ee':'#fff'}"/><path d="M178 214L200 296L168 250Z M222 214L200 296L232 250Z" fill="${d}"/><path d="M196 230H204L207 268L200 280L193 268Z" fill="#c8202e"/><circle cx="204" cy="318" r="4" fill="${d}"/>`]);
 CATS.find(c=>c.id==='neck').items.push(
 ['水滴墜',(c,d,l)=>`<path d="${CH}" stroke="${G}" stroke-width="3" fill="none"/><circle cx="200" cy="246" r="3" fill="${G}"/><path d="M200 248C200 248 189 260 189 266A11 11 0 0 0 211 266C211 260 200 248 200 248Z" fill="${c}" fill-opacity=".9"/><ellipse cx="195" cy="266" rx="2.6" ry="4.6" fill="#fff" fill-opacity=".6" stroke="none"/>`]);
 CATS.find(c=>c.id==='face').items.push(
@@ -282,7 +282,7 @@ CATS.find(c=>c.id==='face').items.push(
 ['眼罩',(c)=>{const a=c==='#26262b'?'#fff':'#26262b';return `<path d="M150 140L128 138M250 140L272 138" stroke="${c}" stroke-width="7" stroke-linecap="round" stroke-opacity="1"/><path d="M164 124H236Q250 124 250 138V148Q250 162 236 162H212Q200 152 188 162H164Q150 162 150 148V138Q150 124 164 124Z" fill="${c}"/><path d="M163 140Q172 152 181 140M219 140Q228 152 237 140" stroke="${a}" stroke-width="3" stroke-linecap="round" fill="none" stroke-opacity="1"/>`}]);
 const POSES=[['站立',[277,292,30]],['萬歲',[290,226,26]],['打招呼',[296,252,36]],['抱胸',[238,306,62]]];
 const st={bear:0,cat:0,sel:{},col:{},pose:0,coatOpen:false};
-CATS.forEach((c,i)=>{st.sel[c.id]=null;st.col[c.id]=P[i%9]});st.col.face='#26262b';st.col.hat=P[2];st.col.neck=P[4];st.col.held=P[1];st.col.top=P[3];st.col.bottom=P[9];st.col.back=P[7];st.col.coat=P[9];st.col.suit=P[5];st.cat=2;
+CATS.forEach((c,i)=>{st.sel[c.id]=null;st.col[c.id]=P[i%9]});st.col.face='#26262b';st.col.hat=P[2];st.col.neck=P[4];st.col.held=P[1];st.col.top=P[7];st.col.bottom=P[9];st.col.back=P[7];st.col.coat=P[9];st.col.suit=P[7];st.cat=2;
 
 const TRN={hat:'translate(200 7) scale(.88 1) translate(-200 0)',face:'translate(0 3)',held:'translate(-24 -20)',scarf:'translate(200 0) scale(.82 1) translate(-200 0)'};
 const TRI={hair:['translate(-14 8)','translate(-12 8)','translate(0 24)','translate(-12 8)']};
@@ -435,6 +435,7 @@ float skirtZ(vec3 p,float y0,float y1,float r0,float r1,float f0,float f1){float
 vec3 sm(vec3 c){float mx=max(c.r,max(c.g,c.b)),mn=min(c.r,min(c.g,c.b));if(mx-mn<.12){if(mx>.9)return vec3(.8,.82,.85);if(mx<.3)return vec3(.5,.52,.55);return vec3(.1,.1,.12);}return c*.6;}
 float bt(float z,float b){return b+14.*smoothstep(-6.,36.,z);}
 vec3 stp(vec3 c){return (min(c.r,min(c.g,c.b))>.9)?vec3(.8,.82,.86):vec3(1.);}
+void crotch(vec3 p,float pth,vec3 c){for(int gi=0;gi<6+Z0;gi++){float g0=352.+float(gi)*5.3333,g1=g0+5.3333;float t0=(pth+3.*smoothstep(345.,385.,g0))*(.75+.25*smoothstep(390.,360.,g0));float t1=(pth+3.*smoothstep(345.,385.,g1))*(.75+.25*smoothstep(390.,360.,g1));A(cap(p,vec3(200.,g0,pz(g0,t0)-.5),vec3(200.,g1,pz(g1,t1)-.5),1.8),sm(c));}}
 float cmap(vec3 p){p=rt(p);gPy=p.y;gCy=0.;
   gD=1e5;gC=WH;gG=0.;
   vec3 q=vec3(200.+abs(p.x-200.),p.y,p.z);
@@ -528,20 +529,20 @@ float cmap(vec3 p){p=rt(p);gPy=p.y;gCy=0.;
       A(bxs(q,vec3(236.,222.,cz(236.,222.)+11.),vec3(10.,4.,2.),1.5),c*.8);}}
     else if(k==6){vec3 cc=c;if(abs(p.y-258.)<3.)cc=stp(c);
       A(tsh(p,208.,340.,6.),cc);A(slv(q,.9),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-5.5,c*.9);A(tsh(p,334.,342.,9.),c*.85);
-      A(tsh(p,322.,388.,6.),c);
+      A(tsh(p,322.,388.,6.),c);crotch(p,6.,c);
       if(!cch)zipper(p,226.,332.,7.5,false);
       for(int gi=0;gi<4+Z0;gi++){float g0=344.+float(gi)*11.,g1=g0+11.;A(cap(q,vec3(235.,g0,shz(235.,g0,9.)),vec3(235.,g1,shz(235.,g1,9.)),2.),stp(c));}}
     else if(k==7){vec2 gg=fract(vec2(p.x/22.+step(.5,fract(p.y/44.))*.5,p.y/22.))-.5;vec3 cc=mix(c,stp(c),step(length(gg),.22));
       A(tsh(p,208.,342.,8.),cc);A(slv(q,.88),cc);A(length(vec2(length(vec2(p.x-200.,p.z*1.3))-53.,p.y-217.))-5.5,stp(c));
-      A(smax(smin(tsh(p,322.,390.,8.),smax(rcone(q,vec3(243.,326.,14.),vec3(243.,394.,14.),33.,39.),q.y-394.,4.),14.),322.-p.y,3.),cc);
+      A(smax(smin(tsh(p,322.,390.,8.),smax(rcone(q,vec3(243.,326.,14.),vec3(243.,394.,14.),33.,39.),q.y-394.,4.),14.),322.-p.y,3.),cc);crotch(p,8.,c);
       if(!cch){A(ell(q,vec3(214.,224.,cz(214.,224.)+10.),vec3(14.,8.,4.)),stp(c));A(cap(p,vec3(200.,226.,cz(200.,226.)+10.),vec3(200.,334.,cz(200.,334.)+10.),2.2),c*.75);
         for(int gi=0;gi<5+Z0;gi++){float gy=246.+float(gi)*21.;A(length(p-vec3(200.,gy,cz(200.,gy)+12.))-2.6,WH);}}}
-    else if(k==8){vec3 cc=c;float vv=290.-p.y;if(p.z>10.&&p.y<292.&&abs(p.x-200.)<vv*.26)cc=WH;
+    else if(k==8){vec3 cc=c;float vv=290.-p.y;if(p.z>10.&&p.y<292.&&abs(p.x-200.)<vv*.26)cc=mix(WH,vec3(.78,.86,.97),step(.9,min(c.r,min(c.g,c.b))));
       A(tsh(p,208.,346.,7.),cc);A(slvT(q,.9,33.),c);A(length(vec2(length(vec2(p.x-200.,p.z*1.25))-60.,p.y-213.))-6.5,c*.9);
       if(!cch){A(ext(sdTr(q.xy,vec2(220.,212.),vec2(244.,232.),vec2(204.,290.)),p.z-cz(p.x,p.y)-9.,2.5,1.8),c*.8);
         A(ell(p,vec3(200.,262.,cz(200.,262.)+8.),vec3(5.5,26.,3.)),vec3(.78,.12,.2));A(length(p-vec3(200.,236.,cz(200.,236.)+8.))-5.,vec3(.78,.12,.2));
         A(length(p-vec3(204.,316.,cz(204.,316.)+13.))-3.2,c*.55);}
-      A(tsh(p,322.,388.,5.),c);A(cap(p,vec3(200.,356.,pz(356.,5.)-.5),vec3(200.,388.,pz(388.,5.)-.5),1.6),sm(c));}
+      A(tsh(p,322.,388.,5.),c);crotch(p,5.,c);}
   }
   k=hp?((uIt[10]==2)?2:-1):uIt[10];c=uCl[10];
   if(k>=0){
